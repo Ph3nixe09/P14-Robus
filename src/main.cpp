@@ -4,7 +4,7 @@
 int myFunction(int, int);
 
 void setup() {
-  // hello world
+  // ceci est un test
   int result = myFunction(2, 3);
 }
 
