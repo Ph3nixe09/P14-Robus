@@ -25,6 +25,7 @@ bool rouge = false;
 int etat = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGauche
 int etatPast = 0;
 float vitesse = 0.40;
+int accel_timer = 0;
 
 /*
 Vos propres fonctions sont creees ici
@@ -51,7 +52,7 @@ void avance(){
 };
 
 void recule(){
-  MOTOR_SetSpeed(RIGHT, -0.5*vitesse);
+  MOTOR_SetSpeed(RIGHT, -vitesse);
   MOTOR_SetSpeed(LEFT, -vitesse);
 };
 
@@ -90,7 +91,7 @@ void loop() {
   bumperArr = ROBUS_IsBumper(3);
   if (bumperArr){
     if (etat == 0){
-      beep(2);
+      beep(8);
       etat = 1;
     } 
     else{
@@ -117,32 +118,64 @@ void loop() {
   }
 
   if (etatPast != etat){
-    arret();
-    delay(50);
+    if (etatPast == 2){ // si on reculait, on continue de reculer
+      recule();
+      delay(500);
+      tourneDroit();
+      delay(900);
+      avance();
+      delay(1100);
+      tourneGauche();
+      delay(900);
+      arret();
+    }
+    else{
+      arret();
+      delay(50);
+      }
   }
   else{
-    switch (etat)
-    {
-    case 0:
-      arret();
-      break;
-    case 1:
+    if (accel_timer > 10 && etat == 1){
+      vitesse += 0.05;
+      if (vitesse > 1.0){
+        vitesse = 1.0;
+      }
       avance();
-      break;
-    case 2:
-      recule();
-      break;
-    case 3:
-      tourneDroit();
-      break;
-    case 4:
-      tourneGauche();
-      break;            
-    default:
-      avance();
-      etat = 1;
-    break;
     }
+    else if (accel_timer <= 10){
+      vitesse -= 0.5;
+      avance();
+    }
+    else{
+      switch (etat)
+      {
+      case 0:
+        arret();
+        accel_timer = 0;
+        break;
+      case 1:
+        avance();
+        accel_timer += 1;
+        break;
+      case 2:
+        recule();
+        accel_timer = 0;
+        break;
+      case 3:
+        tourneDroit();
+        accel_timer = 0;
+        break;
+      case 4:
+        tourneGauche();
+        accel_timer = 0;
+        break;            
+      default:
+        avance();
+        etat = 1;
+      break;
+      }
+    }
+    
   }
   delay(200);
 }
