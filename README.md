@@ -10,7 +10,3 @@ Projet robotique S1
 * Functions: camelCase
 * Classes: PascaleCase
 * File names: lowercasenospaces
-
-
-
-
