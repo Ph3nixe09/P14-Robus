@@ -13,6 +13,20 @@ loop:
 
 // Matrice de position
 void position () {
-    int position_initiale = 2;
-    // Si la position_actuelle 
+    int initial_horizontal_position = 2;
+    int initial_vertical_position = 0;
+    // Si la horizontal_position est égale à 2:
+        // Est-ce qu'il y a un objet devant moi?
+            // Oui
+                // Je me tourne vers la gauche et vérifie s'il y a un objet.
+                // horizontal_position -= 1
+                // Est-ce qu'il y a un objet devant moi?
+                    // Oui
+                        // Je me tourne vers la droite, j'avance de 1 m et j'avance
+                        horizontal_position += 2
+                    // Non
+                        // J'avance de 1 m.s
+            // Non
+                // J'avance de 1,0 m.
+                // vertical_position += 1
 }
