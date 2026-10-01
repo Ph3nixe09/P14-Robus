@@ -37,9 +37,9 @@ void spinLeft(float speed) {
   MOTOR_SetSpeed(LEFT, speed);
 };
 
-void moveIndependant(float speed_right, int speed_left) {
-  MOTOR_SetSpeed(RIGHT, speed_right);
+void moveIndependant(float speed_left, float speed_right) {
   MOTOR_SetSpeed(LEFT, speed_left);
+  MOTOR_SetSpeed(RIGHT, speed_right);
 }
 
 // Encoders
@@ -103,6 +103,25 @@ void testEncoders(){
   }
 }
 
+void driveStraight() {
+  float kp = 0.0005;
+  float speed = 0.5;
+  float p = (getResetEncoderLeft() - getResetEncoderRight()) * kp;
+  Serial.print(p);
+  Serial.print("\n");
+  float speedLeft = speed - p;
+  float speedRight = speed + p;
+  moveIndependant(speedLeft, speedRight);
+}
+
+void testDriveStraight() {
+  for (int i = 0; i < 25; i++) {
+    delay(200);
+    driveStraight();
+  }
+  stop();
+}
+
 // Fonction actionner quand le robot s'allume
 void setup() {
   Serial.begin(9600);
@@ -111,10 +130,10 @@ void setup() {
   delay(100);
   beep(3);
   delay(200);
-  testEncoders();
+  testDriveStraight();
 }
 
 // Boucle du robot
 void loop() {
-  
+
 }
