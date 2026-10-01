@@ -25,31 +25,45 @@ void stop () {
     MOTOR_SetSpeed(LEFT, 0);
 };
 
-// PID
-previous_error := 0
-integral := 0
+void forward () {
+    MOTOR_SetSpeed(RIGHT, speed);
+    MOTOR_SetSpeed(LEFT, speed);
+};
 
-loop:
-	error := setpoint − measured_value
-	integral := integral + error × dt
-	derivative := (error − previous_error) / dt
-	output := Kp × error + Ki × integral + Kd × derivative
-	previous_error := error
-	wait(dt)
-	goto loop
+void turn_left () {
+
+};
+
+void turn_right () {
+
+};
+
+// PID
+// previous_error := 0
+// integral := 0
+
+// loop:
+// 	error := setpoint − measured_value
+// 	integral := integral + error × dt
+// 	derivative := (error − previous_error) / dt
+// 	output := Kp × error + Ki × integral + Kd × derivative
+// 	previous_error := error
+// 	wait(dt)
+// 	goto loop
 
 // Matrice de position initiale
-int position () {
+int position[2] () {
     int initial_horizontal_position = 2;
     int initial_vertical_position = 0;
     int max_vertical_position = 5;
     int vertical_position = 0;
     int horizontal_position = 0;
-    int horizontal_path = [];
-    int vertical_path = [];
-    if vertical_position == max_vertical_position;
+    int horizontal_path[5] = {0, 0, 0, 0, 0};
+    int vertical_path[5] = {0, 0, 0, 0, 0};
+    if (vertical_position == max_vertical_position){
         state = 0; // arret
-    else;
+    }
+    else {
         green = digitalRead(greenpin);
         red = digitalRead(redpin);
         if (state > 0) {
@@ -59,7 +73,8 @@ int position () {
             if (!green && !red) {
                 state = 2;
             }
-
+        }
+    }
     // Si la horizontal_position est égale à 2:
         // Est-ce qu'il y a un objet devant moi?
             // Oui
@@ -75,8 +90,7 @@ int position () {
             // Non
                 // J'avance de 1,0 m.
                 // vertical_position += 1
-    return int vertical_position;
-    return int horizontal_position;
+    return {vertical_position, horizontal_position};
 }
 
 

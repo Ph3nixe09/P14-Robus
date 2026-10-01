@@ -15,4 +15,3 @@ Projet robotique S1
 ##### `git clone https://github.com/UdeS-GRO/LibRobUS`
 2. Copier le répertoire `LibRobus` dans le répertoire `lib` de votre projet (vous pouvez simplement faire un "drag and drop").
 ##### source: https://github.com/UdeS-GRO/LibRobus/wiki/Environnement-de-d%C3%A9veloppement-logiciel-PlatformIO#utilisation-la-librairie-librobus
-
