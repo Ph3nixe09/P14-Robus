@@ -43,6 +43,37 @@ void moveIndependant(float speed_right, int speed_left) {
 }
 
 // Encoders
+// Les encodeurs retourne 64 pulses par tours
+// Reducteur de 50:1, donc 3200 pulses par tours
+// Les roues ont une circonference de 3 pouces
+int32_t getEncoderLeft() {
+  return ENCODER_Read(0);
+}
+
+int32_t getEncoderRight() {
+  return ENCODER_Read(1);
+}
+
+int32_t getResetEncoderLeft() {
+  return ENCODER_ReadReset(0);
+}
+
+int32_t getResetEncoderRight() {
+  return ENCODER_ReadReset(1);
+}
+
+void resetEncoderLeft() {
+  ENCODER_Reset(0);
+}
+
+void resetEncoderRight() {
+  ENCODER_Reset(1);
+}
+
+void ResetEncoderAll() {
+  ENCODER_Reset(0);
+  ENCODER_Reset(1);
+}
 
 // Commandes
 void dance(float speed = 0.4) {
@@ -57,6 +88,21 @@ void dance(float speed = 0.4) {
   stop();
 }
 
+void testEncoders(){
+  for (int i = 0; i <= 5; i++) {
+    move(0.4);
+    Serial.print("Left: ");
+    Serial.print(getResetEncoderLeft());
+    Serial.print("\n");
+    Serial.print("Right: ");
+    Serial.print(getResetEncoderRight());
+    Serial.print("\n");
+    delay(1000);
+    stop();
+    delay(1000);
+  }
+}
+
 // Fonction actionner quand le robot s'allume
 void setup() {
   Serial.begin(9600);
@@ -65,10 +111,10 @@ void setup() {
   delay(100);
   beep(3);
   delay(200);
-  dance();
+  testEncoders();
 }
 
 // Boucle du robot
 void loop() {
-
+  
 }
