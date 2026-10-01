@@ -1,21 +1,72 @@
-// PID
-previous_error := 0
-integral := 0
+/*
+Projet: Déplacement du robot dans le labyrinthe - Robus
+Équipe: 14B
+Auteurs: Félix Albert, Éléna Barabé, Edouard Farley et Rose Villeneuve
+Description: Breve description du script
+Date: 01/10/2026
+*/
 
-loop:
-	error := setpoint − measured_value
-	integral := integral + error × dt
-	derivative := (error − previous_error) / dt
-	output := Kp × error + Ki × integral + Kd × derivative
-	previous_error := error
-	wait(dt)
-	goto loop
+// Librairies
+#include <LibRobus.h>
+#include <stdio.h>
+
+// Global variables and definitions
+bool bumperArr;
+int greenpin = 48;
+int redpin = 49;
+bool green = false;
+bool red = false;
+int state = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGauche
+int PastState = 0;
+float speed = 0.40;
+
+
+// PID
+// previous_error := 0
+// integral := 0
+
+// loop:
+// 	error := setpoint − measured_value
+// 	integral := integral + error × dt
+// 	derivative := (error − previous_error) / dt
+// 	output := Kp × error + Ki × integral + Kd × derivative
+// 	previous_error := error
+// 	wait(dt)
+// 	goto loop
 
 // Matrice de position initiale
 int position () {
     int initial_horizontal_position = 2;
     int initial_vertical_position = 0;
-    // Si la horizontal_position est égale à 2:
+    int max_vertical_position = 5;
+    int vertical_position = 0;
+    int horizontal_position = 0;
+    if (vertical_position == max_vertical_position){
+        state = 0; // arret
+    }
+    else {
+        green = digitalRead(greenpin);
+        red = digitalRead(redpin);
+        if (state > 0) {
+            if (green && red) { // aucun obstacle, avance
+                state = 1;
+            }
+            if (!green && !red) { // obstacle, arrête
+                state = 2;
+            }
+        }
+    }
+    return {vertical_position};
+}
+
+// Matrices de position à jour pour le retour
+
+// mettre des limites de position ex: peut pas aller en bas de 1 ou plus haut que 3
+// éviter de changer la position trop vite lorsqu'il est au milieu pour éviter qu'il sorte des limites
+
+// Matrice de position horizontale
+
+ // Si la horizontal_position est égale à 2:
         // Est-ce qu'il y a un objet devant moi?
             // Oui
                 // Je me tourne vers la gauche et vérifie s'il y a un objet.
@@ -30,11 +81,3 @@ int position () {
             // Non
                 // J'avance de 1,0 m.
                 // vertical_position += 1
-    return int position
-}
-
-
-// mettre des limites de position ex: peut pas aller en bas de 1 ou plus haut que 3
-// éviter de changer la position trop vite lorsqu'il est au milieu pour éviter qu'il sorte des limites
-
-// Matrice de position horizontale
