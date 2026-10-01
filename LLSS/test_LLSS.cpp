@@ -62,14 +62,14 @@ void PID(int32_t pulse_gauche, int32_t pulse_droit){
 
 }
 
-
+//Consigne de 0 pour la vitesse pour effectuer un arret
 void arret(){
   MOTOR_SetSpeed(RIGHT, 0);
   MOTOR_SetSpeed(LEFT, 0);
 };
 
 void avance(float distance){
-  int val_expected_distance = 13400 * distance;
+  float val_expected_distance = (13400 * distance); 
   int val_expected_speed = 3333;
   float KPD = 0.0001;
   float KPL = 0.0001;
@@ -78,29 +78,65 @@ void avance(float distance){
   int distance_right = 0;
   int distance_left = 0;
   int cycle = 0;
-  float speed_correct_right = 1.0;
-  float speed_correct_left = 1.0;
+  float speed_correct_right = 0.6;
+  float speed_correct_left = 0.6;
+  int left_error = 0;
+  int right_error = 0;
 
   while (true) {
     int32_t read_pulse_left = ENCODER_ReadReset(0);
     int32_t read_pulse_right =  ENCODER_ReadReset(1);
-    int left_error = (val_expected_speed - read_pulse_left)*KPL;
-    int right_error = (val_expected_speed - read_pulse_right)*KPD;
+    Serial.print("Pulse right / left: ");
+    Serial.println(read_pulse_right);
+    Serial.println(read_pulse_left);
 
+
+    //Difference avec la realite pour la vitesse calcul directement de l'ajustement
+    left_error = 0;
+    right_error = 0;    
+    left_error = (val_expected_speed - read_pulse_left)*KPL;    
+    right_error = (val_expected_speed - read_pulse_right)*KPD;  
+    Serial.print("1er right / left error: ");
+    Serial.println(right_error);
+    Serial.println(left_error);
+
+
+    //Distance reel parcouru
     distance_right += read_pulse_right;
     distance_left += read_pulse_left;
     
+   /* //Diminution de la vitesse vers la fin de la distance
     if (distance_right >= (val_expected_distance - 1000) && distance_left >= (val_expected_distance - 1000)){
-      val_expected_speed = 1500; 
+      val_expected_speed = 1500;
     } 
     else if (distance_right >= (val_expected_distance - 50)  && distance_left >= (val_expected_distance - 50)){
-      MOTOR_SetSpeed(RIGHT, 0);
-      MOTOR_SetSpeed(LEFT, 0);
+      //Vitesse a zero pour arreter le robot
+      arret();
       break;
-    };
+    };*/
 
+    //Calcul de l'ajustement de la distance totale
+    left_error += (((cycle * val_expected_speed) - distance_left) * KIL);
+    right_error += (((cycle * val_expected_speed) - distance_right) * KID);
+    Serial.print("2nd right / left error: ");
+    Serial.println(right_error);
+    Serial.println(left_error);
+
+    //Ajustement des variables de vitesse
+    speed_correct_right += right_error;
+    speed_correct_left += left_error;
+    Serial.print("Vitesse appliqué: ");
+    Serial.println(speed_correct_right);
+    Serial.println(speed_correct_left);
+
+    //Ajustement de la vitesse
     MOTOR_SetSpeed(RIGHT,speed_correct_right);
     MOTOR_SetSpeed(LEFT, speed_correct_left);
+
+    //Un cycle complete
+    cycle++;
+    Serial.print("Valeur du cycle: ");
+    Serial.println(cycle);
     
     delay(300);
 
@@ -111,26 +147,31 @@ void recule(){
   MOTOR_SetSpeed(RIGHT, -vitesse);
   MOTOR_SetSpeed(LEFT, -vitesse);
 };
-
+/**
 void tourner(int angle){
   int expected_val = 1600;
   int KP = 0.00001;
   int compteur = 0;
+  int speed = 0;
+  int32_t read_pulse_right = 0;
+  int32_t read_pulse_left = 0;
+  int difference_right = 0;
+  int difference_left = 0
 
   switch (angle)
   {
     case 1: // Pivot à droite (90)
-      while(compteur != expected_val){
-        int32_t read_pulse_right =  ENCODER_ReadReset(1);
-        int32_t read_pulse_left =  ENCODER_ReadReset(0);
+      while(true){
+        read_pulse_right =  ENCODER_ReadReset(1);
+        read_pulse_left =  ENCODER_ReadReset(0);
 
-        int difference_right = expected_val - read_pulse_right;
-        int difference_left = expected_val - read_pulse_left;
+        difference_right = expected_val - read_pulse_right;
+        difference_left = expected_val - read_pulse_left;
       
-        int correction = KP * difference;
+       //int correction = KP * difference;
 
         
-        int speed = 0.5 + correction;
+        //speed = 0.5 + correction;
         
       }
       break;
@@ -165,7 +206,6 @@ bool detection_infrarouge(bool obstacle){
   };
 }
 
-/*
 Fonctions d'initialisation (setup)
  -> Se fait appeler au debut du programme
  -> Se fait appeler seulement un fois
@@ -195,7 +235,9 @@ void loop() {
     }
   }
   */ 
-  avance();
+  beep(10);
+  avance(1);
+  /**
   int32_t gauche = ENCODER_ReadReset(0);
   int32_t droite = ENCODER_ReadReset(1);
   
@@ -216,7 +258,7 @@ void loop() {
   };
 
   delay (1000);
-
+  */
 
   
 };
