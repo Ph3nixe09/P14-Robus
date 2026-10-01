@@ -24,10 +24,11 @@ bool vert = false;
 bool rouge = false;
 int etat = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGauche
 int etatPast = 0;
-float vitesse = 0.40;
+float vitesse = 1;
 int accel_timer = 0;
 bool fini = false;
 bool sifflet = false;
+int test_stop = 0;
 
 /*
 Vos propres fonctions sont creees ici
@@ -42,6 +43,25 @@ void beep(int count){
   }
   delay(400);
 }
+
+void PID(int32_t pulse_gauche, int32_t pulse_droit){
+  int32_t read_pulse_gauche =  int32_t_ENCODER_ReadReset(0)
+  int32_t read_pulse_droit =  int32_t_ENCODER_ReadReset(1)
+  val_attendu_gauche = 10000;
+  val_attendu_droit = 10000;
+  KP = 0.00001;
+
+  erreur_gauche = val_attendu_gauche - read_pulse_gauche;
+  erreur_droit = val_attendu_droit - read_pulse_droit;
+
+  correctif_gauche = KP * erreur_gauche;
+  correctif_droit = KP * erreur_droit;
+  
+
+
+
+}
+
 
 void arret(){
   MOTOR_SetSpeed(RIGHT, 0);
@@ -101,7 +121,6 @@ void setup(){
   pinMode(vertpin, INPUT);
   pinMode(rougepin, INPUT);
   delay(100);
-  beep(3);
 };
 
 /*
@@ -109,19 +128,8 @@ Fonctions de boucle infini
  -> Se fait appeler perpetuellement suite au "setup"
 */
 void loop() {
-  etatPast = etat;
-  bumperArr = ROBUS_IsBumper(3);
-  if (bumperArr){
-    if (etat == 0){
-      beep(8);
-      etat = 1;
-    } 
-    else{
-      beep(1);
-      etat = 0;
-    }
-  };
   
+  /**
   detection_sifflet(sifflet);
 
   if (sifflet && not fini){
@@ -129,85 +137,29 @@ void loop() {
 
     }
   }
+  */ 
+  avance();
+  int32_t gauche = ENCODER_ReadReset(0);
+  int32_t droite = ENCODER_ReadReset(1);
+  
+  Serial.print("Voici la valeur de droite: ");
+  Serial.println(droite); // Imprime la valeur et saute une ligne
 
-  /**
-  vert = digitalRead(vertpin);
-  rouge = digitalRead(rougepin);
-  if (etat > 0){
-    if (vert && rouge){ // aucun obstacle => avance
-      etat = 1;
-    }
-    if (!vert && !rouge){  // obstacle devant => recule
-      etat = 2;
-    }
-    if (!vert && rouge){ // obstacle à gauche => tourne droit
-        etat = 3;
-      }
-    if (vert && !rouge){ // obstacle à droite => tourne gauche
-        etat = 4;
-    }
-  }
+  Serial.print("Voici la valeur de gauche:::::: ");
+  Serial.println(gauche);
 
-  if (etatPast != etat){
-    if (etatPast == 2){ // si on reculait, on continue de reculer
-      recule();
-      delay(500);
-      tourneDroit();
-      delay(900);
-      avance();
-      delay(1100);
-      tourneGauche();
-      delay(900);
-      arret();
-    }
-    else{
-      arret();
-      delay(50);
-      }
-  }
-  else{
-    if (accel_timer > 10 && etat == 1){
-      vitesse += 0.05;
-      if (vitesse > 1.0){
-        vitesse = 1.0;
-      }
-      avance();
-    }
-    else if (accel_timer <= 10){
-      vitesse -= 0.5;
-      avance();
-    }
-    else{
-      switch (etat)
-      {
-      case 0:
-        arret();
-        accel_timer = 0;
-        break;
-      case 1:
-        avance();
-        accel_timer += 1;
-        break;
-      case 2:
-        recule();
-        accel_timer = 0;
-        break;
-      case 3:
-        tourneDroit();
-        accel_timer = 0;
-        break;
-      case 4:
-        tourneGauche();
-        accel_timer = 0;
-        break;            
-      default:
-        avance();
-        etat = 1;
-      break;
-      }
-    }
-    
-  }
-  delay(200);
-  */
-}
+  test_stop++;
+
+  if (test_stop == 3){
+    MOTOR_SetSpeed(RIGHT,(0.5*vitesse));
+    MOTOR_SetSpeed(LEFT, (0.5*vitesse));
+    delay(200);
+    arret();
+    test_stop = 0;
+  };
+
+  delay (1000);
+
+
+  
+};
