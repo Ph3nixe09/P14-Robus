@@ -1,3 +1,30 @@
+/*
+Projet: Déplacement du robot dans le labyrinthe - Robus
+Équipe: 14B
+Auteurs: Félix Albert, Éléna Barabé, Edouard Farley et Rose Villeneuve
+Description: Breve description du script
+Date: 01/10/2026
+*/
+
+// Librairies
+#include <LibRobus.h>
+
+// Global variables and definitions
+bool bumperArr;
+int greenpin = 48;
+int redpin = 49;
+bool green = false;
+bool red = false;
+int state = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGauche
+int PastState = 0;
+float speed = 0.40;
+
+// State definitions
+void stop () {
+    MOTOR_SetSpeed(RIGHT, 0);
+    MOTOR_SetSpeed(LEFT, 0);
+};
+
 // PID
 previous_error := 0
 integral := 0
@@ -15,6 +42,24 @@ loop:
 int position () {
     int initial_horizontal_position = 2;
     int initial_vertical_position = 0;
+    int max_vertical_position = 5;
+    int vertical_position = 0;
+    int horizontal_position = 0;
+    int horizontal_path = [];
+    int vertical_path = [];
+    if vertical_position == max_vertical_position;
+        state = 0; // arret
+    else;
+        green = digitalRead(greenpin);
+        red = digitalRead(redpin);
+        if (state > 0) {
+            if (green && red) { // aucun obstacle, avance
+                state = 1;
+            }
+            if (!green && !red) {
+                state = 2;
+            }
+
     // Si la horizontal_position est égale à 2:
         // Est-ce qu'il y a un objet devant moi?
             // Oui
@@ -30,7 +75,8 @@ int position () {
             // Non
                 // J'avance de 1,0 m.
                 // vertical_position += 1
-    return int position
+    return int vertical_position;
+    return int horizontal_position;
 }
 
 
