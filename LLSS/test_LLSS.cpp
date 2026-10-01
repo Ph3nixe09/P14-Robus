@@ -147,32 +147,36 @@ void recule(){
   MOTOR_SetSpeed(RIGHT, -vitesse);
   MOTOR_SetSpeed(LEFT, -vitesse);
 };
-/**
+
 void tourner(int angle){
-  int expected_val = 1600;
-  int KP = 0.00001;
+  int expected_val_distance = 3200 / 2;
+  int KP = 0.0001;
   int compteur = 0;
   int speed = 0;
   int32_t read_pulse_right = 0;
   int32_t read_pulse_left = 0;
   int difference_right = 0;
-  int difference_left = 0
+  int difference_left = 0;
 
   switch (angle)
   {
     case 1: // Pivot à droite (90)
       while(true){
+        // Mise à zéro des encodeurs
+        ENCODER_Reset(1);
+        ENCODER_Reset(0);
+
+        // Lecture des encodeurs
         read_pulse_right =  ENCODER_ReadReset(1);
         read_pulse_left =  ENCODER_ReadReset(0);
 
-        difference_right = expected_val - read_pulse_right;
-        difference_left = expected_val - read_pulse_left;
+        //difference_right = expected_val - read_pulse_right;
+        //difference_left = expected_val - read_pulse_left;
       
-       //int correction = KP * difference;
+        //int correction = KP * difference;
 
         
         //speed = 0.5 + correction;
-        
       }
       break;
     case -1: // Pivot à gauche (-90)
@@ -205,7 +209,7 @@ bool detection_infrarouge(bool obstacle){
     return obstacle;
   };
 }
-
+/**
 Fonctions d'initialisation (setup)
  -> Se fait appeler au debut du programme
  -> Se fait appeler seulement un fois
