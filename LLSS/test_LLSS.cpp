@@ -29,6 +29,7 @@ int accel_timer = 0;
 bool fini = false;
 bool sifflet = false;
 int test_stop = 0;
+bool one_time = true;
 
 /*
 Vos propres fonctions sont creees ici
@@ -70,18 +71,18 @@ void arret(){
 
 void avance(float distance){
   float val_expected_distance = (13400 * distance); 
-  int val_expected_speed = 3333;
-  float KPD = 0.0001;
-  float KPL = 0.0001;
-  float KID = 0.00002;
-  float KIL = 0.00002;
-  int distance_right = 0;
-  int distance_left = 0;
+  int val_expected_speed = 2500;
+  float KPD = 0.00002;
+  float KPL = 0.00002;
+  float KID = 0.0000;
+  float KIL = 0.0000;
+  float distance_right = 0;
+  float distance_left = 0;
   int cycle = 0;
   float speed_correct_right = 0.6;
   float speed_correct_left = 0.6;
-  int left_error = 0;
-  int right_error = 0;
+  float left_error = 0;
+  float right_error = 0;
 
   while (true) {
     int32_t read_pulse_left = ENCODER_ReadReset(0);
@@ -105,15 +106,12 @@ void avance(float distance){
     distance_right += read_pulse_right;
     distance_left += read_pulse_left;
     
-   /* //Diminution de la vitesse vers la fin de la distance
-    if (distance_right >= (val_expected_distance - 1000) && distance_left >= (val_expected_distance - 1000)){
-      val_expected_speed = 1500;
-    } 
-    else if (distance_right >= (val_expected_distance - 50)  && distance_left >= (val_expected_distance - 50)){
+    //Diminution de la vitesse vers la fin de la distance
+    if (distance_right >= (val_expected_distance)  && distance_left >= (val_expected_distance)){
       //Vitesse a zero pour arreter le robot
       arret();
       break;
-    };*/
+    };
 
     //Calcul de l'ajustement de la distance totale
     left_error += (((cycle * val_expected_speed) - distance_left) * KIL);
@@ -137,7 +135,7 @@ void avance(float distance){
     cycle++;
     Serial.print("Valeur du cycle: ");
     Serial.println(cycle);
-    
+
     delay(300);
 
   };
@@ -240,7 +238,8 @@ void loop() {
   }
   */ 
   beep(10);
-  avance(1);
+  avance(5);
+  delay(999999);
   /**
   int32_t gauche = ENCODER_ReadReset(0);
   int32_t droite = ENCODER_ReadReset(1);
