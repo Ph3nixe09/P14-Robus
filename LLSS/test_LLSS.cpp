@@ -26,6 +26,8 @@ int etat = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGauc
 int etatPast = 0;
 float vitesse = 0.40;
 int accel_timer = 0;
+bool fini = false;
+bool sifflet = false;
 
 /*
 Vos propres fonctions sont creees ici
@@ -66,6 +68,26 @@ void tourneGauche(){
   MOTOR_SetSpeed(LEFT, 0.5*vitesse);
 };
 
+bool detection_sifflet(bool &son){
+  //Détection du sifflet pour démarrer le programme de labyrinthe
+  delay(500);   //Attends une demi seconde
+  return (son = true);
+};
+
+bool detection_infrarouge(bool obstacle){
+  //Détection d'obstacle avec l'infrarouge mais seulement si les deux s'allument
+  vert = digitalRead(vertpin);
+  rouge = digitalRead(rougepin);
+  if (!vert && !rouge){
+    obstacle = true;
+    return obstacle;
+  }
+  else {
+    obstacle = false;
+    return obstacle;
+  };
+}
+
 /*
 Fonctions d'initialisation (setup)
  -> Se fait appeler au debut du programme
@@ -80,7 +102,7 @@ void setup(){
   pinMode(rougepin, INPUT);
   delay(100);
   beep(3);
-}
+};
 
 /*
 Fonctions de boucle infini
@@ -98,8 +120,17 @@ void loop() {
       beep(1);
       etat = 0;
     }
-  }
+  };
   
+  detection_sifflet(sifflet);
+
+  if (sifflet && not fini){
+    while (!fini){
+
+    }
+  }
+
+  /**
   vert = digitalRead(vertpin);
   rouge = digitalRead(rougepin);
   if (etat > 0){
@@ -178,4 +209,5 @@ void loop() {
     
   }
   delay(200);
+  */
 }
