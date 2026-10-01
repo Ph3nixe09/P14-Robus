@@ -70,12 +70,12 @@ void tourneGauche(){
 
 bool detection_sifflet(bool &son){
   //Détection du sifflet pour démarrer le programme de labyrinthe
-  delay(1000);   //Attends une seconde
+  delay(500);   //Attends une demi seconde
   return (son = true);
 };
 
 bool detection_infrarouge(bool obstacle){
-  //Détection d'obstacle avec l'infrarouge mais seulement si les deux s'alument
+  //Détection d'obstacle avec l'infrarouge mais seulement si les deux s'allument
   vert = digitalRead(vertpin);
   rouge = digitalRead(rougepin);
   if (!vert && !rouge){
