@@ -1,0 +1,132 @@
+Pseudocode de la meilleure équipe
+
+Avancer (distance)
+Tourner (90, -90, 180)
+Sifflet (bool)
+Infrarouge (bool)
+Loop avec la logic (colonne, rangé, fini)
+Retour (fini, liste du chemin)
+--Variables global
+    fini
+    liste du chemin
+    nbr de flash pour 1m
+   
+
+=============================================================================================================
+
+void avancer(distance){
+    Setup de toutes les variables locales
+    Lire la valeur des encodeurs de droite et gauche
+    vitesse = Soustraire la valeur de l'encodeur réel à la valeur voulu * KP
+    ajouter au compteur la valeur de l'encodeur
+    distance = soustraire le compteur total réel à une multiplication de la valeur théorique * KI
+    if compteur total réel <= valeur théorique:
+        break
+    modifier la vitesse du moteur selon (vitesse + distance)
+    recommence pour l'autre moteur
+    incrémenter le compteur de cycle
+    delay (1000)
+}
+
+// 1 (droite), -1(gauche), 2(demi tour)
+void tourner (degre) {
+    Calculer le nombre de pulses nécessaire pour pivoter de l'angle voulue(3200 / 2 = 1600)
+    Lire le compteur des deux encodeurs
+    Calcul de la marge d'erreur des deux moteurs
+    Additionner la marge d'erreur à la vitesse voulue
+    Verifier angle en condition (if - elseif)
+    (90, droite)
+    Moteur droite : vitesse trouver négative
+    Moteur gauche : vitesse trouver positive
+    (-90, gauche)
+    Moteur droite : vitesse trouver positive
+    Moteur gauche : vitesse trouver négative
+    (180, demi-tour)
+    Moteur droite : vitesse trouver positive
+    Moteur gauche : vitesse trouver négative
+}
+
+bool sifflet{
+    Detection du bruit du sifflet 5Kz avec la pin assigner
+    retourner une valeur positive à une variable sifflet
+}
+
+bool Detection{
+    Vérifie les valeurs des pins du détecteur infrarouge
+    retourne une valeur bool 
+}
+
+void Retour(){
+    for i in liste retour:
+        switch case des premières valeurs de liste
+        appel la fonction selon la deuxième valeur
+        Ex: [[A,1],[T,1],[A,0.5],[T,-90]]
+}
+
+void setup(){
+    BoardInit();
+  
+    //initialisation
+    pinMode(vertpin, INPUT);
+    pinMode(rougepin, INPUT);
+    void ENCODER_Reset(0, Encodeur2, gauche)
+    void ENCODER_Reset(1, Encodeur1, droite)
+    delay(100);
+}
+
+void loop(){
+    #1  vérifier le capteur infrarouge
+    if qqch:
+        Vérifie la colonne
+        Selon la colonne faire les bonnes actions pour trouver la sortie (diagramme)
+    else:
+        avancer de 1m tout simplement
+    enregistre le chemin du retour selon lui utiliser
+    Vérifie la rangé
+    if rangé == 4:
+        appel de la fonction retour
+    else:
+        recommence à #1
+}
+
+
+
+
+==================================================================================================================
+void avancer(distance){
+    total_encodeur = distance * nbr_de_flash_pour_1m
+    vit_encodeur = 2500
+    vrai_tot = 0
+    vrai_vit_droit = 0
+    vrai_vit_gauche = 0
+    speed_droit = 0.6
+    speed_gauche = 0.6
+    nb_cycle = 0
+    while true:    //PID
+        pulse_droit = ENCODER_ReadReset(1, Encodeur1, droite)
+        pulse_gauche = ENCODER_ReadReset(0, Encodeur2, gauche)
+        vrai_vit_droit = (vit_encodeur - pulse_droit)KP
+        vrai_vit_droit += ()
+}
+
+// 1 (droite), -1(gauche), 2(demi tour)
+void tourner (degre) {
+    nb_tour = degree * 
+    
+    while (){
+        
+    }
+    
+    if (degree == 90){
+        motorsetspeed(RIGHT, 0.6)
+        motorsetspeed(LEFT, -0.6)
+    }
+    elseif (degree == -90){
+        motorsetspeed(RIGHT, 0.6)
+        motorsetspeed(LEFT, -0.6)
+    }
+    elseif (degree == 180){
+        motorsetspeed(RIGHT, 0.6)
+        motorsetspeed(LEFT, -0.6)
+    }
+}
