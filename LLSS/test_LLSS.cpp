@@ -45,17 +45,17 @@ void beep(int count){
 }
 
 void PID(int32_t pulse_gauche, int32_t pulse_droit){
-  int32_t read_pulse_gauche =  int32_t_ENCODER_ReadReset(0)
-  int32_t read_pulse_droit =  int32_t_ENCODER_ReadReset(1)
-  val_attendu_gauche = 10000;
-  val_attendu_droit = 10000;
-  KP = 0.00001;
+  int32_t read_pulse_gauche = ENCODER_ReadReset(0);
+  int32_t read_pulse_droit =  ENCODER_ReadReset(1);
+  int val_attendu_gauche = 10000;
+  int val_attendu_droit = 10000;
+  int KP = 0.00001;
 
-  erreur_gauche = val_attendu_gauche - read_pulse_gauche;
-  erreur_droit = val_attendu_droit - read_pulse_droit;
+  int erreur_gauche = val_attendu_gauche - read_pulse_gauche;
+  int erreur_droit = val_attendu_droit - read_pulse_droit;
 
-  correctif_gauche = KP * erreur_gauche;
-  correctif_droit = KP * erreur_droit;
+  int correctif_gauche = KP * erreur_gauche;
+  int correctif_droit = KP * erreur_droit;
   
 
 
@@ -68,9 +68,43 @@ void arret(){
   MOTOR_SetSpeed(LEFT, 0);
 };
 
-void avance(){
-  MOTOR_SetSpeed(RIGHT,vitesse);
-  MOTOR_SetSpeed(LEFT, vitesse);
+void avance(float distance){
+  int val_expected_distance = 13400 * distance;
+  int val_expected_speed = 3333;
+  float KPD = 0.0001;
+  float KPL = 0.0001;
+  float KID = 0.00002;
+  float KIL = 0.00002;
+  int distance_right = 0;
+  int distance_left = 0;
+  int cycle = 0;
+  float speed_correct_right = 1.0;
+  float speed_correct_left = 1.0;
+
+  while (true) {
+    int32_t read_pulse_left = ENCODER_ReadReset(0);
+    int32_t read_pulse_right =  ENCODER_ReadReset(1);
+    int left_error = (val_expected_speed - read_pulse_left)*KPL;
+    int right_error = (val_expected_speed - read_pulse_right)*KPD;
+
+    distance_right += read_pulse_right;
+    distance_left += read_pulse_left;
+    
+    if (distance_right >= (val_expected_distance - 1000) && distance_left >= (val_expected_distance - 1000)){
+      val_expected_speed = 1500; 
+    } 
+    else if (distance_right >= (val_expected_distance - 50)  && distance_left >= (val_expected_distance - 50)){
+      MOTOR_SetSpeed(RIGHT, 0);
+      MOTOR_SetSpeed(LEFT, 0);
+      break;
+    };
+
+    MOTOR_SetSpeed(RIGHT,speed_correct_right);
+    MOTOR_SetSpeed(LEFT, speed_correct_left);
+    
+    delay(300);
+
+  };
 };
 
 void recule(){
@@ -78,14 +112,37 @@ void recule(){
   MOTOR_SetSpeed(LEFT, -vitesse);
 };
 
-void tourneDroit(){
-  MOTOR_SetSpeed(RIGHT, 0.5*vitesse);
-  MOTOR_SetSpeed(LEFT, -0.5*vitesse);
-};
+void tourner(int angle){
+  int expected_val = 1600;
+  int KP = 0.00001;
+  int compteur = 0;
 
-void tourneGauche(){
-  MOTOR_SetSpeed(RIGHT, -0.5*vitesse);
-  MOTOR_SetSpeed(LEFT, 0.5*vitesse);
+  switch (angle)
+  {
+    case 1: // Pivot à droite (90)
+      while(compteur != expected_val){
+        int32_t read_pulse_right =  ENCODER_ReadReset(1);
+        int32_t read_pulse_left =  ENCODER_ReadReset(0);
+
+        int difference_right = expected_val - read_pulse_right;
+        int difference_left = expected_val - read_pulse_left;
+      
+        int correction = KP * difference;
+
+        
+        int speed = 0.5 + correction;
+        
+      }
+      break;
+    case -1: // Pivot à gauche (-90)
+      break;
+    case 2: // Demi-tour (180)
+      break;
+    default:
+        break;
+  }
+  MOTOR_SetSpeed(RIGHT, speed);
+  MOTOR_SetSpeed(LEFT, -speed);
 };
 
 bool detection_sifflet(bool &son){
