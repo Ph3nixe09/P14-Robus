@@ -8,6 +8,7 @@ Date: 01/10/2026
 
 // Librairies
 #include <LibRobus.h>
+#include <stdio.h>
 
 // Global variables and definitions
 bool bumperArr;
@@ -19,24 +20,6 @@ int state = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGau
 int PastState = 0;
 float speed = 0.40;
 
-// State definitions
-void stop () {
-    MOTOR_SetSpeed(RIGHT, 0);
-    MOTOR_SetSpeed(LEFT, 0);
-};
-
-void forward () {
-    MOTOR_SetSpeed(RIGHT, speed);
-    MOTOR_SetSpeed(LEFT, speed);
-};
-
-void turn_left () {
-
-};
-
-void turn_right () {
-
-};
 
 // PID
 // previous_error := 0
@@ -52,14 +35,12 @@ void turn_right () {
 // 	goto loop
 
 // Matrice de position initiale
-int position[2] () {
+int position () {
     int initial_horizontal_position = 2;
     int initial_vertical_position = 0;
     int max_vertical_position = 5;
     int vertical_position = 0;
     int horizontal_position = 0;
-    int horizontal_path[5] = {0, 0, 0, 0, 0};
-    int vertical_path[5] = {0, 0, 0, 0, 0};
     if (vertical_position == max_vertical_position){
         state = 0; // arret
     }
@@ -70,12 +51,22 @@ int position[2] () {
             if (green && red) { // aucun obstacle, avance
                 state = 1;
             }
-            if (!green && !red) {
+            if (!green && !red) { // obstacle, arrête
                 state = 2;
             }
         }
     }
-    // Si la horizontal_position est égale à 2:
+    return {vertical_position};
+}
+
+// Matrices de position à jour pour le retour
+
+// mettre des limites de position ex: peut pas aller en bas de 1 ou plus haut que 3
+// éviter de changer la position trop vite lorsqu'il est au milieu pour éviter qu'il sorte des limites
+
+// Matrice de position horizontale
+
+ // Si la horizontal_position est égale à 2:
         // Est-ce qu'il y a un objet devant moi?
             // Oui
                 // Je me tourne vers la gauche et vérifie s'il y a un objet.
@@ -90,11 +81,3 @@ int position[2] () {
             // Non
                 // J'avance de 1,0 m.
                 // vertical_position += 1
-    return {vertical_position, horizontal_position};
-}
-
-
-// mettre des limites de position ex: peut pas aller en bas de 1 ou plus haut que 3
-// éviter de changer la position trop vite lorsqu'il est au milieu pour éviter qu'il sorte des limites
-
-// Matrice de position horizontale
