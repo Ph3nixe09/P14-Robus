@@ -76,8 +76,8 @@ void avance(float distance){
   float KPL = 0.00002;
   float KID = 0.0000;
   float KIL = 0.0000;
-  int distance_right = 0;
-  int distance_left = 0;
+  float distance_right = 0;
+  float distance_left = 0;
   int cycle = 0;
   float speed_correct_right = 0.6;
   float speed_correct_left = 0.6;
@@ -107,7 +107,7 @@ void avance(float distance){
     distance_left += read_pulse_left;
     
     //Diminution de la vitesse vers la fin de la distance
-    if (distance_right >= (val_expected_distance - 50)  && distance_left >= (val_expected_distance - 50)){
+    if (distance_right >= (val_expected_distance)  && distance_left >= (val_expected_distance)){
       //Vitesse a zero pour arreter le robot
       arret();
       break;
