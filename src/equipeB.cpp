@@ -2,14 +2,14 @@
 Projet: Déplacement du robot dans le labyrinthe - Robus
 Équipe: 14B
 Auteurs: Félix Albert, Éléna Barabé, Edouard Farley et Rose Villeneuve
-Description: Breve description du script
+Description: Le script suivant sert à faire avancer le robot dans un labyrinthe inconnu avec des dimensions connues
 Date: 01/10/2026
 */
 
 // Librairies
 #include <LibRobus.h>
 #include <stdio.h>
-#include <string>
+#include <Arduino.h>
 
 // Global variables and definitions
 bool bumperArr;
