@@ -109,9 +109,9 @@ void testEncoders(){
 }
 
 void driveStraight() {
-  float kp = 0.01;
-  float ki = 0.00001;
-  float kd = 0.003;
+  float kp = 0.0005;
+  // float ki = 0.00001;
+  // float kd = 0.003;
   float speed = 0.5;
   
   int left = getEncoderLeft();
@@ -119,19 +119,22 @@ void driveStraight() {
   tot_left += left;
   tot_right += right;
   
-  float p = ((right - last_right) / (left - last_left)) * kp;
-  float i = (tot_right - tot_left) * ki;
-  float d = ((right / left) - (last_right / last_left)) * kd;
+  float p = ((right - last_right) - (left - last_left)) * kp;
+  // float i = (tot_right - tot_left) * ki;
+  // float d = ((right / left) - (last_right / last_left)) * kd;
 
-  float speedLeft = speed + p + i + d;
-  float speedRight = speed - p - i - d;
+  float speedLeft = speed + p; // + i + d;
+  float speedRight = speed - p; // - i - d;
   
-  Serial.print("Left: ");
-  Serial.print(speedLeft);
-  Serial.print("\n");
-  Serial.print("Right: ");
-  Serial.print(speedRight);
-  Serial.print("\n");
+  // Serial.print("Left: ");
+  // Serial.print(speedLeft);
+  // Serial.print("\n");
+  // Serial.print("Right: ");
+  // Serial.print(speedRight);
+  // Serial.print("\n");
+  // Serial.print("P: ");
+  // Serial.print(p);
+  // Serial.print("\n");
 
   moveIndependant(speedLeft, speedRight);
   
@@ -143,7 +146,7 @@ void driveStraight() {
 void testDriveStraight() {
   move(0.3);
   delay(200);
-  for (int i = 0; i < 50; i++) {
+  for (int i = 0; i < 25; i++) {
     delay(200);
     driveStraight();
   }
