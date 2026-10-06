@@ -69,13 +69,13 @@ void arret(){
   MOTOR_SetSpeed(LEFT, 0);
 };
 
-void avance(float distance){
+void avance_2PID(float distance){
   float val_expected_distance = (13400 * distance); 
-  int val_expected_speed = 2500;
+  int val_expected_speed = 1000;
   float KPD = 0.00002;
   float KPL = 0.00002;
-  float KID = 0.0000;
-  float KIL = 0.0000;
+  //float KID = 0.00003;
+  //float KIL = 0.00003;
   float distance_right = 0;
   float distance_left = 0;
   int cycle = 0;
@@ -92,7 +92,7 @@ void avance(float distance){
     Serial.println(read_pulse_left);
 
 
-    //Difference avec la realite pour la vitesse calcul directement de l'ajustement
+    //Difference avec la realite pour la vitesse, calcul directement de l'ajustement
     left_error = 0;
     right_error = 0;    
     left_error = (val_expected_speed - read_pulse_left)*KPL;    
@@ -114,11 +114,11 @@ void avance(float distance){
     };
 
     //Calcul de l'ajustement de la distance totale
-    left_error += (((cycle * val_expected_speed) - distance_left) * KIL);
-    right_error += (((cycle * val_expected_speed) - distance_right) * KID);
-    Serial.print("2nd right / left error: ");
-    Serial.println(right_error);
-    Serial.println(left_error);
+    //left_error += (((cycle * val_expected_speed) - distance_left) * KIL);
+    //right_error += (((cycle * val_expected_speed) - distance_right) * KID);
+    //Serial.print("2nd right / left error: ");
+    //Serial.println(right_error);
+    //Serial.println(left_error);
 
     //Ajustement des variables de vitesse
     speed_correct_right += right_error;
@@ -137,6 +137,70 @@ void avance(float distance){
     Serial.println(cycle);
 
     delay(300);
+
+  };
+};
+
+void avance_1PID(float distance){
+  float val_expected_distance = (13400 * distance); 
+  float KP = 0.001;
+  float distance_right = 0;  //Pour atteindre la distance voulu
+  int cycle = 0;
+  float speed_right = 0;
+  float speed_correct_left = 0;
+  float left_error = 0;
+  bool distance_done = false;
+
+  while (true) {
+    int32_t read_pulse_left = ENCODER_ReadReset(0);
+    int32_t read_pulse_right =  ENCODER_ReadReset(1);
+    Serial.print("Pulse right / left: ");
+    Serial.println(read_pulse_right);
+    Serial.println(read_pulse_left);
+
+    left_error = (read_pulse_right - read_pulse_left) * KP;
+
+      //Distance reel parcouru
+    distance_right += read_pulse_right;
+    
+    //Diminution de la vitesse vers la fin de la distance
+    //if (distance_right >= (val_expected_distance)){
+      //Vitesse a zero pour arreter le robot
+    //  arret();
+    //  break;
+    //}
+
+    if (distance_right <= (12000)){
+      if (speed_right < 6.0){
+      speed_right += 0.5;
+      speed_correct_left += 0.5;
+      }
+
+    }
+
+    else if (distance_right >= (val_expected_distance)){
+      arret();
+      break;
+    }
+
+    else if (distance_right >= (val_expected_distance - 12000)){
+      if (speed_right > 1.5){
+      speed_right -= 0.5;
+      speed_correct_left -= 0.5;
+      }
+    };
+
+    //Ajustement de la vitesse
+    speed_correct_left += left_error;
+    Serial.print("Error left / speed correct left: ");
+    Serial.println(left_error);
+    Serial.println(speed_correct_left);
+    
+    //Ajustement de la vitesse
+    MOTOR_SetSpeed(RIGHT,speed_right);
+    MOTOR_SetSpeed(LEFT, speed_correct_left);
+
+    delay(200);
 
   };
 };
@@ -237,9 +301,22 @@ void loop() {
     }
   }
   */ 
-  beep(10);
-  avance(5);
-  delay(999999);
+  etatPast = etat;
+  bumperArr = ROBUS_IsBumper(3);
+  if (bumperArr){
+    if (etat == 0){
+      beep(5);
+      avance_1PID(5);
+      etat = 1;
+    } 
+    else{
+      beep(1);
+      MOTOR_SetSpeed(RIGHT, 0);
+      MOTOR_SetSpeed(LEFT, 0);
+      etat = 0;
+    }
+  }
+
   /**
   int32_t gauche = ENCODER_ReadReset(0);
   int32_t droite = ENCODER_ReadReset(1);
