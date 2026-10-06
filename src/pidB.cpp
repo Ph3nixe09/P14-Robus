@@ -7,6 +7,10 @@ int last_right = 0;
 int tot_left = 0;
 int tot_right = 0;
 
+// Constants
+const int GREEN_PIN = 48;
+const int RED_PIN = 49;
+
 // Buzzer
 void beep(int count){
   for(int i=0;i<count;i++){
@@ -108,44 +112,47 @@ void testEncoders(){
   }
 }
 
-void driveStraight() {
-  float kp = 0.01;
-  float ki = 0.00001;
-  float kd = 0.003;
-  float speed = 0.5;
+void driveStraight(float speed = 0.5) {
+  float kp = 0.0005;
   
   int left = getEncoderLeft();
   int right = getEncoderRight();
   tot_left += left;
   tot_right += right;
   
-  float p = ((right - last_right) / (left - last_left)) * kp;
-  float i = (tot_right - tot_left) * ki;
-  float d = ((right / left) - (last_right / last_left)) * kd;
+  float p = ((right - last_right) - (left - last_left)) * kp;
 
-  float speedLeft = speed + p + i + d;
-  float speedRight = speed - p - i - d;
-  
-  Serial.print("Left: ");
-  Serial.print(speedLeft);
-  Serial.print("\n");
-  Serial.print("Right: ");
-  Serial.print(speedRight);
-  Serial.print("\n");
+  float speedLeft = speed + p;
+  float speedRight = speed - p;
 
   moveIndependant(speedLeft, speedRight);
   
   last_left = left;
   last_right = right;
-  
 }
 
 void testDriveStraight() {
   move(0.3);
   delay(200);
-  for (int i = 0; i < 50; i++) {
+  for (int i = 0; i < 25; i++) {
     delay(200);
     driveStraight();
+  }
+  move(0.3);
+  delay(200);
+  stop();
+}
+
+void driveToWall() {
+  move(0.3);
+  delay(200);
+  bool green = 1;
+  bool red = 1;
+  while (green == 1 and red == 1) {
+    driveStraight();
+    green = digitalRead(GREEN_PIN);
+    red = digitalRead(RED_PIN);
+    delay(200);
   }
   move(0.3);
   delay(200);
@@ -157,13 +164,22 @@ void setup() {
   Serial.begin(9600);
   BoardInit();
 
+  pinMode(GREEN_PIN, INPUT);
+  pinMode(RED_PIN, INPUT);
+
   delay(100);
   beep(3);
   delay(200);
-  testDriveStraight();
+  driveToWall();
 }
 
 // Boucle du robot
 void loop() {
-
+  // Serial.print("Vert");
+  // Serial.print(digitalRead(GREEN_PIN));
+  // Serial.print("\n");
+  // Serial.print("ROUGE");
+  // Serial.print(digitalRead(RED_PIN));
+  // Serial.print("\n");
+  // delay(500);
 }
