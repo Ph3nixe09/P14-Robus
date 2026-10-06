@@ -2,13 +2,14 @@
 Projet: Déplacement du robot dans le labyrinthe - Robus
 Équipe: 14B
 Auteurs: Félix Albert, Éléna Barabé, Edouard Farley et Rose Villeneuve
-Description: Breve description du script
+Description: Le script suivant sert à faire avancer le robot dans un labyrinthe inconnu avec des dimensions connues
 Date: 01/10/2026
 */
 
 // Librairies
 #include <LibRobus.h>
 #include <stdio.h>
+#include <Arduino.h>
 
 // Global variables and definitions
 bool bumperArr;
@@ -20,27 +21,26 @@ int state = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGau
 int PastState = 0;
 float speed = 0.40;
 
+// Buzzer
+void beep(int count){
+  for(int i=0;i<count;i++){
+    AX_BuzzerON();
+    delay(100);
+    AX_BuzzerOFF();
+    delay(100);  
+  }
+  delay(400);
+}
 
 // PID
-// previous_error := 0
-// integral := 0
 
-// loop:
-// 	error := setpoint − measured_value
-// 	integral := integral + error × dt
-// 	derivative := (error − previous_error) / dt
-// 	output := Kp × error + Ki × integral + Kd × derivative
-// 	previous_error := error
-// 	wait(dt)
-// 	goto loop
 
-// Matrice de position initiale
-int position () {
-    int initial_horizontal_position = 2;
+// Initial vertical positioning
+int InitialVerticalPosition () {
+    // Variable declarations
     int initial_vertical_position = 0;
     int max_vertical_position = 5;
     int vertical_position = 0;
-    int horizontal_position = 0;
     if (vertical_position == max_vertical_position){
         state = 0; // arret
     }
@@ -57,6 +57,13 @@ int position () {
         }
     }
     return {vertical_position};
+}
+
+// Initial horizontal positioning
+int InitialHorizontalPosition (){
+    // Variable declarations
+    int initial_horizontal_position = 2;
+    int horizontal_position = 0;
 }
 
 // Matrices de position à jour pour le retour
