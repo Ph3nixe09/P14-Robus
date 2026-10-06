@@ -21,105 +21,108 @@ int redpin = 49;
 bool green = false;
 bool red = false;
 int state = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGauche
-int PastState = 0;
+int pastState = 0;
 float speed = 0.40;
 int horizontalPosition = 1;
 int verticalPosition = 0;
 
 // Buzzer
-void beep(int count){
-  for(int i=0;i<count;i++){
+void beep(int count)
+{
+  for (int i = 0; i < count; i++)
+  {
     AX_BuzzerON();
     delay(100);
     AX_BuzzerOFF();
-    delay(100);  
+    delay(100);
   }
   delay(400);
 }
 
 // Motors
-void stop(){
+void stop()
+{
   MOTOR_SetSpeed(RIGHT, 0);
   MOTOR_SetSpeed(LEFT, 0);
 };
 
-void move(float speed, bool backwards = false) {
-  if (backwards) {
-    speed*=-1;
+void move(float speed, bool backwards = false)
+{
+  if (backwards)
+  {
+    speed *= -1;
   };
   MOTOR_SetSpeed(RIGHT, speed);
   MOTOR_SetSpeed(LEFT, speed);
 };
 
-void spinRight(float speed) {
+void spinRight(float speed)
+{
   MOTOR_SetSpeed(RIGHT, speed);
   MOTOR_SetSpeed(LEFT, -speed);
 };
 
-void spinLeft(float speed) {
+void spinLeft(float speed)
+{
   MOTOR_SetSpeed(RIGHT, -speed);
   MOTOR_SetSpeed(LEFT, speed);
 };
 
-void moveIndependant(float speed_left, float speed_right) {
+void moveIndependant(float speed_left, float speed_right)
+{
   MOTOR_SetSpeed(LEFT, speed_left);
   MOTOR_SetSpeed(RIGHT, speed_right);
 }
 
 // Encoders
-int32_t getEncoderLeft() {
+int32_t getEncoderLeft()
+{
   return ENCODER_Read(0);
 }
 
-int32_t getEncoderRight() {
+int32_t getEncoderRight()
+{
   return ENCODER_Read(1);
 }
 
-int32_t getResetEncoderLeft() {
+int32_t getResetEncoderLeft()
+{
   return ENCODER_ReadReset(0);
 }
 
-int32_t getResetEncoderRight() {
+int32_t getResetEncoderRight()
+{
   return ENCODER_ReadReset(1);
 }
 
-void resetEncoderLeft() {
+void resetEncoderLeft()
+{
   ENCODER_Reset(0);
 }
 
-void resetEncoderRight() {
+void resetEncoderRight()
+{
   ENCODER_Reset(1);
 }
 
-void ResetEncoderAll() {
+void ResetEncoderAll()
+{
   ENCODER_Reset(0);
   ENCODER_Reset(1);
 }
 
-// Commandes
-void dance(float speed = 0.4) {
-  move(speed);
-  delay(500);
-  move(speed, true);
-  delay(500);
-  spinRight(speed);
-  delay(500);
-  spinLeft(speed);
-  delay(500);
-  stop();
-}
-
-void driveStraight() {
+void driveStraight()
+{
   float kp = 0.01;
   float ki = 0.00001;
   float kd = 0.003;
   float speed = 0.5;
-  
+
   int left = getEncoderLeft();
   int right = getEncoderRight();
   tot_left += left;
   tot_right += right;
-  
+
   float p = ((right - last_right) / (left - last_left)) * kp;
   float i = (tot_right - tot_left) * ki;
   float d = ((right / left) - (last_right / last_left)) * kd;
@@ -128,43 +131,86 @@ void driveStraight() {
   float speedRight = speed - p - i - d;
 
   moveIndependant(speedLeft, speedRight);
-  
+
   last_left = left;
   last_right = right;
 }
 
-void goBack() {
-
+void goBack()
+{
+  int reversedPath = 
 }
 
-void detectSound() {
-
+void detectSound()
+{
 }
 
 // Setup
-void setup() {
-    Serial.begin(9600);
+void setup()
+{
+  Serial.begin(9600);
 
-    BoardInit();
+  BoardInit();
 
-    pinMode(greenpin, INPUT);
-    pinMode(redpin, INPUT);
+  pinMode(greenpin, INPUT);
+  pinMode(redpin, INPUT);
 
-    delay(100);
+  delay(100);
 
-    beep(3);
+  beep(3);
 
-    verticalPosition = 0;
-    horizontalPosition = 1;
+  verticalPosition = 0;
+  horizontalPosition = 1;
 }
 
 // Loop
 void loop()
 {
-    if (verticalPosition > 5) {
-        goBack();
+  if (verticalPosition > 5)
+  {
+    goBack();
+  }
+  else
+  {
+    goBack();
+  }
+
+  pastState = state;
+
+  green = digitalRead(greenpin);
+  red = digitalRead(redpin);
+  if (state > 0) {
+    if (green && red)
+    { // pas d'obstacles: avance
+      state = 1;
     }
-    else {
-        goBack();
+  }
+
+  if (pastState != state)
+  {
+    stop();
+    delay(50);
+  }
+  else
+  {
+    switch (state){
+    case 0:
+      stop();
+      break;
+    case 1:
+      driveStraight();
+      break;
+    case 2:
+      spinRight();
+      break;
+    case 3:
+      spinLeft();
+      break;
+    default:
+      driveStraight();
+      state= 1;
+      break;
     }
+  }
+  delay(200);
 }
