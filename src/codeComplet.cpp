@@ -23,6 +23,8 @@ bool red = false;
 int state = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGauche
 int PastState = 0;
 float speed = 0.40;
+int horizontalPosition = 1;
+int verticalPosition = 0;
 
 // Buzzer
 void beep(int count){
@@ -136,7 +138,7 @@ void goBack() {
 }
 
 void detectSound() {
-    
+
 }
 
 // Setup
@@ -159,8 +161,10 @@ void setup() {
 // Loop
 void loop()
 {
-    if (verticalPosition > 5)
-        goBack()
-    else:
-
+    if (verticalPosition > 5) {
+        goBack();
+    }
+    else {
+        goBack();
+    }
 }
