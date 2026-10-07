@@ -142,14 +142,13 @@ void avance_2PID(float distance){
 };
 
 void avance_1PID(float distance){
-  float val_expected_distance = (13400 * distance); 
+  float val_expected_distance = (13998.25 * distance); 
   float KP = 0.001;
   float distance_right = 0;  //Pour atteindre la distance voulu
-  int cycle = 0;
   float speed_right = 0;
   float speed_correct_left = 0;
   float left_error = 0;
-  bool distance_done = false;
+  int accel = 0;
 
   while (true) {
     int32_t read_pulse_left = ENCODER_ReadReset(0);
@@ -162,18 +161,37 @@ void avance_1PID(float distance){
 
       //Distance reel parcouru
     distance_right += read_pulse_right;
-    
-    //Diminution de la vitesse vers la fin de la distance
-    //if (distance_right >= (val_expected_distance)){
-      //Vitesse a zero pour arreter le robot
-    //  arret();
-    //  break;
-    //}
 
-    //switch (accel)
-    //{
+    /**
+    // Nouveau code d'acceleration à tester
+    switch (accel)
+    {
+      case 0:
+        speed_right += 0.1;
+        speed_correct_left += 0.1;
+        if (speed_right == 0.5){
+          accel = 1;
+        };
+        break;
 
-    //}
+      case 1:
+        if (distance_right <= (val_expected_distance - 3000)){
+          speed_right -= 0.1;
+          speed_correct_left -= 0.1;
+          if (speed_right == 0.1){
+            accel = 2;
+        };
+        break;
+      
+      case 2:
+        break;
+    };
+
+    if (distance_right >= val_expected_distance){
+      arret()
+      break;
+    };
+    */
 
     if (distance_right <= (12000)){
       if (speed_right < 0.9){
@@ -316,8 +334,7 @@ void loop() {
     } 
     else{
       beep(1);
-      MOTOR_SetSpeed(RIGHT, 0);
-      MOTOR_SetSpeed(LEFT, 0);
+      arret();
       etat = 0;
     }
   }
