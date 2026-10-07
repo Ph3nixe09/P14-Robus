@@ -234,31 +234,117 @@ void recule(){
 };
 
 void tourner(int angle){
-  int expected_val_distance_90 = 2000; // Distance en pulse pour parcourir 90°
-  int expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
-  int KP = 0.0001;
-  int speed = 0;
-  int difference_right = 0;
-  int difference_left = 0;
-  
+  float expected_val_distance_90 = 2000; // Distance en pulse
+
   switch (angle)
   {
     case 1: // Pivot à droite (90)
+      float KP_right = 0.0001;
+      float right_error = 0;
+      float distance_left = 0;
+      float speed_left = 0;
+      float speed_correct_right = 0;
+
       while(true){
         // Lecture des encodeurs
         int32_t read_pulse_right = ENCODER_ReadReset(1);
         int32_t read_pulse_left = ENCODER_ReadReset(0);
+        
+        right_error = (read_pulse_left - read_pulse_right) * KP_right;
+        
+        distance_left += read_pulse_left;
+
+        if (distance_left < 1500){
+          speed_left += 0.07;
+          speed_correct_right += 0.07;
+        }
+        else if (distance_left >= (expected_val_distance_90 - 500)){
+          speed_left -= 0.1;
+          speed_correct_right -= 0.1;
+        }
+        else if (distance_left >= expected_val_distance_90){
+          arret();
+          break;
+        }
+
+        speed_correct_right += right_error;
+
+        MOTOR_SetSpeed(RIGHT, speed_correct_right);
+        MOTOR_SetSpeed(LEFT, -speed_left);
       }
       break;
     case -1: // Pivot à gauche (-90)
+      float KP_left = 0.0001;
+      float left_error = 0;
+      float distance_right = 0;
+      float speed_right = 0;
+      float speed_correct_left = 0;
+
+      while (true){
+        int32_t read_pulse_right = ENCODER_ReadReset(1);
+        int32_t read_pulse_left = ENCODER_ReadReset(0);
+
+        left_error = (read_pulse_right - read_pulse_left) * KP_left;
+
+        distance_right += read_pulse_right;
+
+        if (distance_right < 1500){
+          speed_right += 0.07;
+          speed_correct_left += 0.07;
+        }
+        else if (distance_right >= (expected_val_distance_90 -500)){
+          speed_right -= 0.1;
+          speed_correct_left -= 0.1;
+        }
+        else if (distance_right >= expected_val_distance_90){
+          arret();
+          break;
+        }
+
+        speed_correct_left += left_error;
+
+        MOTOR_SetSpeed(RIGHT, -speed_right);
+        MOTOR_SetSpeed(LEFT,   speed_correct_left);
+      }
       break;
     case 2: // Demi-tour (180)
+      float expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
+      float KP_return = 0.0001;
+      float left_error = 0;
+      float distance_right = 0;
+
+      while (true){
+        int32_t read_pulse_right = ENCODER_ReadReset(1);
+        int32_t read_pulse_left = ENCODER_ReadReset(0);
+
+        left_error = (read_pulse_right - read_pulse_left) * KP_return;
+
+        distance_right += read_pulse_right;
+
+        if (distance_right < 1500){
+          speed_right += 0.07;
+          speed_correct_left += 0.07;
+        }
+        else if (distance_right >= (expected_val_distance_90 -500)){
+          speed_right -= 0.1;
+          speed_correct_left -= 0.1;
+        }
+        else if (distance_right >= expected_val_distance_90){
+          arret();
+          break;
+        }
+
+        speed_correct_left += left_error;
+
+        MOTOR_SetSpeed(RIGHT, -speed_right);
+        MOTOR_SetSpeed(LEFT,   speed_correct_left);
+      }
       break;
     default:
         break;
   }
-  MOTOR_SetSpeed(RIGHT, speed);
-  MOTOR_SetSpeed(LEFT, -speed);
+  //MOTOR_SetSpeed(RIGHT, speed);
+  //MOTOR_SetSpeed(LEFT, -speed);
 };
 
 bool detection_sifflet(bool &son){
