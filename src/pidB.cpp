@@ -128,6 +128,10 @@ void driveStraight(float speed = 0.5) {
 }
 
 void driveToWall() {
+  ResetEncoderAll();
+  tot_left = 0;
+  tot_right = 0;
+
   move(0.3);
   delay(200);
   while (detectWall()) {
@@ -163,6 +167,7 @@ void turnAngleRight(float angle) {
   } 
 }
 
+// Angle en degrées
 void turnAngleLeft(float angle) {
   ResetEncoderAll();
   float arc = (angle / 360) * WHEEL_SPACE_CIRCUMFERENCE;
@@ -184,6 +189,33 @@ void turnAngleLeft(float angle) {
     }
     delay(20);
   } 
+}
+
+// Distance en cm
+void driveDistance(float distance) {
+  ResetEncoderAll();
+  tot_left = 0;
+  tot_right = 0;
+  
+  float distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
+  bool moving = true;
+  float encoder = 0;
+  move(0.2);
+  delay(200);
+  while (moving) {
+    encoder = (getEncoderLeft() + getEncoderRight()) / 2;
+    if (distance_pulses < encoder - 300) {\
+      // driveStraight(0.2);
+      // delay(100);
+      stop();
+      moving = false;
+    } else if (encoder < distance_pulses - 300) {
+      driveStraight(0.6);
+    } else {
+      driveStraight(0.2);
+    }
+    delay(100);
+  }
 }
 
 void first() {
@@ -209,8 +241,6 @@ void loop() {
   Serial.print(getEncoderRight());
   Serial.print("\n");
   if (getBummberRear()) {
-    Serial.println("BUMP");
-    ResetEncoderAll();
-    turnAngleLeft(90);
+    driveDistance(100);
   }
 }
