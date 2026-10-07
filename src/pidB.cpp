@@ -1,7 +1,7 @@
 #include <LibRobus.h>
 #include <Arduino.h>
 #include <math.h>
-#include "pidB.h"
+// #include "pidB.h"
 
 // Global variables
 int last_left = 0;
@@ -163,6 +163,29 @@ void turnAngleRight(float angle) {
   } 
 }
 
+void turnAngleLeft(float angle) {
+  ResetEncoderAll();
+  float arc = (angle / 360) * WHEEL_SPACE_CIRCUMFERENCE;
+  float arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
+  float encoder = 0;
+  int error = 10;
+  bool turning = true;
+  while (turning) {
+    encoder = getEncoderLeft();
+    if (arc_pulses - error < encoder && encoder < arc_pulses + error) {
+      stop();
+      turning = false;
+    } else if (encoder <= arc_pulses - 500) {
+      spinLeft(0.3);
+    } else if (arc_pulses - 500 <= encoder && encoder <= arc_pulses + error) {
+      spinLeft(0.13);
+    } else {
+      spinRight(0.13);
+    }
+    delay(20);
+  } 
+}
+
 void first() {
   
 }
@@ -188,6 +211,6 @@ void loop() {
   if (getBummberRear()) {
     Serial.println("BUMP");
     ResetEncoderAll();
-    turnAngleRight(90);
+    turnAngleLeft(90);
   }
 }
