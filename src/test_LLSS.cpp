@@ -234,34 +234,20 @@ void recule(){
 };
 
 void tourner(int angle){
-  int expected_val_distance = 3200 / 2;
+  int expected_val_distance_90 = 2000; // Distance en pulse pour parcourir 90°
+  int expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
   int KP = 0.0001;
-  int compteur = 0;
   int speed = 0;
-  int32_t read_pulse_right = 0;
-  int32_t read_pulse_left = 0;
   int difference_right = 0;
   int difference_left = 0;
-
+  
   switch (angle)
   {
     case 1: // Pivot à droite (90)
       while(true){
-        // Mise à zéro des encodeurs
-        ENCODER_Reset(1);
-        ENCODER_Reset(0);
-
         // Lecture des encodeurs
-        read_pulse_right =  ENCODER_ReadReset(1);
-        read_pulse_left =  ENCODER_ReadReset(0);
-
-        //difference_right = expected_val - read_pulse_right;
-        //difference_left = expected_val - read_pulse_left;
-      
-        //int correction = KP * difference;
-
-        
-        //speed = 0.5 + correction;
+        int32_t read_pulse_right = ENCODER_ReadReset(1);
+        int32_t read_pulse_left = ENCODER_ReadReset(0);
       }
       break;
     case -1: // Pivot à gauche (-90)
