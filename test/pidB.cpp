@@ -11,6 +11,7 @@ int tot_right = 0;
 // Constants
 const int GREEN_PIN = 48;
 const int RED_PIN = 49;
+const int WHEEL_SPACE = 186; // mm
 
 // Buzzer
 void beep(int count){
@@ -85,6 +86,12 @@ void ResetEncoderAll() {
   ENCODER_Reset(1);
 }
 
+// objectDetection
+bool detectWall() {
+  // La fonctions retourne true si le capteur ne détecte pas de murs
+  return (digitalRead(GREEN_PIN) == 1 and digitalRead(RED_PIN) == 1);
+}
+
 // Commandes
 void dance(float speed = 0.4) {
   move(speed);
@@ -147,17 +154,17 @@ void testDriveStraight() {
 void driveToWall() {
   move(0.3);
   delay(200);
-  bool green = 1;
-  bool red = 1;
-  while (green == 1 and red == 1) {
+  while (detectWall()) {
     driveStraight();
-    green = digitalRead(GREEN_PIN);
-    red = digitalRead(RED_PIN);
     delay(200);
   }
   move(0.3);
   delay(200);
   stop();
+}
+
+void first() {
+  
 }
 
 // Fonction actionner quand le robot s'allume
