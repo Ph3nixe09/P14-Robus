@@ -68,7 +68,7 @@ void arret(){
   MOTOR_SetSpeed(RIGHT, 0);
   MOTOR_SetSpeed(LEFT, 0);
 };
-
+/**
 void avance_2PID(float distance){
   float val_expected_distance = (13400 * distance); 
   int val_expected_speed = 1000;
@@ -140,15 +140,26 @@ void avance_2PID(float distance){
 
   };
 };
-
+*/
 void avance_1PID(float distance){
-  float val_expected_distance = (13998.25 * distance); 
-  float KP = 0.001;
+  float val_expected_distance = (13228.25 * distance); 
+  float KP = 0.0005;
   float distance_right = 0;  //Pour atteindre la distance voulu
   float speed_right = 0;
   float speed_correct_left = 0;
   float left_error = 0;
   int accel = 0;
+  int slow_distance = 0;
+
+  if (distance == 0.5){
+      slow_distance = 2;
+  }
+  else if (distance == 1){
+    slow_distance = 3;
+  }
+  else{
+    slow_distance = 7;
+  };
 
   while (true) {
     int32_t read_pulse_left = ENCODER_ReadReset(0);
@@ -161,38 +172,40 @@ void avance_1PID(float distance){
 
       //Distance reel parcouru
     distance_right += read_pulse_right;
+    Serial.print("Distance total: ");
+    Serial.println(distance_right);
 
-    /**
     // Nouveau code d'acceleration à tester
-    switch (accel)
-    {
+    switch (accel){
       case 0:
         speed_right += 0.1;
         speed_correct_left += 0.1;
-        if (speed_right == 0.5){
+        if ((speed_right >= 0.7) || distance_right >= (val_expected_distance / 2)){
           accel = 1;
         };
         break;
 
       case 1:
-        if (distance_right <= (val_expected_distance - 3000)){
-          speed_right -= 0.1;
-          speed_correct_left -= 0.1;
-          if (speed_right == 0.1){
+        if (distance_right >= (val_expected_distance - (val_expected_distance / slow_distance))){
+          speed_right -= 0.2;
+          speed_correct_left -= 0.2;
+          if (speed_right <= 0.3){
+            speed_right = 0.1;
+            speed_correct_left = 0.1;
             accel = 2;
-        };
+          };
         break;
-      
+        };
       case 2:
         break;
     };
 
-    if (distance_right >= val_expected_distance){
-      arret()
+    if (distance_right >= val_expected_distance - 200){
+      arret();
       break;
     };
-    */
-
+    
+    /**
     if (distance_right <= (12000)){
       if (speed_right < 0.9){
       speed_right += 0.07;
@@ -210,9 +223,9 @@ void avance_1PID(float distance){
       if (speed_right > 0.4){
       speed_right -= 0.1;
       speed_correct_left -= 0.1;
-      }
+      };
     };
-
+    */
     //Ajustement de la vitesse
     speed_correct_left += left_error;
     Serial.print("Error left / speed correct left: ");
@@ -329,14 +342,25 @@ void loop() {
   if (bumperArr){
     if (etat == 0){
       beep(1);
-      avance_1PID(2);
+      avance_1PID(0.5);
+      delay(2000);
+      avance_1PID(0.5);
+      delay(2000);
+      avance_1PID(0.5);
+      delay(2000);
+      avance_1PID(0.5);
+      delay(2000);
+      avance_1PID(0.5);
+      delay(2000);
+      avance_1PID(0.5);
+      delay(2000);
       etat = 1;
     } 
     else{
-      beep(1);
+      beep(3);
       arret();
       etat = 0;
-    }
+    };
   }
 
   /**
