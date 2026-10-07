@@ -170,6 +170,11 @@ void avance_1PID(float distance){
     //  break;
     //}
 
+    //switch (accel)
+    //{
+
+    //}
+
     if (distance_right <= (12000)){
       if (speed_right < 6.0){
       speed_right += 0.5;
