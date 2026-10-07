@@ -176,9 +176,9 @@ void avance_1PID(float distance){
     //}
 
     if (distance_right <= (12000)){
-      if (speed_right < 6.0){
-      speed_right += 0.5;
-      speed_correct_left += 0.5;
+      if (speed_right < 0.9){
+      speed_right += 0.07;
+      speed_correct_left += 0.07;
       }
 
     }
@@ -188,10 +188,10 @@ void avance_1PID(float distance){
       break;
     }
 
-    else if (distance_right >= (val_expected_distance - 12000)){
-      if (speed_right > 1.5){
-      speed_right -= 0.5;
-      speed_correct_left -= 0.5;
+    else if (distance_right >=(val_expected_distance-12000)){
+      if (speed_right > 0.4){
+      speed_right -= 0.1;
+      speed_correct_left -= 0.1;
       }
     };
 
@@ -310,8 +310,8 @@ void loop() {
   bumperArr = ROBUS_IsBumper(3);
   if (bumperArr){
     if (etat == 0){
-      beep(5);
-      avance_1PID(5);
+      beep(1);
+      avance_1PID(2);
       etat = 1;
     } 
     else{
