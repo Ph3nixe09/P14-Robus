@@ -21,20 +21,6 @@ int state = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGau
 int PastState = 0;
 float speed = 0.40;
 
-// Buzzer
-void beep(int count){
-  for(int i=0;i<count;i++){
-    AX_BuzzerON();
-    delay(100);
-    AX_BuzzerOFF();
-    delay(100);  
-  }
-  delay(400);
-}
-
-// PID
-
-
 // Initial vertical positioning
 int InitialVerticalPosition () {
     // Variable declarations
@@ -88,3 +74,19 @@ int InitialHorizontalPosition (){
             // Non
                 // J'avance de 1,0 m.
                 // vertical_position += 1
+
+
+void goBack()
+{
+  // int reversedPath = 
+}
+
+bool detectSound()
+{
+  if (3>2) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
