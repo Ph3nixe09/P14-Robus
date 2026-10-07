@@ -1,5 +1,6 @@
 #include <LibRobus.h>
 #include <Arduino.h>
+#include <math.h>
 
 // Global variables
 int last_left = 0;
@@ -7,10 +8,17 @@ int last_right = 0;
 int tot_left = 0;
 int tot_right = 0;
 
-// Constants
+// Pins
 const int GREEN_PIN = 48;
 const int RED_PIN = 49;
-const int WHEEL_SPACE = 186; // mm
+
+// Constants
+const float WHEEL_SPACE = 191.5; // mm
+const float WHEEL_SPACE_CIRCUMFERENCE = 3.141592 * WHEEL_SPACE; // mm
+const float WHEEL_DIAMETER = 3;
+const float WHEEL_CIRCUMFERENCE_INCHES = WHEEL_DIAMETER * 3.141592; // inches
+const float WHEEL_CIRCUMFERENCE = WHEEL_CIRCUMFERENCE_INCHES * 25.4; // mm
+const float PULSES_PER_ROTATION = 3200;
 
 // Buzzer
 void beep(int count){
@@ -22,6 +30,12 @@ void beep(int count){
   }
   delay(400);
 }
+
+// Bumbers
+bool getBummberRear() {
+  return ROBUS_IsBumper(3);
+}
+
 
 // Motors
 void stop(){
@@ -56,19 +70,20 @@ void moveIndependant(float speed_left, float speed_right) {
 // Les encodeurs retourne 64 pulses par tours
 // Reducteur de 50:1, donc 3200 pulses par tours
 // Les roues ont une circonference de 3 pouces
-int32_t getEncoderLeft() {
+int getEncoderLeft() {
   return ENCODER_Read(0);
 }
 
-int32_t getEncoderRight() {
+int 
+getEncoderRight() {
   return ENCODER_Read(1);
 }
 
-int32_t getResetEncoderLeft() {
+int getResetEncoderLeft() {
   return ENCODER_ReadReset(0);
 }
 
-int32_t getResetEncoderRight() {
+int getResetEncoderRight() {
   return ENCODER_ReadReset(1);
 }
 
@@ -91,34 +106,7 @@ bool detectWall() {
   return (digitalRead(GREEN_PIN) == 1 and digitalRead(RED_PIN) == 1);
 }
 
-// Commandes
-void dance(float speed = 0.4) {
-  move(speed);
-  delay(500);
-  move(speed, true);
-  delay(500);
-  spinRight(speed);
-  delay(500);
-  spinLeft(speed);
-  delay(500);
-  stop();
-}
-
-void testEncoders(){
-  for (int i = 0; i <= 5; i++) {
-    move(0.4);
-    Serial.print("Left: ");
-    Serial.print(getResetEncoderLeft());
-    Serial.print("\n");
-    Serial.print("Right: ");
-    Serial.print(getResetEncoderRight());
-    Serial.print("\n");
-    delay(1000);
-    stop();
-    delay(1000);
-  }
-}
-
+// Commands
 void driveStraight(float speed = 0.5) {
   float kp = 0.0005;
   
@@ -138,18 +126,6 @@ void driveStraight(float speed = 0.5) {
   last_right = right;
 }
 
-void testDriveStraight() {
-  move(0.3);
-  delay(200);
-  for (int i = 0; i < 25; i++) {
-    delay(200);
-    driveStraight();
-  }
-  move(0.3);
-  delay(200);
-  stop();
-}
-
 void driveToWall() {
   move(0.3);
   delay(200);
@@ -160,6 +136,30 @@ void driveToWall() {
   move(0.3);
   delay(200);
   stop();
+}
+
+// Angle en degrées
+void turnAngleRight(float angle) {
+  ResetEncoderAll();
+  float arc = (angle / 360) * WHEEL_SPACE_CIRCUMFERENCE;
+  float arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
+  float encoder = 0;
+  int error = 10;
+  bool turning = true;
+  while (turning) {
+    encoder = getEncoderRight();
+    if (arc_pulses - error < encoder && encoder < arc_pulses + error) {
+      stop();
+      turning = false;
+    } else if (encoder <= arc_pulses - 500) {
+      spinRight(0.3);
+    } else if (arc_pulses - 500 <= encoder && encoder <= arc_pulses + error) {
+      spinRight(0.13);
+    } else {
+      spinLeft(0.13);
+    }
+    delay(20);
+  } 
 }
 
 void first() {
@@ -177,16 +177,16 @@ void setup() {
   delay(100);
   beep(3);
   delay(200);
-  driveToWall();
 }
 
 // Boucle du robot
 void loop() {
-  // Serial.print("Vert");
-  // Serial.print(digitalRead(GREEN_PIN));
-  // Serial.print("\n");
-  // Serial.print("ROUGE");
-  // Serial.print(digitalRead(RED_PIN));
-  // Serial.print("\n");
-  // delay(500);
+  Serial.print("RIGHT: ");
+  Serial.print(getEncoderRight());
+  Serial.print("\n");
+  if (getBummberRear()) {
+    Serial.println("BUMP");
+    ResetEncoderAll();
+    turnAngleRight(90);
+  }
 }
