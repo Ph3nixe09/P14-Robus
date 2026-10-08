@@ -8,6 +8,5 @@ void move(float speed, bool backwards = false);
 void driveStraight(float speed = 0.5);
 void spinRight(float speed);
 void spinLeft(float speed);
-void driveDistance(float distance);
 
 #endif

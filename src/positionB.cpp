@@ -18,20 +18,11 @@ int redpin = 49;
 bool green = false;
 bool red = false;
 int state = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGauche
+int PastState = 0;
 float speed = 0.40;
-int state = 0;
 
-bool detectObstacle () {
-    green = digitalRead(greenpin);
-    red = digitalRead(redpin);
-    if (state > 0){
-    if (green && red){
-        return true;
-    }
-    else {
-        return false;
-    }
-  }
+bool detectObject(){
+    
 }
 
 void goBack()
