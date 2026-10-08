@@ -357,7 +357,8 @@ Fonctions d'initialisation (setup)
 //Logic
 int positionX = 1;
 int positionY = 0;
-int portes[] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1, 1,1,1};
+//                0,1,2   3,4,5   6,7,8   9,10,11 12,13,14 15,16,17 18,19,20 21,22,23 24,25,26 27,28,29
+int portes[30] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1};
 
 
 
@@ -371,10 +372,48 @@ void path(){
   }
   tourner(180);
   //reverse path
-  
+  retourne();
 };
 
-
+void retourne(){
+  //Sortir de la ligne d'arrivé
+  avance(0.5);
+  while (positionY != 0){
+    if (portes[(positionY - 3) + positionX] == 2){
+      //Avance
+      portes[positionY + positionX] = 3;
+      positionY -= 6;
+      avance(1);
+    }
+    else if (portes[(positionY + (positionX + 1))] == 2){
+      //Gauche
+      portes[positionY + positionX] = 3;
+      positionX += 1;
+      tourner(-1);
+      avance(0.5);
+      tourner(1);
+    }
+    else if (portes[(positionY + (positionX - 1))] == 2){
+      //Droite
+      portes[positionY + positionX] = 3;
+      positionX -= 1;
+      tourner(1);
+      avance(0.5);
+      tourner(-1);
+    }
+    //Pour éviter recule dans le finish
+    else if (positionY < 24){
+      if (portes[(positionY + 3) + positionX] == 2){
+        //Recule
+        portes[positionY + positionX] = 3;
+        positionY += 6;
+        tourner(2);
+        avance(1);
+        tourner(2);
+      };
+    };
+  };
+};
 
 void dirChoice(){
   //Choisi de la direction a tourner selon l'etat 0 ou 1 dans cette positions Y, tourne et appel verif x
