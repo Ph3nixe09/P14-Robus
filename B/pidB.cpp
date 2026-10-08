@@ -1,13 +1,10 @@
 #include <LibRobus.h>
 #include <Arduino.h>
 #include <math.h>
-// #include "pidB.h"
 
 // Global variables
 int last_left = 0;
 int last_right = 0;
-int tot_left = 0;
-int tot_right = 0;
 
 // Pins
 const int GREEN_PIN = 48;
@@ -33,8 +30,20 @@ void beep(int count){
 }
 
 // Bumbers
-bool getBummberRear() {
+bool getBumberRear() {
   return ROBUS_IsBumper(3);
+}
+
+bool getBumberFront() {
+  return ROBUS_IsBumper(2);
+}
+
+bool getBumberLeft() {
+  return ROBUS_IsBumper(1);
+}
+
+bool getBumberRight() {
+  return ROBUS_IsBumper(0);
 }
 
 
@@ -99,6 +108,8 @@ void resetEncoderRight() {
 void ResetEncoderAll() {
   ENCODER_Reset(0);
   ENCODER_Reset(1);
+  last_right = 0;
+  last_left = 0;
 }
 
 // objectDetection
@@ -109,19 +120,24 @@ bool detectWall() {
 
 // Commands
 void driveStraight(float speed = 0.5) {
-  float kp = 0.0005;
+  float kp = 0.00075 * speed;
+  float ki = 0.00015;
   
   int left = getEncoderLeft();
   int right = getEncoderRight();
-  tot_left += left;
-  tot_right += right;
   
   float p = ((right - last_right) - (left - last_left)) * kp;
+  float i = (right - left) * ki;
 
-  float speedLeft = speed + p;
-  float speedRight = speed - p;
+  float speed_left = speed + p + i;
+  float speed_right = speed - p - i;
 
-  moveIndependant(speedLeft, speedRight);
+  Serial.print("P: ");
+  Serial.println(p);
+  Serial.print("I: ");
+  Serial.println(i);
+
+  moveIndependant(speed_left, speed_right);
   
   last_left = left;
   last_right = right;
@@ -129,8 +145,6 @@ void driveStraight(float speed = 0.5) {
 
 void driveToWall() {
   ResetEncoderAll();
-  tot_left = 0;
-  tot_right = 0;
 
   move(0.3);
   delay(200);
@@ -194,27 +208,27 @@ void turnAngleLeft(float angle) {
 // Distance en cm
 void driveDistance(float distance) {
   ResetEncoderAll();
-  tot_left = 0;
-  tot_right = 0;
   
   float distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
   bool moving = true;
   float encoder = 0;
-  move(0.2);
+  driveStraight(0.2);
+  delay(200);
+  driveStraight(0.3);
+  delay(200);
+  driveStraight(0.4);
   delay(200);
   while (moving) {
     encoder = (getEncoderLeft() + getEncoderRight()) / 2;
-    if (distance_pulses < encoder - 300) {\
-      // driveStraight(0.2);
-      // delay(100);
-      stop();
-      moving = false;
-    } else if (encoder < distance_pulses - 300) {
-      driveStraight(0.6);
+    if (distance_pulses - 100 < encoder) {
+        stop();
+        moving = false;
+    } else if (encoder < distance_pulses - 1500) {
+      driveStraight(0.8);
     } else {
-      driveStraight(0.2);
+      driveStraight(0.3);
     }
-    delay(100);
+    delay(20);
   }
 }
 
@@ -223,7 +237,7 @@ void first() {
 }
 
 // Fonction actionner quand le robot s'allume
-void setup() {
+void setup() { 
   Serial.begin(9600);
   BoardInit();
 
@@ -237,10 +251,13 @@ void setup() {
 
 // Boucle du robot
 void loop() {
-  Serial.print("RIGHT: ");
-  Serial.print(getEncoderRight());
-  Serial.print("\n");
-  if (getBummberRear()) {
-    driveDistance(100);
+  if (getBumberRear()) {
+    driveDistance(50);
+  } else if (getBumberLeft()) {
+    turnAngleLeft(90);
+  } else if (getBumberRight()) {
+    turnAngleRight(90);
+  } else if (getBumberFront()) {
+    driveToWall();
   }
 }

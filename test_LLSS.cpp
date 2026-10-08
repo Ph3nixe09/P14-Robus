@@ -123,7 +123,7 @@ void avance_2PID(float distance){
   };
 };
 */
-void avance_1PID(float distance){
+void avance(float distance){
   float val_expected_distance = (13228.25 * distance); 
   float KP = 0.0005;
   float distance_right = 0;  //Pour atteindre la distance voulu
@@ -334,25 +334,193 @@ bool detection_sifflet(bool &son){
   return (son = true);
 };
 
-bool detection_infrarouge(bool obstacle){
+bool detection_infrarouge(){
   //Détection d'obstacle avec l'infrarouge mais seulement si les deux s'allument
   vert = digitalRead(vertpin);
   rouge = digitalRead(rougepin);
   if (!vert && !rouge){
-    obstacle = true;
-    return obstacle;
+    return true;
   }
   else {
-    obstacle = false;
-    return obstacle;
+    return false;
   };
-}
+};
 /**
 Fonctions d'initialisation (setup)
  -> Se fait appeler au debut du programme
  -> Se fait appeler seulement un fois
  -> Generalement on y initilise les varibbles globales
 */
+
+//Logic
+int positionX = 1;
+int positionY = 0;
+//                0,1,2   3,4,5   6,7,8   9,10,11 12,13,14 15,16,17 18,19,20 21,22,23 24,25,26 27,28,29
+int portes[30] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1};
+
+
+
+void path(){
+  //alterne entre avancer ou tourner jusqu'a la position 9 en Y et effectue le trajet inverse
+  while (positionY == 27) 
+  {
+    verif_y();
+    dirChoice();
+    Serial.print("Position actuel X:");
+    Serial.println(positionX);
+    Serial.print("Position actuel Y:");
+    Serial.println(positionY);
+    for (int val : portes){
+    Serial.println(val);
+    }
+
+    
+
+  }
+  tourner(180);
+  //reverse path
+  retourne();
+};
+
+void retourne(){
+  //Sortir de la ligne d'arrivé
+  avance(0.5);
+  while (positionY != 0){
+    if (portes[(positionY - 3) + positionX] == 2){
+      //Avance
+      portes[positionY + positionX] = 3;
+      positionY -= 6;
+      avance(1);
+    }
+    else if (portes[(positionY + (positionX + 1))] == 2){
+      //Gauche
+      portes[positionY + positionX] = 3;
+      positionX += 1;
+      tourner(-1);
+      avance(0.5);
+      tourner(1);
+    }
+    else if (portes[(positionY + (positionX - 1))] == 2){
+      //Droite
+      portes[positionY + positionX] = 3;
+      positionX -= 1;
+      tourner(1);
+      avance(0.5);
+      tourner(-1);
+    }
+    //Pour éviter recule dans le finish
+    else if (positionY < 24){
+      if (portes[(positionY + 3) + positionX] == 2){
+        //Recule
+        portes[positionY + positionX] = 3;
+        positionY += 6;
+        tourner(2);
+        avance(1);
+        tourner(2);
+      };
+    };
+  };
+};
+
+void dirChoice(){
+  //Choisi de la direction a tourner selon l'etat 0 ou 1 dans cette positions Y, tourne et appel verif x
+switch (positionX)
+  {
+  case 0:
+    tourner(1);
+    verif_xPlus();
+    break;
+
+  case 1: // au milieu et doit choisir entre -1 et 1 #
+    if (portes[((positionY)+(positionX - 1))] == 1 && portes[((positionY+3)+(positionX - 1))]==1 ){
+      tourner(-1);//tourne a gauche
+      verif_xMoins();
+      break;
+    }
+    else if (portes[((positionY)+(positionX + 1))] == 1 && portes[((positionY+3)+(positionX + 1))]==1 ){
+      tourner(1);
+      verif_xPlus();
+      break;
+    }
+
+    //situation en s a faire plus tard
+    else if(portes[((positionY+3)+(0))] == 0 && portes[((positionY+3)+(1))] == 0 ){
+      break;
+
+    }
+    
+
+  case 2:
+    tourner(-1);
+    verif_xMoins();
+    break;
+
+  default:
+    break;
+  }
+   
+  
+};
+
+
+
+void verif_y(){
+
+  while (true){
+  
+  if (detection_infrarouge){
+    //change next matrice at same x position to 0
+    portes[((positionY + 3)+positionX)] = 0;
+    break;
+  
+  } else if(not detection_infrarouge) { //avance et enregistre le path valide en ajoutant 1 au porte valide
+    
+    portes[((positionY + 3 )+ positionX)] = 2; //pos porte valide
+    positionY += 6;
+    avance(1);
+  }
+
+  };
+};
+
+
+
+void verif_xMoins(){
+ // detecte devant lui, si rien -> posX--
+ //                     si oui -> S shape / tourne gauche et avance
+ if (not detection_infrarouge){
+    portes[(positionY + positionX)] =2;
+    positionX --;
+    avance(0.5);
+    tourner(1);
+
+  } else {
+    portes[((positionY)+positionX+1)] = 0;
+    tourner(1);
+    printf("probleme, cul de sac");// manque le s shape
+  }
+};
+
+
+
+void verif_xPlus(){
+  // detecte devant lui, si rien -> posX ++
+ //                     si oui -> S shape / tourne droite et avance
+  if (not detection_infrarouge){
+    portes[(positionY + positionX)] =2;
+    positionX ++;
+    avance(0.5);
+    tourner(-1);
+
+  } else {
+    portes[((positionY)+positionX+1)] = 0;
+    tourner(-1);
+    printf("probleme, cul de sac");// manque le s shape
+  }
+
+};
+
+
 void setup(){
   BoardInit();
   
@@ -383,7 +551,7 @@ void loop() {
   if (false){
     if (etat == 0){
       beep(1);
-      avance_1PID(2);
+      avance(2);
       etat = 1;
     } 
     else{
@@ -430,3 +598,4 @@ void loop() {
 
   
 };
+
