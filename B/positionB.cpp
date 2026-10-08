@@ -26,10 +26,10 @@ bool detectObstacle () {
     red = digitalRead(redpin);
     if (state > 0){
     if (green && red){
-        return true;
+        return false;
     }
     else {
-        return false;
+        return true;
     }
   }
 }

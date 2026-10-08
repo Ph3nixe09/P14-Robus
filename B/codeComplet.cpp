@@ -26,6 +26,7 @@ float speed = 0.40;
 int horizontalPosition = 1;
 int verticalPosition = 0;
 int state = 0;
+int horizontalPosition[5] = {0,0,0,0,0};
 
 void setup()
 {
@@ -57,17 +58,15 @@ void loop()
   {
     if (detectObstacle()){
       stop();
-      spinLeft(speed);
-      driveStraight(speed);
-      spinRight(speed);
+      turnAngleLeft(90);
+      driveDistance(50);
+      turnAngleRight(90);
         if (detectObstacle()){
           stop();
-          spinRight(speed);
-          driveStraight(speed);
-          driveStraight(speed);
-          spinLeft(speed);
-          driveStraight(speed);
-          driveStraight(speed);
+          turnAngleRight(90);
+          driveDistance(100);
+          turnAngleLeft(90);
+          driveDistance(100);
           verticalPosition ++;
           horizontalPosition = 2;
         }
@@ -79,7 +78,7 @@ void loop()
         }
       }
     else {
-      driveStraight(speed);
+      driveDistance(1);
       verticalPosition ++;
     }
     }
