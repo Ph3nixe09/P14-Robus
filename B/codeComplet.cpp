@@ -22,13 +22,12 @@ int greenpin = 48;
 int redpin = 49;
 bool green = false;
 bool red = false;
-int state = 0; // = 0 arrêt 1 = avance 2 = recule 3 = TourneDroit 4 = TourneGauche
-int pastState = 0;
 float speed = 0.40;
 int horizontalPosition = 1;
 int verticalPosition = 0;
+int state = 0;
+int horizontalPosition[5] = {0,0,0,0,0};
 
-// Setup
 void setup()
 {
   Serial.begin(9600);
@@ -44,57 +43,44 @@ void setup()
 
   verticalPosition = 0;
   horizontalPosition = 1;
+  state = 0;
 }
 
-// Loop
 void loop()
 {
-  if (detectSound()) {
+  if (detectSound()) 
+  {
     if (verticalPosition > 5)
   {
     goBack();
   }
   else
   {
-  pastState = state;
-  green = digitalRead(greenpin);
-  red = digitalRead(redpin);
-  if (state > 0) {
-    if (green && red)
-    { // pas d'obstacles: avance
-      state = 1;
-    }
-  }
-  if (pastState != state)
-  {
-    stop();
-    delay(50);
-  }
-  else
-  {
-    switch (state){
-    case 0:
+    if (detectObstacle()){
       stop();
-      break;
-    case 1:
-      driveStraight();
-      break;
-    case 2:
-      spinRight(0.35);
-      break;
-    case 3:
-      spinLeft(0.35);
-      break; // faudrait mettre un 90 degrés?
-    default:
-      driveStraight();
-      state= 1;
-      break;
+      turnAngleLeft(90);
+      driveDistance(50);
+      turnAngleRight(90);
+        if (detectObstacle()){
+          stop();
+          turnAngleRight(90);
+          driveDistance(100);
+          turnAngleLeft(90);
+          driveDistance(100);
+          verticalPosition ++;
+          horizontalPosition = 2;
+        }
+        else {
+          driveStraight(speed);
+          driveStraight(speed);
+          verticalPosition ++;
+          horizontalPosition = 0;
+        }
+      }
+    else {
+      driveDistance(1);
+      verticalPosition ++;
+    }
     }
   }
-  delay(200);
   }
-  }
-  else {
-    stop();
-  }
-}

@@ -3,5 +3,6 @@
 
 void goBack();
 bool detectSound();
+bool detectObstacle();
 
 #endif

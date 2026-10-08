@@ -43,32 +43,14 @@ void beep(int count){
     delay(100);  
   }
   delay(400);
-}
-
-void PID(int32_t pulse_gauche, int32_t pulse_droit){
-  int32_t read_pulse_gauche = ENCODER_ReadReset(0);
-  int32_t read_pulse_droit =  ENCODER_ReadReset(1);
-  int val_attendu_gauche = 10000;
-  int val_attendu_droit = 10000;
-  int KP = 0.00001;
-
-  int erreur_gauche = val_attendu_gauche - read_pulse_gauche;
-  int erreur_droit = val_attendu_droit - read_pulse_droit;
-
-  int correctif_gauche = KP * erreur_gauche;
-  int correctif_droit = KP * erreur_droit;
-  
-
-
-
-}
+};
 
 //Consigne de 0 pour la vitesse pour effectuer un arret
 void arret(){
   MOTOR_SetSpeed(RIGHT, 0);
   MOTOR_SetSpeed(LEFT, 0);
 };
-/**
+/** PID 2
 void avance_2PID(float distance){
   float val_expected_distance = (13400 * distance); 
   int val_expected_speed = 1000;
@@ -141,7 +123,7 @@ void avance_2PID(float distance){
   };
 };
 */
-void avance_1PID(float distance){
+void avance(float distance){
   float val_expected_distance = (13228.25 * distance); 
   float KP = 0.0005;
   float distance_right = 0;  //Pour atteindre la distance voulu
@@ -151,14 +133,15 @@ void avance_1PID(float distance){
   int accel = 0;
   int slow_distance = 0;
 
+  //Choix de distance pour ralentir le robot
   if (distance == 0.5){
-      slow_distance = 2;
+      slow_distance = 2;    //Moitié à 50cm
   }
   else if (distance == 1){
-    slow_distance = 3;
+    slow_distance = 3;      //Tier à 1m
   }
   else{
-    slow_distance = 7;
+    slow_distance = 7;      //Le reste du temps (3m environ) au septième
   };
 
   while (true) {
@@ -205,27 +188,6 @@ void avance_1PID(float distance){
       break;
     };
     
-    /**
-    if (distance_right <= (12000)){
-      if (speed_right < 0.9){
-      speed_right += 0.07;
-      speed_correct_left += 0.07;
-      }
-
-    }
-
-    else if (distance_right >= (val_expected_distance)){
-      arret();
-      break;
-    }
-
-    else if (distance_right >=(val_expected_distance-12000)){
-      if (speed_right > 0.4){
-      speed_right -= 0.1;
-      speed_correct_left -= 0.1;
-      };
-    };
-    */
     //Ajustement de la vitesse
     speed_correct_left += left_error;
     Serial.print("Error left / speed correct left: ");
@@ -246,111 +208,119 @@ void recule(){
   MOTOR_SetSpeed(LEFT, -vitesse);
 };
 
-void tourner(int angle){
+void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> rotation à 180°
   float expected_val_distance_90 = 2000; // Distance en pulse
 
   switch (angle)
   {
     case 1: // Pivot à droite (90)
-      float KP_right = 0.0001;
-      float right_error = 0;
-      float distance_left = 0;
-      float speed_left = 0;
-      float speed_correct_right = 0;
+      float t_KP_right = 0.0001;
+      float t_right_error = 0;
+      float t_distance_left = 0;
+      float t_speed_left = 0;
+      float t_speed_correct_right = 0;
 
       while(true){
         // Lecture des encodeurs
         int32_t read_pulse_right = ENCODER_ReadReset(1);
         int32_t read_pulse_left = ENCODER_ReadReset(0);
         
-        right_error = (read_pulse_left - read_pulse_right) * KP_right;
+        t_right_error = (read_pulse_left - read_pulse_right) * t_KP_right;
         
-        distance_left += read_pulse_left;
+        t_distance_left += read_pulse_left;
 
-        if (distance_left < 1500){
-          speed_left += 0.07;
-          speed_correct_right += 0.07;
+        if (t_distance_left < 1500){
+          t_speed_left += 0.07;
+          t_speed_correct_right += 0.07;
         }
-        else if (distance_left >= (expected_val_distance_90 - 500)){
-          speed_left -= 0.1;
-          speed_correct_right -= 0.1;
+        else if (t_distance_left >= (expected_val_distance_90 - 500)){
+          t_speed_left -= 0.1;
+          t_speed_correct_right -= 0.1;
         }
-        else if (distance_left >= expected_val_distance_90){
+        else if (t_distance_left >= expected_val_distance_90){
           arret();
           break;
         }
 
-        speed_correct_right += right_error;
+        t_speed_correct_right += t_right_error;
 
-        MOTOR_SetSpeed(RIGHT, speed_correct_right);
-        MOTOR_SetSpeed(LEFT, -speed_left);
+        MOTOR_SetSpeed(RIGHT, t_speed_correct_right);
+        MOTOR_SetSpeed(LEFT, -t_speed_left);
+
+        delay(300);
       }
       break;
     case -1: // Pivot à gauche (-90)
-      float KP_left = 0.0001;
-      float left_error = 0;
-      float distance_right = 0;
-      float speed_right = 0;
-      float speed_correct_left = 0;
+      float t_KP_left = 0.0001;
+      float t_left_error = 0;
+      float t_distance_right = 0;
+      float t_speed_right = 0;
+      float t_speed_correct_left = 0;
 
       while (true){
         int32_t read_pulse_right = ENCODER_ReadReset(1);
         int32_t read_pulse_left = ENCODER_ReadReset(0);
 
-        left_error = (read_pulse_right - read_pulse_left) * KP_left;
+        t_left_error = (read_pulse_right - read_pulse_left) * t_KP_left;
 
-        distance_right += read_pulse_right;
+        t_distance_right += read_pulse_right;
 
-        if (distance_right < 1500){
-          speed_right += 0.07;
-          speed_correct_left += 0.07;
+        if (t_distance_right < 1500){
+          t_speed_right += 0.07;
+          t_speed_correct_left += 0.07;
         }
-        else if (distance_right >= (expected_val_distance_90 -500)){
-          speed_right -= 0.1;
-          speed_correct_left -= 0.1;
+        else if (t_distance_right >= (expected_val_distance_90 -500)){
+          t_speed_right -= 0.1;
+          t_speed_correct_left -= 0.1;
         }
-        else if (distance_right >= expected_val_distance_90){
+        else if (t_distance_right >= expected_val_distance_90){
           arret();
           break;
         }
 
-        speed_correct_left += left_error;
+        t_speed_correct_left += t_left_error;
 
-        MOTOR_SetSpeed(RIGHT, -speed_right);
-        MOTOR_SetSpeed(LEFT,   speed_correct_left);
+        MOTOR_SetSpeed(RIGHT, -t_speed_right);
+        MOTOR_SetSpeed(LEFT,   t_speed_correct_left);
+
+        delay(300);
       }
       break;
     case 2: // Demi-tour (180)
-      float expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
-      float KP_return = 0.0001;
-      float left_error = 0;
-      float distance_right = 0;
+      float t2_expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
+      float t2_KP_return = 0.0001;
+      float t2_left_error = 0;
+      float t2_distance_right = 0;
+      float t2_speed_right = 0;
+      float t2_speed_correct_left = 0;
 
       while (true){
         int32_t read_pulse_right = ENCODER_ReadReset(1);
         int32_t read_pulse_left = ENCODER_ReadReset(0);
 
-        left_error = (read_pulse_right - read_pulse_left) * KP_return;
+        t2_left_error = (read_pulse_right - read_pulse_left) * t2_KP_return;
 
-        distance_right += read_pulse_right;
+        t2_distance_right += read_pulse_right;
 
-        if (distance_right < 1500){
-          speed_right += 0.07;
-          speed_correct_left += 0.07;
+        if (t2_distance_right < 1500){
+          t2_speed_right += 0.07;
+          t2_speed_correct_left += 0.07;
         }
-        else if (distance_right >= (expected_val_distance_90 -500)){
-          speed_right -= 0.1;
-          speed_correct_left -= 0.1;
+        else if (t2_distance_right >= (t2_expected_val_distance_180 -500)){
+          t2_speed_right -= 0.1;
+          t2_speed_correct_left -= 0.1;
         }
-        else if (distance_right >= expected_val_distance_90){
+        else if (t2_distance_right >= t2_expected_val_distance_180){
           arret();
           break;
         }
 
-        speed_correct_left += left_error;
+        t2_speed_correct_left += t2_left_error;
 
-        MOTOR_SetSpeed(RIGHT, -speed_right);
-        MOTOR_SetSpeed(LEFT,   speed_correct_left);
+        MOTOR_SetSpeed(RIGHT, -t2_speed_right);
+        MOTOR_SetSpeed(LEFT,   t2_speed_correct_left);
+
+        delay(300);
       }
       break;
     default:
@@ -366,25 +336,172 @@ bool detection_sifflet(bool &son){
   return (son = true);
 };
 
-bool detection_infrarouge(bool obstacle){
+bool detection_infrarouge(){
   //Détection d'obstacle avec l'infrarouge mais seulement si les deux s'allument
   vert = digitalRead(vertpin);
   rouge = digitalRead(rougepin);
   if (!vert && !rouge){
-    obstacle = true;
-    return obstacle;
+    return true;
   }
   else {
-    obstacle = false;
-    return obstacle;
+    return false;
   };
-}
+};
 /**
 Fonctions d'initialisation (setup)
  -> Se fait appeler au debut du programme
  -> Se fait appeler seulement un fois
  -> Generalement on y initilise les varibbles globales
 */
+
+//Logic
+int positionX = 1;
+int positionY = 0;
+//                0,1,2   3,4,5   6,7,8   9,10,11 12,13,14 15,16,17 18,19,20 21,22,23 24,25,26 27,28,29
+int portes[30] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1};
+
+
+
+void path(){
+  //alterne entre avancer ou tourner jusqu'a la position 9 en Y et effectue le trajet inverse
+  while (positionY <9) 
+  {
+    verif_y();
+    dirChoice();
+
+  }
+  tourner(180);
+  //reverse path
+  retourne();
+};
+
+void retourne(){
+  //Sortir de la ligne d'arrivé
+  avance(0.5);
+  while (positionY != 0){
+    if (portes[(positionY - 3) + positionX] == 2){
+      //Avance
+      portes[positionY + positionX] = 3;
+      positionY -= 6;
+      avance(1);
+    }
+    else if (portes[(positionY + (positionX + 1))] == 2){
+      //Gauche
+      portes[positionY + positionX] = 3;
+      positionX += 1;
+      tourner(-1);
+      avance(0.5);
+      tourner(1);
+    }
+    else if (portes[(positionY + (positionX - 1))] == 2){
+      //Droite
+      portes[positionY + positionX] = 3;
+      positionX -= 1;
+      tourner(1);
+      avance(0.5);
+      tourner(-1);
+    }
+    //Pour éviter recule dans le finish
+    else if (positionY < 24){
+      if (portes[(positionY + 3) + positionX] == 2){
+        //Recule
+        portes[positionY + positionX] = 3;
+        positionY += 6;
+        tourner(2);
+        avance(1);
+        tourner(2);
+      };
+    };
+  };
+};
+
+void dirChoice(){
+  //Choisi de la direction a tourner selon l'etat 0 ou 1 dans cette positions Y, tourne et appel verif x
+switch (positionX)
+  {
+  case 0:
+    tourner(1);
+    verif_xPlus();
+    break;
+
+  case 1: // au milieu et doit choisir entre -1 et 1 #
+    if (portes[((positionY)+(positionX - 1))] = 1){
+      tourner(-1);//tourne a gauche
+      verif_xMoins();
+    }
+    else if (portes[((positionY)+(positionX + 1))] = 1){
+      tourner(1);
+    }
+    else if(portes[((positionY+3)+(0))] == 0 && portes[((positionY+3)+(1))] == 0 ){//situation en s
+
+    }
+    
+
+  case 2:
+    tourner(-1);
+    verif_xMoins();
+    break;
+
+  default:
+    break;
+  }
+   
+  
+};
+
+
+
+void verif_y(){
+
+  while (true){
+  
+  if (detection_infrarouge){
+    //change next matrice at same x position to 0
+    portes[((positionY + 3)+positionX)] = 0;
+    break;
+  
+  } else if(not detection_infrarouge) {
+    avance(1);
+    positionY += 6;
+  }
+
+  };
+};
+
+
+
+void verif_xMoins(){
+ // detecte devant lui, si rien -> posX--
+ //                     si oui -> S shape / tourne gauche et avance
+ if (not detection_infrarouge){
+    positionX --;
+    avance(0.5);
+    tourner(1);
+
+  } else {
+    portes[((positionY)+positionX+1)] = 0;
+    printf("probleme, cul de sac");// manque le s shape
+  }
+};
+
+
+
+void verif_xPlus(){
+  // detecte devant lui, si rien -> posX ++
+ //                     si oui -> S shape / tourne droite et avance
+  if (not detection_infrarouge){
+    positionX ++;
+    avance(0.5);
+    tourner(-1);
+
+  } else {
+    portes[((positionY)+positionX+1)] = 0;
+    printf("probleme, cul de sac");// manque le s shape
+  }
+
+};
+
+
 void setup(){
   BoardInit();
   
@@ -414,18 +531,7 @@ void loop() {
   if (bumperArr){
     if (etat == 0){
       beep(1);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
+      avance(2);
       etat = 1;
     } 
     else{
@@ -433,6 +539,18 @@ void loop() {
       arret();
       etat = 0;
     };
+  }
+  else if (ROBUS_IsBumper(0)){
+    if (etat == 0){
+      beep(1);
+      tourner(1);
+      etat = 1;
+    }
+    else{
+      beep(3);
+      arret();
+      etat = 0;
+    }
   }
 
   /**
@@ -460,3 +578,4 @@ void loop() {
 
   
 };
+
