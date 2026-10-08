@@ -151,14 +151,15 @@ void avance_1PID(float distance){
   int accel = 0;
   int slow_distance = 0;
 
+  //Choix de distance pour ralentir le robot
   if (distance == 0.5){
-      slow_distance = 2;
+      slow_distance = 2;    //Moitié à 50cm
   }
   else if (distance == 1){
-    slow_distance = 3;
+    slow_distance = 3;      //Tier à 1m
   }
   else{
-    slow_distance = 7;
+    slow_distance = 7;      //Le reste du temps (3m environ) au septième
   };
 
   while (true) {
@@ -205,27 +206,6 @@ void avance_1PID(float distance){
       break;
     };
     
-    /**
-    if (distance_right <= (12000)){
-      if (speed_right < 0.9){
-      speed_right += 0.07;
-      speed_correct_left += 0.07;
-      }
-
-    }
-
-    else if (distance_right >= (val_expected_distance)){
-      arret();
-      break;
-    }
-
-    else if (distance_right >=(val_expected_distance-12000)){
-      if (speed_right > 0.4){
-      speed_right -= 0.1;
-      speed_correct_left -= 0.1;
-      };
-    };
-    */
     //Ajustement de la vitesse
     speed_correct_left += left_error;
     Serial.print("Error left / speed correct left: ");
@@ -414,18 +394,7 @@ void loop() {
   if (bumperArr){
     if (etat == 0){
       beep(1);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
-      avance_1PID(0.5);
-      delay(2000);
+      avance_1PID(2);
       etat = 1;
     } 
     else{
