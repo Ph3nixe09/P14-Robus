@@ -123,7 +123,7 @@ void avance_2PID(float distance){
   };
 };
 */
-void avance_1PID(float distance){
+void avance(float distance){
   float val_expected_distance = (13228.25 * distance); 
   float KP = 0.0005;
   float distance_right = 0;  //Pour atteindre la distance voulu
@@ -345,6 +345,8 @@ bool detection_infrarouge(){
   }
   else {
     return false;
+  };
+};
 /**
 Fonctions d'initialisation (setup)
  -> Se fait appeler au debut du programme
@@ -490,7 +492,7 @@ void loop() {
   if (bumperArr){
     if (etat == 0){
       beep(1);
-      avance_1PID(2);
+      avance(2);
       etat = 1;
     } 
     else{
