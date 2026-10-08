@@ -254,7 +254,7 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
       float right_motor_speed_left_rotation = 0;
       float left_motor_speed_left_rotation = 0;
       float left_motor_error_left_rotation = 0;
-      float left_rotation_KP = 0.0000;
+      float left_rotation_KP = 0.00003;
 
       while (true){
         int32_t read_pulse_right = ENCODER_ReadReset(1);
@@ -287,34 +287,34 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
       break;
     }
     case 2: {// Demi-tour (180)
-      float expected_val_distance_turn_over = 4000; // Distance en pulse pour parcourir 180°
-      float turn_over_KP = 0.0001;
-      float rotational_adjustment_turn_over = 0;
+      float expected_val_distance_turn_over = 2600; // Distance en pulse pour parcourir 180°
+      float turn_over_KP = 0.00003;
+      float left_motor_error_turn_over = 0;
       float distance_turn_over = 0;
-      float turn_over_speed_right_motor = 0;
-      float turn_over_speed_left_motor = 0;
+      float right_motor_speed_turn_over = 0;
+      float left_motor_speed_turn_over = 0;
 
       while (true){
         int32_t read_pulse_right = ENCODER_ReadReset(1);
         int32_t read_pulse_left = ENCODER_ReadReset(0);
 
-        rotational_adjustment_turn_over = (read_pulse_right - read_pulse_left) * turn_over_KP;
+        left_motor_error_turn_over = (read_pulse_right - read_pulse_left) * turn_over_KP;
 
         distance_turn_over += read_pulse_right;
 
         if (distance_turn_over < 1500){
-          turn_over_speed_right_motor += 0.07;
-          turn_over_speed_left_motor += 0.07;
+          right_motor_speed_turn_over += 0.07;
+          left_motor_speed_turn_over += 0.07;
         }
         else if (distance_turn_over >= expected_val_distance_turn_over){
           arret();
           break;
         }
 
-        turn_over_speed_left_motor += rotational_adjustment_turn_over;
+        left_motor_speed_turn_over += left_motor_error_turn_over;
 
-        MOTOR_SetSpeed(RIGHT, -turn_over_speed_right_motor);
-        MOTOR_SetSpeed(LEFT,   turn_over_speed_left_motor);
+        MOTOR_SetSpeed(RIGHT, -right_motor_speed_turn_over);
+        MOTOR_SetSpeed(LEFT,   left_motor_speed_turn_over);
 
         delay(300);
       }
