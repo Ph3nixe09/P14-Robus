@@ -287,19 +287,12 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
       }
       break;
     case 2: // Demi-tour (180)
-<<<<<<< Updated upstream
       float t2_expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
       float t2_KP_return = 0.0001;
       float t2_left_error = 0;
       float t2_distance_right = 0;
       float t2_speed_right = 0;
       float t2_speed_correct_left = 0;
-=======
-      float expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
-      float KP_return = 0.0001;
-      left_error = 0;
-      distance_right = 0;
->>>>>>> Stashed changes
 
       while (true){
         int32_t read_pulse_right = ENCODER_ReadReset(1);
