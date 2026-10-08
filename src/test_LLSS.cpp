@@ -209,122 +209,120 @@ void recule(){
 };
 
 void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> rotation à 180°
-  float expected_val_distance_90 = 2000; // Distance en pulse
+  float expected_val_distance_90 = 1300; // Distance en pulse
 
   switch (angle)
   {
-    case 1: // Pivot à droite (90)
-      float t_KP_right = 0.0001;
-      float t_right_error = 0;
-      float t_distance_left = 0;
-      float t_speed_left = 0;
-      float t_speed_correct_right = 0;
+    case 1: {// Pivot à droite (90)
+      float right_rotation_distance = 0;
+      float right_motor_speed_right_rotation = 0;
+      float left_motor_speed_right_rotation = 0;
+      float left_motor_error_right_rotation = 0;
+      float right_rotation_KP = 0.00003;
 
       while(true){
         // Lecture des encodeurs
         int32_t read_pulse_right = ENCODER_ReadReset(1);
         int32_t read_pulse_left = ENCODER_ReadReset(0);
-        
-        t_right_error = (read_pulse_left - read_pulse_right) * t_KP_right;
-        
-        t_distance_left += read_pulse_left;
+                
+        left_motor_error_right_rotation = (read_pulse_right - read_pulse_left) * right_rotation_KP;
 
-        if (t_distance_left < 1500){
-          t_speed_left += 0.07;
-          t_speed_correct_right += 0.07;
+        right_rotation_distance += read_pulse_right;
+
+        if (right_rotation_distance < 1000){
+          right_motor_speed_right_rotation += 0.07;
+          left_motor_speed_right_rotation += 0.07;
         }
-        else if (t_distance_left >= (expected_val_distance_90 - 500)){
-          t_speed_left -= 0.1;
-          t_speed_correct_right -= 0.1;
-        }
-        else if (t_distance_left >= expected_val_distance_90){
+        else if (right_rotation_distance >= expected_val_distance_90){
           arret();
+          //Serial.print("arret atteint");
           break;
         }
 
-        t_speed_correct_right += t_right_error;
+        left_motor_speed_right_rotation += left_motor_error_right_rotation;
 
-        MOTOR_SetSpeed(RIGHT, t_speed_correct_right);
-        MOTOR_SetSpeed(LEFT, -t_speed_left);
+        MOTOR_SetSpeed(RIGHT, -right_motor_speed_right_rotation);
+        MOTOR_SetSpeed(LEFT,   left_motor_speed_right_rotation);
 
         delay(300);
       }
       break;
-    case -1: // Pivot à gauche (-90)
-      float t_KP_left = 0.0001;
-      float t_left_error = 0;
-      float t_distance_right = 0;
-      float t_speed_right = 0;
-      float t_speed_correct_left = 0;
+    }
+    case -1: { // Pivot à gauche (-90)
+      float left_rotation_distance = 0;
+      float right_motor_speed_left_rotation = 0;
+      float left_motor_speed_left_rotation = 0;
+      float left_motor_error_left_rotation = 0;
+      float left_rotation_KP = 0.0000;
+
+      while (true){
+        int32_t read_pulse_right = ENCODER_ReadReset(1);
+        int32_t read_pulse_left = ENCODER_ReadReset(0);
+        Serial.println("Encodeur lu " + read_pulse_right);
+        Serial.println("Encodeur lu " + read_pulse_left);
+
+        left_motor_error_left_rotation = (read_pulse_right - read_pulse_left) * left_rotation_KP;
+
+        left_rotation_distance += read_pulse_right;
+
+        if (left_rotation_distance < 1500){
+          right_motor_speed_left_rotation += 0.07;
+          left_motor_speed_left_rotation += 0.07;
+          Serial.println("Acceleration atteint");
+        }
+        else if (left_rotation_distance >= expected_val_distance_90){
+          arret();
+          Serial.println("arret atteint");
+          break;
+        }
+
+        left_motor_error_left_rotation += left_motor_error_left_rotation;
+
+        MOTOR_SetSpeed(RIGHT, right_motor_speed_left_rotation);
+        MOTOR_SetSpeed(LEFT, -left_motor_speed_left_rotation);
+
+        delay(300);
+      }
+      break;
+    }
+    case 2: {// Demi-tour (180)
+      float expected_val_distance_turn_over = 4000; // Distance en pulse pour parcourir 180°
+      float turn_over_KP = 0.0001;
+      float rotational_adjustment_turn_over = 0;
+      float distance_turn_over = 0;
+      float turn_over_speed_right_motor = 0;
+      float turn_over_speed_left_motor = 0;
 
       while (true){
         int32_t read_pulse_right = ENCODER_ReadReset(1);
         int32_t read_pulse_left = ENCODER_ReadReset(0);
 
-        t_left_error = (read_pulse_right - read_pulse_left) * t_KP_left;
+        rotational_adjustment_turn_over = (read_pulse_right - read_pulse_left) * turn_over_KP;
 
-        t_distance_right += read_pulse_right;
+        distance_turn_over += read_pulse_right;
 
-        if (t_distance_right < 1500){
-          t_speed_right += 0.07;
-          t_speed_correct_left += 0.07;
+        if (distance_turn_over < 1500){
+          turn_over_speed_right_motor += 0.07;
+          turn_over_speed_left_motor += 0.07;
         }
-        else if (t_distance_right >= (expected_val_distance_90 -500)){
-          t_speed_right -= 0.1;
-          t_speed_correct_left -= 0.1;
-        }
-        else if (t_distance_right >= expected_val_distance_90){
+        else if (distance_turn_over >= expected_val_distance_turn_over){
           arret();
           break;
         }
 
-        t_speed_correct_left += t_left_error;
+        turn_over_speed_left_motor += rotational_adjustment_turn_over;
 
-        MOTOR_SetSpeed(RIGHT, -t_speed_right);
-        MOTOR_SetSpeed(LEFT,   t_speed_correct_left);
-
-        delay(300);
-      }
-      break;
-    case 2: // Demi-tour (180)
-      float t2_expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
-      float t2_KP_return = 0.0001;
-      float t2_left_error = 0;
-      float t2_distance_right = 0;
-      float t2_speed_right = 0;
-      float t2_speed_correct_left = 0;
-
-      while (true){
-        int32_t read_pulse_right = ENCODER_ReadReset(1);
-        int32_t read_pulse_left = ENCODER_ReadReset(0);
-
-        t2_left_error = (read_pulse_right - read_pulse_left) * t2_KP_return;
-
-        t2_distance_right += read_pulse_right;
-
-        if (t2_distance_right < 1500){
-          t2_speed_right += 0.07;
-          t2_speed_correct_left += 0.07;
-        }
-        else if (t2_distance_right >= (t2_expected_val_distance_180 -500)){
-          t2_speed_right -= 0.1;
-          t2_speed_correct_left -= 0.1;
-        }
-        else if (t2_distance_right >= t2_expected_val_distance_180){
-          arret();
-          break;
-        }
-
-        t2_speed_correct_left += t2_left_error;
-
-        MOTOR_SetSpeed(RIGHT, -t2_speed_right);
-        MOTOR_SetSpeed(LEFT,   t2_speed_correct_left);
+        MOTOR_SetSpeed(RIGHT, -turn_over_speed_right_motor);
+        MOTOR_SetSpeed(LEFT,   turn_over_speed_left_motor);
 
         delay(300);
       }
       break;
-    default:
-        break;
+    }
+    default: {
+      Serial.print("fct tourner échoué");
+      break;
+    }
   }
   //MOTOR_SetSpeed(RIGHT, speed);
   //MOTOR_SetSpeed(LEFT, -speed);
@@ -379,9 +377,10 @@ void loop() {
     }
   }
   */ 
+   
   etatPast = etat;
   bumperArr = ROBUS_IsBumper(3);
-  if (bumperArr){
+  if (false){
     if (etat == 0){
       beep(1);
       avance_1PID(2);
@@ -396,7 +395,7 @@ void loop() {
   else if (ROBUS_IsBumper(0)){
     if (etat == 0){
       beep(1);
-      tourner(1);
+      tourner(-1);
       etat = 1;
     }
     else{
