@@ -147,16 +147,16 @@ void avance(float distance){
   while (true) {
     int32_t read_pulse_left = ENCODER_ReadReset(0);
     int32_t read_pulse_right =  ENCODER_ReadReset(1);
-    Serial.print("Pulse right / left: ");
-    Serial.println(read_pulse_right);
-    Serial.println(read_pulse_left);
+    //Serial.print("Pulse right / left: ");
+    //Serial.println(read_pulse_right);
+    //Serial.println(read_pulse_left);
 
     left_error = (read_pulse_right - read_pulse_left) * KP;
 
       //Distance reel parcouru
     distance_right += read_pulse_right;
-    Serial.print("Distance total: ");
-    Serial.println(distance_right);
+    //Serial.print("Distance total: ");
+    //Serial.println(distance_right);
 
     // Nouveau code d'acceleration à tester
     switch (accel){
@@ -190,9 +190,9 @@ void avance(float distance){
     
     //Ajustement de la vitesse
     speed_correct_left += left_error;
-    Serial.print("Error left / speed correct left: ");
-    Serial.println(left_error);
-    Serial.println(speed_correct_left);
+    //Serial.print("Error left / speed correct left: ");
+    //Serial.println(left_error);
+    //Serial.println(speed_correct_left);
     
     //Ajustement de la vitesse
     MOTOR_SetSpeed(RIGHT,speed_right);
@@ -201,6 +201,7 @@ void avance(float distance){
     delay(200);
 
   };
+  delay(1000);
 };
 
 void recule(){
@@ -328,6 +329,27 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
   }
   //MOTOR_SetSpeed(RIGHT, speed);
   //MOTOR_SetSpeed(LEFT, -speed);
+/**
+ switch (angle){
+  case 1:
+    MOTOR_SetSpeed(RIGHT,-0.4);
+    MOTOR_SetSpeed(LEFT, 0.4);
+    delay(500);
+    arret();
+    break;
+  case -1:
+    MOTOR_SetSpeed(RIGHT,0.4);
+    MOTOR_SetSpeed(LEFT, -0.4);
+    delay(500);
+    arret();
+    break;
+  case 2:
+    MOTOR_SetSpeed(RIGHT, -0.4);
+    MOTOR_SetSpeed(LEFT, 0.4);
+    delay(1000);
+    arret();
+    break;
+ };*/
 };
 
 bool detection_sifflet(bool &son){
@@ -361,28 +383,6 @@ int positionY = 0;
 int portes[30] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1};
 
 
-
-void path(){
-  //alterne entre avancer ou tourner jusqu'a la position 9 en Y et effectue le trajet inverse
-  while (positionY == 27) 
-  {
-    verif_y();
-    dirChoice();
-    Serial.print("Position actuel X:");
-    Serial.println(positionX);
-    Serial.print("Position actuel Y:");
-    Serial.println(positionY);
-    for (int val : portes){
-    Serial.println(val);
-    }
-
-    
-
-  }
-  tourner(180);
-  //reverse path
-  retourne();
-};
 
 void retourne(){
   //Sortir de la ligne d'arrivé
@@ -422,6 +422,60 @@ void retourne(){
       };
     };
   };
+};
+
+void verif_y(){
+
+  while (true){
+  
+  if (detection_infrarouge()){
+    //change next matrice at same x position to 0
+    portes[((positionY + 3)+positionX)] = 0;
+    break;
+  
+  } else if(not detection_infrarouge()) { //avance et enregistre le path valide en ajoutant 1 au porte valide
+    
+    portes[((positionY + 3 )+ positionX)] = 2; //pos porte valide
+    positionY += 6;
+    avance(1);
+  }
+
+  };
+};
+
+
+
+void verif_xMoins(){
+ // detecte devant lui, si rien -> posX--
+ //                     si oui -> S shape / tourne gauche et avance
+ if (not detection_infrarouge()){
+    portes[(positionY + positionX)] =2;
+    positionX -= 1;
+    avance(1);
+    tourner(1);
+
+  } else {
+    portes[((positionY)+positionX+1)] = 0;
+    tourner(1);
+    printf("probleme, cul de sac");// manque le s shape
+  }
+};
+
+void verif_xPlus(){
+  // detecte devant lui, si rien -> posX ++
+ //                     si oui -> S shape / tourne droite et avance
+  if (not detection_infrarouge()){
+    portes[(positionY + positionX)] =2;
+    positionX ++;
+    avance(0.5);
+    tourner(-1);
+
+  } else {
+    portes[((positionY)+positionX+1)] = 0;
+    tourner(-1);
+    printf("probleme, cul de sac");// manque le s shape
+  }
+
 };
 
 void dirChoice(){
@@ -465,63 +519,27 @@ switch (positionX)
 };
 
 
+void path(){
+  //alterne entre avancer ou tourner jusqu'a la position 9 en Y et effectue le trajet inverse
+  while (positionY < 27) 
+  {
+    verif_y();
+    dirChoice();
+    Serial.print("Position actuel X:");
+    Serial.println(positionX);
+    Serial.print("Position actuel Y:");
+    Serial.println(positionY);
+    for (int val : portes){
+    Serial.println(val);
+    }
 
-void verif_y(){
-
-  while (true){
-  
-  if (detection_infrarouge){
-    //change next matrice at same x position to 0
-    portes[((positionY + 3)+positionX)] = 0;
-    break;
-  
-  } else if(not detection_infrarouge) { //avance et enregistre le path valide en ajoutant 1 au porte valide
     
-    portes[((positionY + 3 )+ positionX)] = 2; //pos porte valide
-    positionY += 6;
-    avance(1);
+
   }
-
-  };
+  tourner(2);
+  //reverse path
+  retourne();
 };
-
-
-
-void verif_xMoins(){
- // detecte devant lui, si rien -> posX--
- //                     si oui -> S shape / tourne gauche et avance
- if (not detection_infrarouge){
-    portes[(positionY + positionX)] =2;
-    positionX --;
-    avance(0.5);
-    tourner(1);
-
-  } else {
-    portes[((positionY)+positionX+1)] = 0;
-    tourner(1);
-    printf("probleme, cul de sac");// manque le s shape
-  }
-};
-
-
-
-void verif_xPlus(){
-  // detecte devant lui, si rien -> posX ++
- //                     si oui -> S shape / tourne droite et avance
-  if (not detection_infrarouge){
-    portes[(positionY + positionX)] =2;
-    positionX ++;
-    avance(0.5);
-    tourner(-1);
-
-  } else {
-    portes[((positionY)+positionX+1)] = 0;
-    tourner(-1);
-    printf("probleme, cul de sac");// manque le s shape
-  }
-
-};
-
 
 void setup(){
   BoardInit();
@@ -552,7 +570,9 @@ void loop() {
   if (bumperArr){
     if (etat == 0){
       beep(1);
-      avance(2);
+      tourner(-1);
+      avance(0.5);
+      tourner(1);
       etat = 1;
     } 
     else{
