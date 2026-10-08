@@ -43,32 +43,14 @@ void beep(int count){
     delay(100);  
   }
   delay(400);
-}
-
-void PID(int32_t pulse_gauche, int32_t pulse_droit){
-  int32_t read_pulse_gauche = ENCODER_ReadReset(0);
-  int32_t read_pulse_droit =  ENCODER_ReadReset(1);
-  int val_attendu_gauche = 10000;
-  int val_attendu_droit = 10000;
-  int KP = 0.00001;
-
-  int erreur_gauche = val_attendu_gauche - read_pulse_gauche;
-  int erreur_droit = val_attendu_droit - read_pulse_droit;
-
-  int correctif_gauche = KP * erreur_gauche;
-  int correctif_droit = KP * erreur_droit;
-  
-
-
-
-}
+};
 
 //Consigne de 0 pour la vitesse pour effectuer un arret
 void arret(){
   MOTOR_SetSpeed(RIGHT, 0);
   MOTOR_SetSpeed(LEFT, 0);
 };
-/**
+/** PID 2
 void avance_2PID(float distance){
   float val_expected_distance = (13400 * distance); 
   int val_expected_speed = 1000;
@@ -305,12 +287,19 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
       }
       break;
     case 2: // Demi-tour (180)
+<<<<<<< Updated upstream
       float t2_expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
       float t2_KP_return = 0.0001;
       float t2_left_error = 0;
       float t2_distance_right = 0;
       float t2_speed_right = 0;
       float t2_speed_correct_left = 0;
+=======
+      float expected_val_distance_180 = 4000; // Distance en pulse pour parcourir 180°
+      float KP_return = 0.0001;
+      left_error = 0;
+      distance_right = 0;
+>>>>>>> Stashed changes
 
       while (true){
         int32_t read_pulse_right = ENCODER_ReadReset(1);
