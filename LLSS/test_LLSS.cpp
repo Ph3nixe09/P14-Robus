@@ -11,6 +11,7 @@ Inclure les librairies de functions que vous voulez utiliser
 */
 #include <LibRobus.h>
 
+
 /*
 Variables globales et defines
  -> defines...
@@ -194,17 +195,15 @@ bool detection_sifflet(bool &son){
   return (son = true);
 };
 
-bool detection_infrarouge(bool obstacle){
+bool detection_infrarouge(){
   //Détection d'obstacle avec l'infrarouge mais seulement si les deux s'allument
   vert = digitalRead(vertpin);
   rouge = digitalRead(rougepin);
   if (!vert && !rouge){
-    obstacle = true;
-    return obstacle;
+    return true;
   }
   else {
-    obstacle = false;
-    return obstacle;
+    return false;
   };
 }
 /**
@@ -264,4 +263,119 @@ void loop() {
   */
 
   
+};
+
+
+
+
+
+
+
+
+//Logic
+int positionX = 1;
+int positionY = 0;
+int portes[] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1,  1,1,1, 1,1,1};
+
+
+
+void path(){
+  //alterne entre avancer ou tourner jusqu'a la position 9 en Y et effectue le trajet inverse
+  while (positionY <9) 
+  {
+    verif_y();
+    dirChoice();
+
+  }
+  tourner(180);
+  //reverse path
+  
+};
+
+
+
+void dirChoice(){
+  //Choisi de la direction a tourner selon l'etat 0 ou 1 dans cette positions Y, tourne et appel verif x
+switch (positionX)
+  {
+  case 0:
+    tourner(1);
+    verif_xPlus();
+    break;
+
+  case 1: // au milieu et doit choisir entre -1 et 1 #
+    if (portes[((positionY)+(positionX - 1))] = 1){
+      tourner(-1);//tourne a gauche
+      verif_xMoins();
+    }
+    else if (portes[((positionY)+(positionX + 1))] = 1){
+      tourner(1);
+    }
+    else if(portes[((positionY+3)+(0))] == 0 && portes[((positionY+3)+(1))] == 0 ){//situation en s
+
+    }
+    
+
+  case 2:
+    tourner(-1);
+    verif_xMoins();
+    break;
+
+  default:
+    break;
+  }
+   
+  
+};
+
+
+
+void verif_y(){
+
+  while (true){
+  
+  if (detection_infrarouge){
+    //change next matrice at same x position to 0
+    portes[((positionY + 3)+positionX)] = 0;
+    break;
+  
+  } else if(not detection_infrarouge) {
+    avance(1);
+    positionY += 6;
+  }
+
+  };
+};
+
+
+
+void verif_xMoins(){
+ // detecte devant lui, si rien -> posX--
+ //                     si oui -> S shape / tourne gauche et avance
+ if (not detection_infrarouge){
+    positionX --;
+    avance(0.5);
+    tourner(1);
+
+  } else {
+    portes[((positionY)+positionX+1)] = 0;
+    printf("probleme, cul de sac");// manque le s shape
+  }
+};
+
+
+
+void verif_xPlus(){
+  // detecte devant lui, si rien -> posX ++
+ //                     si oui -> S shape / tourne droite et avance
+  if (not detection_infrarouge){
+    positionX ++;
+    avance(0.5);
+    tourner(-1);
+
+  } else {
+    portes[((positionY)+positionX+1)] = 0;
+    printf("probleme, cul de sac");// manque le s shape
+  }
+
 };
