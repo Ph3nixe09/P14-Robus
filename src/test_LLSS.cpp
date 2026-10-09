@@ -186,6 +186,30 @@ void tourner(int angle){
         Serial.print("Fini");
         break;
       };
+      // Nouveau code d'acceleration à tester
+      switch (accel){
+        case 0:
+          speed_right -= 0.1;
+          speed_correct_left += 0.1;
+          if (speed_right <= -0.3){
+            accel = 1;
+          };
+          break;
+
+        case 1:
+          if (turn_right <= (slow_distance)){
+            speed_right += 0.1;
+            speed_correct_left -= 0.1;
+            if (speed_right >= -0.1){
+              speed_right = -0.05;
+              speed_correct_left = 0.05;
+              accel = 2;
+            };
+          break;
+          };
+        case 2:
+          break;
+      };
     }
     else if (inverter == 1){
       if (turn_right >= val_expected_turn - 50){
@@ -486,7 +510,7 @@ void verif_xMoins(){
  if (not detection_infrarouge()){
     portes[(positionY + positionX)] =2;
     positionX -= 1;
-    avance(1);
+    avance(0.5);
     tourner(1);
 
   } else {
@@ -606,7 +630,7 @@ void loop() {
   if (bumperArr){
     if (etat == 0){
       beep(1);
-      path();
+      avance(0.5);
       etat = 1;
     } 
     else{
