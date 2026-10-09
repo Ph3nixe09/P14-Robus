@@ -210,11 +210,11 @@ void recule(){
 };
 
 void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> rotation à 180°
-  float expected_val_distance_90 = 1300; // Distance en pulse
-
+  
   switch (angle)
   {
     case 1: {// Pivot à droite (90)
+      float expected_val_distance_right_rotation = 1570; // Distance en pulse
       float right_rotation_distance = 0;
       float right_motor_speed_right_rotation = 0;
       float left_motor_speed_right_rotation = 0;
@@ -228,13 +228,13 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
                 
         left_motor_error_right_rotation = (read_pulse_right - read_pulse_left) * right_rotation_KP;
 
-        right_rotation_distance += read_pulse_right;
+        right_rotation_distance += read_pulse_left;
 
         if (right_rotation_distance < 1000){
           right_motor_speed_right_rotation += 0.07;
           left_motor_speed_right_rotation += 0.07;
         }
-        else if (right_rotation_distance >= expected_val_distance_90){
+        else if (right_rotation_distance >= expected_val_distance_right_rotation){
           arret();
           //Serial.print("arret atteint");
           break;
@@ -249,7 +249,8 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
       }
       break;
     }
-    case -1: { // Pivot à gauche (-90)
+    case -1: { // Pivot à gauche (-90) // À revoir
+      float expected_val_distance_left_rotation = 1720;
       float left_rotation_distance = 0;
       float right_motor_speed_left_rotation = 0;
       float left_motor_speed_left_rotation = 0;
@@ -266,12 +267,12 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
 
         left_rotation_distance += read_pulse_right;
 
-        if (left_rotation_distance < 1500){
+        if (left_rotation_distance < 1000){
           right_motor_speed_left_rotation += 0.07;
           left_motor_speed_left_rotation += 0.07;
           Serial.println("Acceleration atteint");
         }
-        else if (left_rotation_distance >= expected_val_distance_90){
+        else if (left_rotation_distance >= expected_val_distance_left_rotation){
           arret();
           Serial.println("arret atteint");
           break;
@@ -287,12 +288,12 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
       break;
     }
     case 2: {// Demi-tour (180)
-      float expected_val_distance_turn_over = 2600; // Distance en pulse pour parcourir 180°
-      float turn_over_KP = 0.00003;
-      float left_motor_error_turn_over = 0;
+      float expected_val_distance_turn_over = 2900; // Distance en pulse pour parcourir 180°
       float distance_turn_over = 0;
+      float left_motor_error_turn_over = 0;
       float right_motor_speed_turn_over = 0;
       float left_motor_speed_turn_over = 0;
+      float turn_over_KP = 0.000007;
 
       while (true){
         int32_t read_pulse_right = ENCODER_ReadReset(1);
@@ -300,9 +301,9 @@ void tourner(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> r
 
         left_motor_error_turn_over = (read_pulse_right - read_pulse_left) * turn_over_KP;
 
-        distance_turn_over += read_pulse_right;
+        distance_turn_over += read_pulse_left;
 
-        if (distance_turn_over < 1500){
+        if (distance_turn_over < 2000){
           right_motor_speed_turn_over += 0.07;
           left_motor_speed_turn_over += 0.07;
         }
@@ -586,11 +587,6 @@ void loop() {
       tourner(1);
       etat = 1;
     }
-    else{
-      beep(3);
-      arret();
-      etat = 0;
-    }
   }
   else if (ROBUS_IsBumper(1)){
     if (etat == 0){
@@ -598,24 +594,15 @@ void loop() {
       tourner(-1);
       etat = 1;
     }
-    else{
-      beep(3);
-      arret();
-      etat = 0;
-    }
   }
   else if (ROBUS_IsBumper(2)){
     if (etat == 0){
       beep(1);
       tourner(2);
-      etat = 0;
-    }
-    else{
-      beep(3);
-      arret();
-      etat = 0;
+      etat = 1;
     }
   }
+  etat = 0;
 
   /**
   int32_t gauche = ENCODER_ReadReset(0);
