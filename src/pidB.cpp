@@ -4,14 +4,20 @@
 
 // Global variables
 int last_left = 0;
-int last_right = 0;
+int last_right = 0; 
+
+enum Position {
+  Left,
+  Middle,
+  Right
+}; 
 
 // Pins
 const int GREEN_PIN = 48;
 const int RED_PIN = 49;
 
 // Constants
-const float WHEEL_SPACE = 191.5; // mm
+const float WHEEL_SPACE = 190; // mm
 const float WHEEL_SPACE_CIRCUMFERENCE = 3.141592 * WHEEL_SPACE; // mm
 const float WHEEL_DIAMETER = 3;
 const float WHEEL_CIRCUMFERENCE_INCHES = WHEEL_DIAMETER * 3.141592; // inches
@@ -143,20 +149,6 @@ void driveStraight(float speed = 0.5) {
   last_right = right;
 }
 
-void driveToWall() {
-  ResetEncoderAll();
-
-  move(0.3);
-  delay(200);
-  while (detectWall()) {
-    driveStraight();
-    delay(200);
-  }
-  move(0.3);
-  delay(200);
-  stop();
-}
-
 // Angle en degrées
 void turnAngleRight(float angle) {
   ResetEncoderAll();
@@ -205,6 +197,30 @@ void turnAngleLeft(float angle) {
   } 
 }
 
+// Retourne le nombre de metres parcourus
+int driveToWall() {
+  ResetEncoderAll();
+
+  move(0.3);
+  delay(200);
+  while (detectWall()) {
+    driveStraight();
+    delay(200);
+  }
+  move(0.3);
+  delay(200);
+  stop();
+
+  float encoder = (getEncoderLeft() + getEncoderRight()) / 2;
+  float meter_pulses = (1100 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE; // 1.10m en pulses
+  int count = 0;
+  while (meter_pulses < encoder) {
+    count++;
+    encoder = encoder - meter_pulses;
+  }
+  return count;
+}
+
 // Distance en cm
 void driveDistance(float distance) {
   ResetEncoderAll();
@@ -232,8 +248,79 @@ void driveDistance(float distance) {
   }
 }
 
-void first() {
-  
+
+// Commandes pour le défi
+Position left() {
+  Position current; 
+  turnAngleRight(90);
+  driveDistance(50);
+  turnAngleLeft(90);
+  if (!detectWall()) {
+    current = Middle;
+    return current;
+  } else {
+    turnAngleRight(90);
+    driveDistance(50);
+    turnAngleLeft(90);
+    current = Right;
+    return current;
+  }
+}
+
+Position middle() {
+  Position current; 
+  turnAngleLeft(90);
+  driveDistance(50);
+  turnAngleRight(90);
+  if (detectWall()) {
+    current = Left;
+    return current;
+  } else {
+    turnAngleRight(90);
+    driveDistance(100);
+    turnAngleLeft(90);
+    current = Right;
+    return current;
+  }
+}
+
+Position right() {
+  Position current; 
+  turnAngleLeft(90);
+  driveDistance(50);
+  turnAngleRight(90);
+  if (detectWall()) {
+    current = Middle;
+    return current;
+  } else {
+    turnAngleLeft(90);
+    driveDistance(50);
+    turnAngleRight(90);
+    current = Left;
+    return current;
+  }
+}
+
+void logic() {
+  Position position = Middle;
+  int level = 1;
+  while (level <= 4) {
+    switch (position) {
+      case Left:
+        position = left();
+        level = level + driveToWall();
+        break;
+      case Middle:
+        position = middle();
+        level = level + driveToWall();
+        break;
+      case Right:
+        position = right();
+        level = level + driveToWall();
+        break;
+    }
+  }
+  driveDistance(25);
 }
 
 // Fonction actionner quand le robot s'allume
@@ -252,12 +339,13 @@ void setup() {
 // Boucle du robot
 void loop() {
   if (getBumberRear()) {
-    driveDistance(50);
-  } else if (getBumberLeft()) {
-    turnAngleLeft(90);
+    logic();
+  } 
+  else if (getBumberLeft()) {
+    left();
   } else if (getBumberRight()) {
-    turnAngleRight(90);
+    right();
   } else if (getBumberFront()) {
-    driveToWall();
+    middle();
   }
 }
