@@ -485,7 +485,7 @@ void retourne(){
 
 void verif_y(){
 
-  while (true){
+  while (positionY < 27){
   
   if (detection_infrarouge()){
     //change next matrice at same x position to 0
@@ -538,45 +538,49 @@ void verif_xPlus(){
 };
 
 void dirChoice(){
+  //Vérification si l'on a terminé le parcourse
+  if (positionY == 27){
+  }
+  else{
   //Choisi de la direction a tourner selon l'etat 0 ou 1 dans cette positions Y, tourne et appel verif x
-switch (positionX)
-  {
-  case 0:
-    tourner(1);
-    verif_xPlus();
-    break;
-
-  case 1: // au milieu et doit choisir entre -1 et 1 #
-    if (portes[((positionY)+(positionX - 1))] == 1 && portes[((positionY+3)+(positionX - 1))]==1 ){
-      tourner(-1);//tourne a gauche
-      verif_xMoins();
-      break;
-    }
-    else if (portes[((positionY)+(positionX + 1))] == 1 && portes[((positionY+3)+(positionX + 1))]==1 ){
+  switch (positionX)
+    {
+    case 0:
       tourner(1);
       verif_xPlus();
       break;
-    }
 
-    //situation en s a faire plus tard
-    else if(portes[((positionY+3)+(0))] == 0 && portes[((positionY+3)+(1))] == 0 ){
+    case 1: // au milieu et doit choisir entre -1 et 1 #
+      if (portes[((positionY)+(positionX - 1))] == 1 && portes[((positionY+3)+(positionX - 1))]==1 ){
+        tourner(-1);//tourne a gauche
+        verif_xMoins();
+        break;
+      }
+      else if (portes[((positionY)+(positionX + 1))] == 1 && portes[((positionY+3)+(positionX + 1))]==1 ){
+        tourner(1);
+        verif_xPlus();
+        break;
+      }
+
+      //situation en s a faire plus tard
+      else if(portes[((positionY+3)+(0))] == 0 && portes[((positionY+3)+(1))] == 0 ){
+        break;
+
+      }
+      
+
+    case 2:
+      tourner(-1);
+      verif_xMoins();
       break;
 
+    default:
+      break;
     }
-    
-
-  case 2:
-    tourner(-1);
-    verif_xMoins();
-    break;
-
-  default:
-    break;
-  }
    
   
 };
-
+};
 
 void path(){
   //alterne entre avancer ou tourner jusqu'a la position 9 en Y et effectue le trajet inverse
@@ -599,6 +603,8 @@ void path(){
   //reverse path
   retourne();
 };
+
+//============================================================================================================================
 
 void setup(){
   BoardInit();
