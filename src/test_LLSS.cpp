@@ -134,7 +134,7 @@ void avance(float distance){
 
 void tourner(int angle){
   float val_expected_turn = (-2030 * angle); 
-  float KPT = 0.0005;
+  float KPT = 0.000069;
   float turn_right = 0;  //Pour atteindre la distance voulu
   float speed_right = 0.0;
   float speed_correct_left = -0.0;
@@ -263,234 +263,6 @@ void tourner(int angle){
 void recule(){
   MOTOR_SetSpeed(RIGHT, -vitesse);
   MOTOR_SetSpeed(LEFT, -vitesse);
-};
-
-void tourner_Louis(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> rotation à 180°
-  /*ENCODER_Reset(0);
-  ENCODER_Reset(1);*/
-
-  long now = millis();
-  long target_time = 1000;
-  if (now >= target_time){
-    arret();
-    return;
-  }
-
-  float speed = 0.5;
-
-  MOTOR_SetSpeed(RIGHT, speed);
-  MOTOR_SetSpeed(LEFT, -speed);
-
-  delay(50);
-
-  /*// Variables de temps
-  long last_check = 0;
-  long interval = 50; // interval de prise de mesure à 50 ms
-
-  float speed_left = 0;
-  float speed_right = 0;
-
-  // PID
-  float KP = 0.01;
-  float KI = 0.01;
-  float KD = 0.01;
-  float integral_left = 0;
-  float integral_right = 0;
-  float input_right = 0;
-  float input_left = 0;
-
-  // Distance de l'angle
-  float target_distance = 1600;
-  float distance_now_left = 0;
-  float distance_now_right = 0;
-
-  // Mesure temps
-  long now = millis();
-  long time_passed = now - last_check;
-  last_check = now;
-
-  if (time_passed >= interval){
-    input_left = ENCODER_ReadReset(0);
-    input_right = ENCODER_ReadReset(1);
-
-    distance_now_left = input_left;
-    distance_now_right = input_right;
-  }
-
-  // Calculs d'erreurs
-  float error_left = target_distance - input_left;
-  float error_right = target_distance - input_right;
-  float last_error_left = 0;
-  float last_error_right = 0;
-
-  // Calculs de P
-  float proportionnal_left = error_left * KP;
-  float proportionnal_right = error_right * KP;
-
-  // Calculs de I
-  float time = (float)time_passed / 1000;
-  integral_left += error_left * time;
-  integral_right += error_right * time;
-
-  // Calculs de D
-  float derivative_left = (error_left - last_error_left) / time;
-  float derivative_right = (error_right - last_error_right) / time;
-  last_error_left = error_left;
-  last_error_right = error_right;
-
-  // Calculs P + I + D
-  float output_PID_left = proportionnal_left + (integral_left * KI) + (derivative_left * KD);
-  float output_PID_right = proportionnal_right + (integral_right * KI) + (derivative_right * KD);
-
-
-  // PID pour le moteur droit
-
-  if (distance_now_left <= 1280 || distance_now_right <= 1280){
-    speed_left += 0.07;
-    speed_right += 0.07;
-  }
-  else if (distance_now_left > 1280 || distance_now_right > 1280){
-    speed_left -= 0.1;
-    speed_right -= 0.1;
-  }
-  else if (distance_now_left >= target_distance || distance_now_right >= target_distance){
-    arret();
-    return;
-  }
-
-  // Ajustement par PID de la vitesse des moteurs
-  speed_left += output_PID_left;
-  speed_right += output_PID_right;
-
-  // Rotation vers la gauche
-  MOTOR_SetSpeed(LEFT, -speed_left);
-  MOTOR_SetSpeed(RIGHT, speed_right);*/
-
-  /*switch (angle)
-  {
-    case 1: {// Pivot à droite (90)
-      float expected_val_distance_right_rotation = 1570; // Distance en pulse
-      float right_rotation_distance = 0;
-      float right_motor_speed_right_rotation = 0;
-      float left_motor_speed_right_rotation = 0;
-      float left_motor_error_right_rotation = 0;
-      float right_rotation_KP = 0.00003;
-
-      while(true){
-        // Lecture des encodeurs
-        int32_t read_pulse_right = ENCODER_ReadReset(1);
-        int32_t read_pulse_left = ENCODER_ReadReset(0);
-                
-        left_motor_error_right_rotation = (read_pulse_right - read_pulse_left) * right_rotation_KP;
-
-        right_rotation_distance += read_pulse_right;
-        
-        left_motor_speed_right_rotation += left_motor_error_right_rotation;
-
-        if (right_rotation_distance < 1000){
-          right_motor_speed_right_rotation += 0.07;
-          left_motor_speed_right_rotation += 0.07;
-        }
-        else if (right_rotation_distance <= expected_val_distance_right_rotation){
-          right_motor_speed_right_rotation -= 0.2;
-          left_motor_speed_right_rotation -= 0.2;
-        }
-        else if (right_rotation_distance >= expected_val_distance_right_rotation){
-          arret();
-          break;
-        }
-
-        MOTOR_SetSpeed(RIGHT, -right_motor_speed_right_rotation);
-        MOTOR_SetSpeed(LEFT,   left_motor_speed_right_rotation);
-
-        delay(300);
-      }
-      break;
-    }
-    case -1: { // Pivot à gauche (-90) // À revoir
-      float expected_val_distance_left_rotation = 1600;
-      float left_rotation_distance = 0;
-      float right_motor_speed_left_rotation = 0;
-      float left_motor_speed_left_rotation = 0;
-      float left_motor_error_left_rotation = 0;
-      float left_rotation_KP = 0.00003;
-
-      while (true){
-        int32_t read_pulse_right = ENCODER_ReadReset(1);
-        int32_t read_pulse_left = ENCODER_ReadReset(0);
-
-        left_motor_error_left_rotation = (read_pulse_right - read_pulse_left) * left_rotation_KP;
-
-        left_rotation_distance += read_pulse_right;
-
-        left_motor_speed_left_rotation += left_motor_error_left_rotation;
-
-        if (left_rotation_distance < 1000){
-          right_motor_speed_left_rotation += 0.07;
-          left_motor_speed_left_rotation += 0.07;
-          Serial.println("Acceleration atteint");
-        }
-        else if (left_rotation_distance <= expected_val_distance_left_rotation){
-          right_motor_speed_left_rotation -= 0.3;
-          left_motor_speed_left_rotation -= 0.3;
-        }
-        else if (left_rotation_distance >= expected_val_distance_left_rotation){
-          arret();
-          break;
-        }
-
-        MOTOR_SetSpeed(RIGHT, right_motor_speed_left_rotation);
-        MOTOR_SetSpeed(LEFT, -left_motor_speed_left_rotation);
-
-        delay(50);
-      }
-      break;
-    }
-    case 2: {// Demi-tour (180)
-      float expected_val_distance_turn_over = 2900; // Distance en pulse pour parcourir 180°
-      float distance_turn_over = 0;
-      float left_motor_error_turn_over = 0;
-      float right_motor_speed_turn_over = 0;
-      float left_motor_speed_turn_over = 0;
-      float turn_over_KP = 0.000007;
-
-      while (true){
-        int32_t read_pulse_right = ENCODER_ReadReset(1);
-        int32_t read_pulse_left = ENCODER_ReadReset(0);
-
-        left_motor_error_turn_over = (read_pulse_right - read_pulse_left) * turn_over_KP;
-
-        distance_turn_over += read_pulse_left;
-
-        if (distance_turn_over < 2000){
-          right_motor_speed_turn_over += 0.07;
-          left_motor_speed_turn_over += 0.07;
-        }
-        else if (distance_turn_over >= 2000){
-          right_motor_speed_turn_over -= 0.1;
-          left_motor_error_turn_over -= 0.1;
-        }
-        else if (distance_turn_over >= expected_val_distance_turn_over){
-          arret();
-          break;
-        }
-
-        left_motor_speed_turn_over += left_motor_error_turn_over;
-
-        MOTOR_SetSpeed(RIGHT, -right_motor_speed_turn_over);
-        MOTOR_SetSpeed(LEFT,   left_motor_speed_turn_over);
-
-        delay(300);
-      }
-      break;
-    }
-    default: {
-      Serial.print("fct tourner échoué");
-      break;
-    }
-  };
-  ENCODER_Reset(0);
-  ENCODER_Reset(1);*/
 };
 
 bool detection_sifflet(bool &son){
@@ -755,21 +527,21 @@ void loop() {
   else if (ROBUS_IsBumper(0)){
     if (etat == 0){
       beep(1);
-      tourner_Louis(1);
+      tourner(1);
       etat = 1;
     }
   }
   else if (ROBUS_IsBumper(1)){
     if (etat == 0){
       beep(1);
-      tourner_Louis(-1);
+      tourner(-1);
       etat = 1;
     }
   }
   else if (ROBUS_IsBumper(2)){
     if (etat == 0){
       beep(1);
-      tourner_Louis(2);
+      tourner(2);
       etat = 1;
     }
   }
