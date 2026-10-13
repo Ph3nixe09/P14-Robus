@@ -134,7 +134,7 @@ void avance(float distance){
 
 void tourner(int angle){
   float val_expected_turn = (-2030 * angle); 
-  float KPT = 0.0005;
+  float KPT = 0.00007;
   float turn_right = 0;  //Pour atteindre la distance voulu
   float speed_right = 0.0;
   float speed_correct_left = -0.0;
@@ -265,6 +265,7 @@ void recule(){
   MOTOR_SetSpeed(LEFT, -vitesse);
 };
 
+<<<<<<< HEAD
 void tourner_Louis(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> rotation à 180°
   ENCODER_Reset(0);
   ENCODER_Reset(1);
@@ -417,6 +418,9 @@ int detection_sifflet(){
   long temps =millis();
   long debut_temps=0;
   long fin_temps=0;
+=======
+bool detection_sifflet(bool &son){
+>>>>>>> 3792e16ba214c17e5addff99d89272026a511801
   //Détection du sifflet pour démarrer le programme de labyrinthe
   bool detection = false;
   int return_val = 0; //(1= avertissement, 2= depart, 3= signal 10s)
@@ -476,13 +480,12 @@ Fonctions d'initialisation (setup)
  -> Generalement on y initilise les varibbles globales
 */
 
+
 //Logic
 int positionX = 1;
 int positionY = 0;
 //                0,1,2   3,4,5   6,7,8   9,10,11 12,13,14 15,16,17 18,19,20 21,22,23 24,25,26 27,28,29
 int portes[30] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1};
-
-
 
 void retourne(){
   //Sortir de la ligne d'arrivé
@@ -550,8 +553,6 @@ void verif_y(){
 
   };
 };
-
-
 
 void verif_xMoins(){
  // detecte devant lui, si rien -> posX--
@@ -681,10 +682,7 @@ void setup(){
   delay(100);
 };
 
-/*
-Fonctions de boucle infini
- -> Se fait appeler perpetuellement suite au "setup"
-*/
+
 void loop() {
   /**
   detection_sifflet(sifflet);
@@ -770,7 +768,5 @@ void loop() {
 
   delay (1000);
   */
-
-  
 };
 
