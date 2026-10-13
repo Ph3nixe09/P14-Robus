@@ -4,7 +4,6 @@
 
 // Global variables
 int last_left = 0;
-<<<<<<<< HEAD:src/pidB.cpp
 int last_right = 0; 
 
 enum Position {
@@ -12,17 +11,15 @@ enum Position {
   Middle,
   Right
 }; 
-========
-int last_right = 0;
+
 int goBackListe[5] = {0,0,0,0,0};
->>>>>>>> origin/main:B/pidB.cpp
 
 // Pins
 const int GREEN_PIN = 48;
 const int RED_PIN = 49;
 
 // Constants
-const float WHEEL_SPACE = 190; // mm
+const float WHEEL_SPACE = 190.5; // mm
 const float WHEEL_SPACE_CIRCUMFERENCE = 3.141592 * WHEEL_SPACE; // mm
 const float WHEEL_DIAMETER = 3;
 const float WHEEL_CIRCUMFERENCE_INCHES = WHEEL_DIAMETER * 3.141592; // inches
@@ -50,11 +47,11 @@ bool getBumberFront() {
 }
 
 bool getBumberLeft() {
-  return ROBUS_IsBumper(1);
+  return ROBUS_IsBumper(0);
 }
 
 bool getBumberRight() {
-  return ROBUS_IsBumper(0);
+  return ROBUS_IsBumper(1);
 }
 
 
@@ -73,13 +70,13 @@ void move(float speed, bool backwards = false) { // Ajouter True si en arrière
 };
 
 void spinRight(float speed) {
-  MOTOR_SetSpeed(RIGHT, speed);
-  MOTOR_SetSpeed(LEFT, -speed);
+  MOTOR_SetSpeed(RIGHT, -speed);
+  MOTOR_SetSpeed(LEFT, speed);
 };
 
 void spinLeft(float speed) {
-  MOTOR_SetSpeed(RIGHT, -speed);
-  MOTOR_SetSpeed(LEFT, speed);
+  MOTOR_SetSpeed(RIGHT, speed);
+  MOTOR_SetSpeed(LEFT, -speed);
 };
 
 void moveIndependant(float speed_left, float speed_right) {
@@ -154,52 +151,80 @@ void driveStraight(float speed = 0.5) {
   last_right = right;
 }
 
+void turnStraight(float speed = 0.3) {
+  float kp = 0.00075 * speed;
+  float ki = 0.00015;
+  
+  int left = -getEncoderLeft();
+  int right = getEncoderRight();
+  
+  float p = ((right - last_right) - (left - last_left)) * kp;
+  float i = (right - left) * ki;
+
+  float speed_left = speed + p + i;
+  float speed_right = speed - p - i;
+
+  Serial.print("P: ");
+  Serial.println(p);
+  Serial.print("I: ");
+  Serial.println(i);
+
+  moveIndependant(speed_left, -speed_right);
+  
+  last_left = left;
+  last_right = right;
+}
+
 // Angle en degrées
 void turnAngleRight(float angle) {
   ResetEncoderAll();
-  float arc = (angle / 360) * WHEEL_SPACE_CIRCUMFERENCE;
+  float arc = ((angle - 1.4) / 360) * WHEEL_SPACE_CIRCUMFERENCE;
+  float arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
+  float encoder = 0;
+  int error = 10;
+  bool turning = true;
+  while (turning) {
+    encoder = -getEncoderRight();
+    Serial.println(encoder);
+    if (arc_pulses - error < encoder && encoder < arc_pulses + error) {
+      stop();
+      turning = false;
+    } else if (encoder <= arc_pulses - 1000) {
+      spinRight(0.3);
+    } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + error) {
+      spinRight(0.13);
+    } else {
+      spinLeft(0.13);
+    }
+    delay(20);
+  } 
+  delay(200);
+}
+
+// Angle en degrées
+void turnAngleLeft(float angle) {
+  ResetEncoderAll();
+  float arc = ((angle - 0.4) / 360) * WHEEL_SPACE_CIRCUMFERENCE;
   float arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
   float encoder = 0;
   int error = 10;
   bool turning = true;
   while (turning) {
     encoder = getEncoderRight();
+    Serial.println(encoder);
     if (arc_pulses - error < encoder && encoder < arc_pulses + error) {
       stop();
       turning = false;
-    } else if (encoder <= arc_pulses - 500) {
-      spinRight(0.3);
-    } else if (arc_pulses - 500 <= encoder && encoder <= arc_pulses + error) {
-      spinRight(0.13);
-    } else {
-      spinLeft(0.13);
-    }
-    delay(20);
-  } 
-}
-
-// Angle en degrées
-void turnAngleLeft(float angle) {
-  ResetEncoderAll();
-  float arc = (angle / 360) * WHEEL_SPACE_CIRCUMFERENCE;
-  float arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
-  float encoder = 0;
-  int error = 10;
-  bool turning = true;
-  while (turning) {
-    encoder = getEncoderLeft();
-    if (arc_pulses - error < encoder && encoder < arc_pulses + error) {
-      stop();
-      turning = false;
-    } else if (encoder <= arc_pulses - 500) {
+    } else if (encoder <= arc_pulses - 1000) {
       spinLeft(0.3);
-    } else if (arc_pulses - 500 <= encoder && encoder <= arc_pulses + error) {
+    } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + error) {
       spinLeft(0.13);
     } else {
       spinRight(0.13);
     }
     delay(20);
   } 
+  delay(200);
 }
 
 // Retourne le nombre de metres parcourus
@@ -245,7 +270,7 @@ void driveDistance(float distance) {
         stop();
         moving = false;
     } else if (encoder < distance_pulses - 1500) {
-      driveStraight(0.8);
+      driveStraight(0.6);
     } else {
       driveStraight(0.3);
     }
@@ -260,7 +285,8 @@ Position left() {
   turnAngleRight(90);
   driveDistance(50);
   turnAngleLeft(90);
-  if (!detectWall()) {
+  delay(200);
+  if (detectWall()) {
     current = Middle;
     return current;
   } else {
@@ -277,6 +303,7 @@ Position middle() {
   turnAngleLeft(90);
   driveDistance(50);
   turnAngleRight(90);
+  delay(200);
   if (detectWall()) {
     current = Left;
     return current;
@@ -294,6 +321,7 @@ Position right() {
   turnAngleLeft(90);
   driveDistance(50);
   turnAngleRight(90);
+  delay(200);
   if (detectWall()) {
     current = Middle;
     return current;
@@ -330,9 +358,10 @@ void logic() {
 
 //fonction qui enregistre la position des colonne dans une matrice
 //à utiliser quand on avance de rangée
+
 void positionMemory(){
-  int index_position = verticalPosition/2;
-  goBackListe[index_position] = horizontalPosition;
+  // int index_position = verticalPosition/2;
+  // goBackListe[index_position] = horizontalPosition;
 }
 
 //inverse la matrice de position
@@ -411,9 +440,13 @@ void loop() {
     logic();
   } 
   else if (getBumberLeft()) {
-    left();
+    // spinLeft(0.3);
+    turnAngleLeft(89.6);
+    // left();
   } else if (getBumberRight()) {
-    right();
+    // spinRight(0.3);
+    turnAngleRight(91.4);
+    // right();
   } else if (getBumberFront()) {
     middle();
   }
