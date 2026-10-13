@@ -289,13 +289,12 @@ Fonctions d'initialisation (setup)
  -> Generalement on y initilise les varibbles globales
 */
 
+
 //Logic
 int positionX = 1;
 int positionY = 0;
 //                0,1,2   3,4,5   6,7,8   9,10,11 12,13,14 15,16,17 18,19,20 21,22,23 24,25,26 27,28,29
 int portes[30] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1};
-
-
 
 void retourne(){
   //Sortir de la ligne d'arrivé
@@ -363,8 +362,6 @@ void verif_y(){
 
   };
 };
-
-
 
 void verif_xMoins(){
  // detecte devant lui, si rien -> posX--
@@ -569,7 +566,5 @@ void loop() {
 
   delay (1000);
   */
-
-  
 };
 
