@@ -411,10 +411,51 @@ void tourner_Louis(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 
  ENCODER_Reset(1);
 };
 
-bool detection_sifflet(bool &son){
+
+int detection_sifflet(){
+  
+  long temps =millis();
+  long debut_temps=0;
+  long fin_temps=0;
   //Détection du sifflet pour démarrer le programme de labyrinthe
-  delay(500);   //Attends une demi seconde
-  return (son = true);
+  bool detection = false;
+  int return_val = 0; //(1= avertissement, 2= depart, 3= signal 10s)
+  int INTENSITE_5KHZ = A0;
+  int Ambiant = A1;
+  int nb_sifflet = 0;
+  int val_5kHz = analogRead(INTENSITE_5KHZ);
+  int val_ambiant = analogRead(Ambiant);
+  int tolerance = 40;
+  // Trouvé les vraies valeurs***** 0V = 0, 2.5V = 512, 5V = 1023
+  int Val_at_1kHz = 205;
+  int Val_at_5kHz = 512;
+
+  if (!detection){
+    if (val_5kHz >= (Val_at_1kHz-tolerance)){
+      detection=true;
+      debut_temps = temps;
+      
+    }
+  } 
+  if (detection){
+    if (val_5kHz >= (Val_at_1kHz-tolerance) and val_5kHz <= (Val_at_1kHz+tolerance)){
+    nb_sifflet ++;
+    fin_temps = temps;
+    detection=false;
+    }
+  }
+  if (nb_sifflet==3 and (fin_temps-debut_temps)>800 and (fin_temps-debut_temps)<1200){
+    return_val=1;
+    return return_val;
+  }else if (nb_sifflet==3 and (fin_temps-debut_temps)<800){
+    return_val=2;
+    return return_val;
+  }else if (nb_sifflet==1 and (fin_temps-debut_temps)>1600){
+    return_val=3;
+    return return_val;
+  }
+  
+    
 };
 
 bool detection_infrarouge(){
@@ -645,7 +686,6 @@ Fonctions de boucle infini
  -> Se fait appeler perpetuellement suite au "setup"
 */
 void loop() {
-  
   /**
   detection_sifflet(sifflet);
 
@@ -655,7 +695,18 @@ void loop() {
     }
   }
   */ 
-   
+  
+  if (detection_sifflet()==1){
+    Serial.print("Avertissement");
+  }else if (detection_sifflet()==2){
+    Serial.print("Depart");
+  }else if (detection_sifflet()==3){
+    Serial.print("Signal 10s");
+  }
+  
+  
+
+/*** 
   etatPast = etat;
   bumperArr = ROBUS_IsBumper(3);
   if (bumperArr){
@@ -692,6 +743,10 @@ void loop() {
     }
   }
   etat = 0;
+
+***/
+
+
 
   /**
   int32_t gauche = ENCODER_ReadReset(0);
