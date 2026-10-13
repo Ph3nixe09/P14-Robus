@@ -446,6 +446,7 @@ int portes[30] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,
 void retourne(){
   //Sortir de la ligne d'arrivé
   avance(0.5);
+  positionY -= 3;
   while (positionY != 0){
     if (portes[(positionY - 3) + positionX] == 2){
       //Avance
@@ -495,9 +496,16 @@ void verif_y(){
   } else if(not detection_infrarouge()) { //avance et enregistre le path valide en ajoutant 1 au porte valide
     
     portes[((positionY + 3 )+ positionX)] = 2; //pos porte valide
-    positionY += 6;
-    avance(1);
-  }
+    if (positionY == 24){
+      positionY += 3;
+      avance(0.5);
+    }
+    else{
+      positionY += 6;
+      avance(1);
+    };
+
+  };
 
   };
 };
@@ -514,8 +522,7 @@ void verif_xMoins(){
     tourner(1);
 
   } else {
-    portes[((positionY)+positionX+1)] = 0;
-    tourner(1);
+    portes[((positionY)+positionX-1)] = 0;
     printf("probleme, cul de sac");// manque le s shape
   }
 };
@@ -531,17 +538,28 @@ void verif_xPlus(){
 
   } else {
     portes[((positionY)+positionX+1)] = 0;
-    tourner(-1);
     printf("probleme, cul de sac");// manque le s shape
   }
 
 };
 
-void dirChoice(){
-  //Vérification si l'on a terminé le parcourse
-  if (positionY == 27){
+void descend(int previous){
+  switch (previous){
+    case 0:
+      tourner(1);
+
+      break;
+
+    case 2:
+      tourner(-1);
+
+      break;
   }
-  else{
+};
+
+void dirChoice(){
+  //Vérification si l'on a terminé le parcours
+  if (positionY < 27){
   //Choisi de la direction a tourner selon l'etat 0 ou 1 dans cette positions Y, tourne et appel verif x
   switch (positionX)
     {
@@ -562,12 +580,19 @@ void dirChoice(){
         break;
       }
 
-      //situation en s a faire plus tard
-      else if(portes[((positionY+3)+(0))] == 0 && portes[((positionY+3)+(1))] == 0 ){
+      //situation en s en arrivant par 0
+      else if(portes[((positionY+3)+(0))] == 0 && portes[((positionY)+(2))] == 0 ){
+        descend(0);
         break;
 
       }
       
+      //situation en s en arrivant par 2
+      else if(portes[((positionY)+(0))] == 0 && portes[((positionY+3)+(2))] == 0 ){
+        descend(2);
+        break;
+
+      }
 
     case 2:
       tourner(-1);
@@ -599,7 +624,7 @@ void path(){
     
 
   }
-  tourner(2);
+  tourner(6);
   //reverse path
   retourne();
 };
@@ -636,7 +661,7 @@ void loop() {
   if (bumperArr){
     if (etat == 0){
       beep(1);
-      avance(0.5);
+      path();
       etat = 1;
     } 
     else{
