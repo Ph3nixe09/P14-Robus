@@ -42,6 +42,7 @@ bool getBumberRight() {
 void stop(){
   MOTOR_SetSpeed(RIGHT, 0);
   MOTOR_SetSpeed(LEFT, 0);
+  delay(200);
 };
 
 void move(float speed, bool backwards = false) { // Ajouter True si en arrière
