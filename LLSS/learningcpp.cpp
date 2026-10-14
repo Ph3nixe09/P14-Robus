@@ -6,7 +6,7 @@ comment
 */
 //typedef int number;
 using number_t = int;
-int condition = true
+int condition = true;
 int main(){
     int x; //declaration
     x = 5; //assignation
