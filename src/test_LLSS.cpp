@@ -464,6 +464,7 @@ void retourne(){
 };
 
 void verif_y(){
+  /*DESC: Verifie la presence d'un mur avant de faire un deplacement vers l'avant */
 
   while (positionY < 27){
   
@@ -490,8 +491,8 @@ void verif_y(){
 };
 
 void verif_xMoins(){
- // detecte devant lui, si rien -> posX--
- //                     si oui -> S shape / tourne gauche et avance
+  /*DESC: Verifie la presence d'un mur a gauche de sa position en X avant de faire un deplacement vers celle-ci, si elle est libre */
+ 
  if (not detection_infrarouge()){
     portes[(positionY + positionX)] =2;
     positionX -= 1;
@@ -505,8 +506,7 @@ void verif_xMoins(){
 };
 
 void verif_xPlus(){
-  // detecte devant lui, si rien -> posX ++
- //                     si oui -> S shape / tourne droite et avance
+ /*DESC: Verifie la presence d'un mur a droite de sa position en X avant de faire un deplacement vers celle-ci, si elle est libre */
   if (not detection_infrarouge()){
     portes[(positionY + positionX)] =2;
     positionX ++;
@@ -515,7 +515,7 @@ void verif_xPlus(){
 
   } else {
     portes[((positionY)+positionX+1)] = 0;
-    printf("probleme, cul de sac");// manque le s shape
+    printf("probleme, cul de sac");
   }
 
 };
@@ -555,7 +555,7 @@ void descend(int previous){
 void dirChoice(){
   //Vérification si l'on a terminé le parcours
   if (positionY < 27){
-  //Choisi de la direction a tourner selon l'etat 0 ou 1 dans cette positions Y, tourne et appel verif x
+  //Choisi la direction a tourner selon l'etat 0 ou 1 autour de cette positions X Y. Selon le choix, il tourne et appel verif x
   switch (positionX)
     {
     case 0:
