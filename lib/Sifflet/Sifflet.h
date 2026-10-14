@@ -93,33 +93,10 @@ inline void attendreDepart(void) {
             dernier_match = now;
             time_last_event = now;
 
-            if (!deja_valide &&
-                (now - debut) >= dureeRequise) {
-
+            if (!deja_valide && (now - debut) >= dureeRequise) {
                 deja_valide = true;
-
-                if (step == 0) {
-                    bip_amount++;
-
-                    Serial.print("[BIP] Valide #");
-                    Serial.println(bip_amount);
-
-                    if (bip_amount == 3) {
-                        Serial.println(
-                            "[ETAPE] 3 bips OK -> attente du 5kHz (2s)"
-                        );
-
-                        step = 1;
-                        signal_en_cours = false;
-                        deja_valide = false;
-                        time_last_event = now;
-                    }
-                } else {
-                    Serial.println(
-                        "[DEPART] 5kHz valide -> GO !"
-                    );
-                    return;
-                }
+                Serial.println("[DEPART] 5kHz valide -> GO !");
+                return;
             }
         } else if (signal_en_cours &&
                    (now - dernier_match) > TOLERANCE_MS) {
