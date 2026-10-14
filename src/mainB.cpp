@@ -13,7 +13,7 @@ void setup() {
   pinMode(GREEN_PIN, INPUT);
   pinMode(RED_PIN, INPUT);
 
-  delay(100);
+  beep(3);
   delay(200);
 }
 
@@ -24,11 +24,11 @@ void loop() {
   } 
   else if (getBumberLeft()) {
     // spinLeft(0.3);
-    turnAngleLeft(89.6);
+    turnAngleLeft(90);
     // left();
   } else if (getBumberRight()) {
     // spinRight(0.3);
-    turnAngleRight(91.4);
+    turnAngleRight(90);
     // right();
   } else if (getBumberFront()) {
     middle();

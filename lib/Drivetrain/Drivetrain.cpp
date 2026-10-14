@@ -6,8 +6,8 @@ int last_left = 0;
 int last_right = 0; 
 
 // Pins
-const int GREEN_PIN = 48;
-const int RED_PIN = 49;
+extern const int GREEN_PIN = 48;
+extern const int RED_PIN = 49;
 
 // Buzzer
 void beep(int count){
