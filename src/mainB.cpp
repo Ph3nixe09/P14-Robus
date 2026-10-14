@@ -17,23 +17,8 @@ void setup() {
   beep(3);
   delay(200);
   attendreDepart();
-  Serial.println("GOOOO");
+  logic();
 }
 
-// Boucle du robot
 void loop() {
-  if (getBumberRear()) {
-    logic();
-  } 
-  else if (getBumberLeft()) {
-    // spinLeft(0.3);
-    turnAngleLeft(90);
-    // left();
-  } else if (getBumberRight()) {
-    // spinRight(0.3);
-    turnAngleRight(90);
-    // right();
-  } else if (getBumberFront()) {
-    middle();
-  }
 }
