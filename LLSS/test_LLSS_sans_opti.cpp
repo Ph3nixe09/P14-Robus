@@ -350,6 +350,17 @@ void retourne(){
       //Avance
       portes[positionY + positionX] = 3;
       positionY -= 6;
+      /**if (last_state == 1){
+        tourner(1);
+        avance(1);
+      }
+      else if (last_state == 2){
+        tourner(-1);
+        avance(1);
+      }
+      else{
+        avance(1);
+      }*/
       avance(1);
       last_state = 0;
       Serial.println("Passage en avant");
@@ -514,9 +525,18 @@ void dirChoice(){
   switch (positionX)
     {
     case 0:
-      tourner(1);
-      verif_xPlus();
-      break;
+      if (portes[(positionY + 3)+(0)]== 0 && portes[((positionY+3)+(1))] == 0 ){
+        positionX = 2;
+        tourner(1);
+        avance(1);
+        tourner(-1);
+        break;
+      }
+      else{
+        tourner(1);
+        verif_xPlus();
+        break;
+      }
 
     case 1: // au milieu et doit choisir entre -1 et 1 #
       if (portes[((positionY)+(positionX - 1))] == 1 && portes[((positionY+3)+(positionX - 1))]==1 ){
