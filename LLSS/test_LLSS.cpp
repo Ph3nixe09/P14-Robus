@@ -310,52 +310,6 @@ void tourner(int angle) {
   ENCODER_Reset(1);
 }
 
-bool detection_sifflet(bool &son){
-  //Détection du sifflet pour démarrer le programme de labyrinthe
-  bool detection = false;
-  int return_val = 0; //(1= avertissement, 2= depart, 3= signal 10s)
-  int INTENSITE_5KHZ = A0;
-  int Ambiant = A1;
-  int nb_sifflet = 0;
-  int val_5kHz = analogRead(INTENSITE_5KHZ);
-  int val_ambiant = analogRead(Ambiant);
-  int tolerance = 40;
-  // Trouvé les vraies valeurs***** 0V = 0, 2.5V = 512, 5V = 1023
-  int Val_at_1kHz = 205;
-  int Val_at_5kHz = 512;
-
-  float debut_temps = 0;
-  float temps = 0;
-  float fin_temps = 0;
-
-  if (!detection){
-    if (val_5kHz >= (Val_at_1kHz-tolerance)){
-      detection=true;
-      debut_temps = temps;
-      
-    }
-  } 
-  if (detection){
-    if (val_5kHz >= (Val_at_1kHz-tolerance) and val_5kHz <= (Val_at_1kHz+tolerance)){
-    nb_sifflet ++;
-    fin_temps = temps;
-    detection=false;
-    }
-  }
-  if (nb_sifflet==3 and (fin_temps-debut_temps)>800 and (fin_temps-debut_temps)<1200){
-    return_val=1;
-    return return_val;
-  }else if (nb_sifflet==3 and (fin_temps-debut_temps)<800){
-    return_val=2;
-    return return_val;
-  }else if (nb_sifflet==1 and (fin_temps-debut_temps)>1600){
-    return_val=3;
-    return return_val;
-  }
-  
-    
-};
-
 bool detection_infrarouge(){
   //Détection d'obstacle avec l'infrarouge mais seulement si les deux s'allument
   vert = digitalRead(vertpin);
