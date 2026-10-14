@@ -3,7 +3,8 @@
 #include <Drivetrain.h>
 #include <DriveCommands.h>
 #include <math.h>
-#include <Parcours.h>
+#include <Parcours.h> 
+#include <Sifflet.h>
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -15,6 +16,8 @@ void setup() {
 
   beep(3);
   delay(200);
+  attendreDepart();
+  Serial.println("GOOOO");
 }
 
 // Boucle du robot
