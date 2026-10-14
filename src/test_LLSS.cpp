@@ -30,6 +30,7 @@ bool fini = false;
 bool sifflet = false;
 int test_stop = 0;
 bool one_time = true;
+bool son = true;
 
 /*
 Vos propres fonctions sont creees ici
@@ -62,16 +63,12 @@ void avance(float distance){
   int accel = 0;
   int slow_distance = 0;
 
-  //Choix de distance pour ralentir le robot
   if (distance == 0.5){
-      slow_distance = 2;    //Moitié à 50cm
-  }
-  else if (distance == 1){
-    slow_distance = 3;      //Tier à 1m
+    slow_distance = 3000;
   }
   else{
-    slow_distance = 7;      //Le reste du temps (3m environ) au septième
-  };
+    slow_distance = 3000;
+  }
 
   while (true) {
     int32_t read_pulse_left = ENCODER_ReadReset(0);
@@ -88,19 +85,19 @@ void avance(float distance){
     //Serial.println(distance_right);
 
     // Nouveau code d'acceleration à tester
-    /**switch (accel){
+    switch (accel){
       case 0:
-        speed_right += 0.1;
-        speed_correct_left += 0.1;
+        speed_right += 0.01;
+        speed_correct_left += 0.01;
         if ((speed_right >= 0.7) || distance_right >= (val_expected_distance / 2)){
           accel = 1;
         };
         break;
 
       case 1:
-        if (distance_right >= (val_expected_distance - (val_expected_distance / slow_distance))){
-          speed_right -= 0.2;
-          speed_correct_left -= 0.2;
+        if (distance_right >= (val_expected_distance - slow_distance)){
+          speed_right -= 0.02;
+          speed_correct_left -= 0.02;
           if (speed_right <= 0.3){
             speed_right = 0.1;
             speed_correct_left = 0.1;
@@ -110,7 +107,7 @@ void avance(float distance){
         };
       case 2:
         break;
-    };*/
+    };
 
     if (distance_right >= val_expected_distance - 200){
       arret();
@@ -127,7 +124,7 @@ void avance(float distance){
     MOTOR_SetSpeed(RIGHT,speed_right);
     MOTOR_SetSpeed(LEFT, speed_correct_left);
 
-    delay(200);
+    delay(10);
 
   };
 };
@@ -269,21 +266,12 @@ void tourner(int angle) {
   float turn_left = 0;
   
   // Astuce : si 0.05 est trop proche de la zone morte, passe à 0.10 ou 0.15
-  float base_speed = 0.05; 
+  float base_speed = 0.2; 
   int inverter = (val_expected_turn >= 0) ? 1 : -1;
 
   float speed_right = base_speed * inverter;
   float base_speed_left = -base_speed * inverter;
   float integral_error = 0;
-
-  int accel = 0;
-  int slow_distance = 0;
-
-  if (angle == -1 || angle == 1 || angle == -2 || angle == 2) {
-    slow_distance = -1000 * angle;
-  } else if (angle == 4) {
-    slow_distance = 7000;
-  }
 
   ENCODER_Reset(0);
   ENCODER_Reset(1);
@@ -321,162 +309,7 @@ void tourner(int angle) {
   ENCODER_Reset(1);
 }
 
-<<<<<<< HEAD
-void tourner_Louis(int angle){ // 1 -> rotation à 90° -1 -> rotation à -90° 2 -> rotation à 180°
-  ENCODER_Reset(0);
-  ENCODER_Reset(1);
-
-  switch (angle)
-  {
-    case 1: {// Pivot à droite (90)
-      float expected_val_distance_right_rotation = 1570; // Distance en pulse
-      float right_rotation_distance = 0;
-      float right_motor_speed_right_rotation = 0;
-      float left_motor_speed_right_rotation = 0;
-      float left_motor_error_right_rotation = 0;
-      float right_rotation_KP = 0.00003;
-
-      while(true){
-        // Lecture des encodeurs
-        int32_t read_pulse_right = ENCODER_ReadReset(1);
-        int32_t read_pulse_left = ENCODER_ReadReset(0);
-                
-        left_motor_error_right_rotation = (read_pulse_right - read_pulse_left) * right_rotation_KP;
-
-        right_rotation_distance += read_pulse_left;
-
-        if (right_rotation_distance < 1000){
-          right_motor_speed_right_rotation += 0.07;
-          left_motor_speed_right_rotation += 0.07;
-        }
-        else if (right_rotation_distance >= expected_val_distance_right_rotation){
-          arret();
-          //Serial.print("arret atteint");
-          break;
-        }
-
-        left_motor_speed_right_rotation += left_motor_error_right_rotation;
-
-        MOTOR_SetSpeed(RIGHT, -right_motor_speed_right_rotation);
-        MOTOR_SetSpeed(LEFT,   left_motor_speed_right_rotation);
-
-        delay(300);
-      }
-      break;
-    }
-    case -1: { // Pivot à gauche (-90) // À revoir
-      float expected_val_distance_left_rotation = 1720;
-      float left_rotation_distance = 0;
-      float right_motor_speed_left_rotation = 0;
-      float left_motor_speed_left_rotation = 0;
-      float left_motor_error_left_rotation = 0;
-      float left_rotation_KP = 0.00003;
-
-      while (true){
-        int32_t read_pulse_right = ENCODER_ReadReset(1);
-        int32_t read_pulse_left = ENCODER_ReadReset(0);
-        Serial.println("Encodeur lu " + read_pulse_right);
-        Serial.println("Encodeur lu " + read_pulse_left);
-
-        left_motor_error_left_rotation = (read_pulse_right - read_pulse_left) * left_rotation_KP;
-
-        left_rotation_distance += read_pulse_right;
-
-        if (left_rotation_distance < 1000){
-          right_motor_speed_left_rotation += 0.07;
-          left_motor_speed_left_rotation += 0.07;
-          Serial.println("Acceleration atteint");
-        }
-        else if (left_rotation_distance >= expected_val_distance_left_rotation){
-          arret();
-          Serial.println("arret atteint");
-          break;
-        }
-
-        left_motor_error_left_rotation += left_motor_error_left_rotation;
-
-        MOTOR_SetSpeed(RIGHT, right_motor_speed_left_rotation);
-        MOTOR_SetSpeed(LEFT, -left_motor_speed_left_rotation);
-
-        delay(300);
-      }
-      break;
-    }
-    case 2: {// Demi-tour (180)
-      float expected_val_distance_turn_over = 2900; // Distance en pulse pour parcourir 180°
-      float distance_turn_over = 0;
-      float left_motor_error_turn_over = 0;
-      float right_motor_speed_turn_over = 0;
-      float left_motor_speed_turn_over = 0;
-      float turn_over_KP = 0.000007;
-
-      while (true){
-        int32_t read_pulse_right = ENCODER_ReadReset(1);
-        int32_t read_pulse_left = ENCODER_ReadReset(0);
-
-        left_motor_error_turn_over = (read_pulse_right - read_pulse_left) * turn_over_KP;
-
-        distance_turn_over += read_pulse_left;
-
-        if (distance_turn_over < 2000){
-          right_motor_speed_turn_over += 0.07;
-          left_motor_speed_turn_over += 0.07;
-        }
-        else if (distance_turn_over >= expected_val_distance_turn_over){
-          arret();
-          break;
-        }
-
-        left_motor_speed_turn_over += left_motor_error_turn_over;
-
-        MOTOR_SetSpeed(RIGHT, -right_motor_speed_turn_over);
-        MOTOR_SetSpeed(LEFT,   left_motor_speed_turn_over);
-
-        delay(300);
-      }
-      break;
-    }
-    default: {
-      Serial.print("fct tourner échoué");
-      break;
-    }
-  };
-  //MOTOR_SetSpeed(RIGHT, speed);
-  //MOTOR_SetSpeed(LEFT, -speed);
-/**
- switch (angle){
-  case 1:
-    MOTOR_SetSpeed(RIGHT,-0.4);
-    MOTOR_SetSpeed(LEFT, 0.4);
-    delay(500);
-    arret();
-    break;
-  case -1:
-    MOTOR_SetSpeed(RIGHT,0.4);
-    MOTOR_SetSpeed(LEFT, -0.4);
-    delay(500);
-    arret();
-    break;
-  case 2:
-    MOTOR_SetSpeed(RIGHT, -0.4);
-    MOTOR_SetSpeed(LEFT, 0.4);
-    delay(1000);
-    arret();
-    break;
- };*/
- ENCODER_Reset(0);
- ENCODER_Reset(1);
-};
-
-
-int detection_sifflet(){
-  
-  long temps =millis();
-  long debut_temps=0;
-  long fin_temps=0;
-=======
 bool detection_sifflet(bool &son){
->>>>>>> 3792e16ba214c17e5addff99d89272026a511801
   //Détection du sifflet pour démarrer le programme de labyrinthe
   bool detection = false;
   int return_val = 0; //(1= avertissement, 2= depart, 3= signal 10s)
@@ -489,6 +322,10 @@ bool detection_sifflet(bool &son){
   // Trouvé les vraies valeurs***** 0V = 0, 2.5V = 512, 5V = 1023
   int Val_at_1kHz = 205;
   int Val_at_5kHz = 512;
+
+  float debut_temps = 0;
+  float temps = 0;
+  float fin_temps = 0;
 
   if (!detection){
     if (val_5kHz >= (Val_at_1kHz-tolerance)){
@@ -805,19 +642,19 @@ void loop() {
 
     }
   }
-  */ 
   
-  if (detection_sifflet()==1){
+  
+  if (detection_sifflet(son)==1){
     Serial.print("Avertissement");
-  }else if (detection_sifflet()==2){
+  }else if (detection_sifflet(son)==2){
     Serial.print("Depart");
-  }else if (detection_sifflet()==3){
+  }else if (detection_sifflet(son)==3){
     Serial.print("Signal 10s");
-  }
+  }*/
   
   
 
-/*** 
+ 
   etatPast = etat;
   bumperArr = ROBUS_IsBumper(3);
   if (bumperArr){
@@ -855,7 +692,6 @@ void loop() {
   }
   etat = 0;
 
-***/
 
 
 
