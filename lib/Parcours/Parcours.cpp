@@ -29,20 +29,25 @@ Position left() {
 }
 
 Position middle() {
-  Position current; 
-  turnAngleLeft(90);
-  driveDistance(50);
-  turnAngleRight(90);
-  delay(200);
-  if (detectWall()) {
-    current = Left;
+  Position current;
+  if (detectWall()){
+    current = Middle;
     return current;
   } else {
-    turnAngleRight(90);
-    driveDistance(100);
     turnAngleLeft(90);
-    current = Right;
-    return current;
+    driveDistance(50);
+    turnAngleRight(90);
+    delay(200);
+    if (detectWall()) {
+      current = Left;
+      return current;
+  } else {
+      turnAngleRight(90);
+      driveDistance(100);
+      turnAngleLeft(90);
+      current = Right;
+      return current;
+  }
   }
 }
 
