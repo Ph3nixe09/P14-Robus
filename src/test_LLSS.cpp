@@ -379,12 +379,15 @@ int positionX = 1;
 int positionY = 0;
 //                0,1,2   3,4,5   6,7,8   9,10,11 12,13,14 15,16,17 18,19,20 21,22,23 24,25,26 27,28,29
 int portes[30] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1};
+//int portes[36] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,1,1};
+
 //Utilisé pour optimiser les mouvements selon l'ancien
 int last_state = 0;
 
 void retourne(){
   last_state = 0;
   //Sortir de la ligne d'arrivé
+
   avance(0.5);
   positionY -= 3;
   while (positionY != 0){
@@ -443,7 +446,7 @@ void retourne(){
     }
     //3
     //Pour éviter recule dans le finish
-    else if (positionY < 24){
+    else if (positionY < 24){ // 30 for longer path lenght
       if (portes[(positionY + 3) + positionX] == 2){
         //Recule
         portes[(positionY + 3) + positionX] = 3;
@@ -466,7 +469,7 @@ void retourne(){
 void verif_y(){
   /*DESC: Verifie la presence d'un mur avant de faire un deplacement vers l'avant */
 
-  while (positionY < 27){
+  while (positionY < 27){ // 33 for longer path lenght
   
   if (detection_infrarouge()){
     //change next matrice at same x position to 0
@@ -476,7 +479,7 @@ void verif_y(){
   } else if(not detection_infrarouge()) { //avance et enregistre le path valide en ajoutant 1 au porte valide
     
     portes[((positionY + 3 )+ positionX)] = 2; //pos porte valide
-    if (positionY == 24){
+    if (positionY == 24){ //30 for longer path lenght
       positionY += 3;
       avance(0.5);
     }
@@ -554,14 +557,24 @@ void descend(int previous){
 
 void dirChoice(){
   //Vérification si l'on a terminé le parcours
-  if (positionY < 27){
+  if (positionY < 27){ // 33 for longer path lenght
   //Choisi la direction a tourner selon l'etat 0 ou 1 autour de cette positions X Y. Selon le choix, il tourne et appel verif x
   switch (positionX)
     {
     case 0:
-      tourner(1);
-      verif_xPlus();
-      break;
+      if (portes[(positionY + 3)+(0)]== 0 && portes[((positionY+3)+(1))] == 0 ){
+        positionX = 2;
+        tourner(1);
+        avance(1);
+        tourner(-1);
+        break;
+      }
+      else{
+        tourner(1);
+        verif_xPlus();
+        break;
+      }
+      
 
     case 1: // au milieu et doit choisir entre -1 et 1 #
       if (portes[((positionY)+(positionX - 1))] == 1 && portes[((positionY+3)+(positionX - 1))]==1 ){
@@ -590,9 +603,18 @@ void dirChoice(){
       }
 
     case 2:
-      tourner(-1);
-      verif_xMoins();
-      break;
+      if (portes[(positionY + 3)+(2)]== 0 && portes[((positionY+3)+(1))] == 0 ){
+        positionX = 0;
+        tourner(-1);
+        avance(1);
+        tourner(1);
+        break;
+      }
+      else{
+        tourner(-1);
+        verif_xMoins();
+        break;
+      }
 
     default:
       break;
@@ -604,7 +626,7 @@ void dirChoice(){
 
 void path(){
   //alterne entre avancer ou tourner jusqu'a la position 9 en Y et effectue le trajet inverse
-  while (positionY < 27) 
+  while (positionY < 27) // 33 for longer path lenght
   {
     verif_y();
     dirChoice();
@@ -619,6 +641,7 @@ void path(){
   tourner(2);
   //reverse path
   retourne();
+
 };
 
 //============================================================================================================================
