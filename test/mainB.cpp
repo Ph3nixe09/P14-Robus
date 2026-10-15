@@ -3,7 +3,7 @@
 #include <Drivetrain.h>
 #include <DriveCommands.h>
 #include <math.h>
-#include <Parcours.h> 
+#include <nouvellelogiqueB.h> 
 #include <Sifflet.h>
 
 // Fonction actionner quand le robot s'allume
@@ -17,7 +17,7 @@ void setup() {
   beep(3);
   delay(200);
   attendreDepart();
-  logic();
+  path();
 }
 
 void loop() {
