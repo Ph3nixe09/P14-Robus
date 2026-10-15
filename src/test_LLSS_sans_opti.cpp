@@ -66,7 +66,7 @@ void avance(float distance){
   float max_speed = 0.7;
 
   if (distance >= 5){
-    max_speed = 0.9;;
+    max_speed = 0.8;
   }
 
   if (distance == 0.5){
