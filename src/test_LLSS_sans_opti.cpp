@@ -217,7 +217,7 @@ void retourne(){
     tourner(1);
     avance(0.5);
     tourner(1);
-    avance(5);
+    avance(5.5);
   }
   //2
   else{
@@ -225,7 +225,7 @@ void retourne(){
     tourner(-1);
     avance(0.5);
     tourner(-0.98);
-    avance(5);
+    avance(5.5);
   };
 };
 
