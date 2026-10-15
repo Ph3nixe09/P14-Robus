@@ -463,10 +463,22 @@ void verif_xMoins(){
     portes[(positionY + positionX)] =2;
     positionX -= 1;
     avance(0.5);
-    tourner(1);
+    if (detection_infrarouge() && positionX == 1){
+      tourner(1);
+    }
+    else if(positionX == 0){//
+      tourner(-1);
+    }
+    else{
+      portes[(positionY + positionX)] =2;
+      positionX -= 1;
+      avance(0.5);
+      tourner(1);
+    }
 
   } else {
     portes[((positionY)+positionX-1)] = 0;
+    tourner(1);
     printf("probleme, cul de sac");// manque le s shape
   }
 };
@@ -477,10 +489,25 @@ void verif_xPlus(){
     portes[(positionY + positionX)] =2;
     positionX ++;
     avance(0.5);
-    tourner(-1);
+
+    if (detection_infrarouge() && positionX == 1){//
+      tourner(-1);
+    }
+    else if(positionX == 2){//
+      tourner(-1);
+    }
+    
+    else{ // no detection
+      portes[(positionY + positionX)] =2;
+      positionX ++;
+
+      avance(0.5);
+      tourner(-1);
+    }
 
   } else {
     portes[((positionY)+positionX+1)] = 0;
+    tourner(-1);
     printf("probleme, cul de sac");
   }
 
