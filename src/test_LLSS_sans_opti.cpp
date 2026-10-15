@@ -63,6 +63,11 @@ void avance(float distance){
   float left_error = 0;
   int accel = 0;
   int slow_distance = 0;
+  float max_speed = 0.7;
+
+  if (distance >= 5){
+    max_speed = 0.9;;
+  }
 
   if (distance == 0.5){
     slow_distance = 3000;
@@ -90,7 +95,7 @@ void avance(float distance){
       case 0:
         speed_right += 0.01;
         speed_correct_left += 0.01;
-        if ((speed_right >= 0.7) || distance_right >= (val_expected_distance / 2)){
+        if ((speed_right >= max_speed) || distance_right >= (val_expected_distance / 2)){
           accel = 1;
         };
         break;
@@ -214,9 +219,9 @@ void retourne(){
   //Sortir de la ligne d'arrivé
   //0
   if (positionX == 0){
-    tourner(1);
+    tourner(0.98);
     avance(0.5);
-    tourner(1);
+    tourner(0.98);
     avance(5.5);
   }
   //2

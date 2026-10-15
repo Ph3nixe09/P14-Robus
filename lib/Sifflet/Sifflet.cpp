@@ -21,13 +21,13 @@ DÉTECTEUR SONORE
 */
  
 TypeSignal analyserFrequence(void) {
-  const int SEUIL_DIFFERENCE = 50;  // Écart minimal pour 5 kHz
+  const int SEUIL_DIFFERENCE = 20;  // Écart minimal pour 5 kHz
   const int SEUIL_BRUIT_5KHZ = 500; // Seuil bip à 5khz dans le bruit ambiant
   const int SEUIL_BRUIT_1KHZ = 400; // Seuil bip à 1 kHz dans le bruit ambiant
  
   int val5kHz = analogRead(PIN_INTENSITE_5KHZ);
   int valBruit = analogRead(PIN_BRUIT_AMBIANT);
-  // Serial.println(val5kHz);
+  // Serial.println(valBruit);
  
   if (val5kHz > SEUIL_BRUIT_5KHZ && (val5kHz - valBruit) > SEUIL_DIFFERENCE) {
     return TYPE_5KHZ;
