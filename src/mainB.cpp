@@ -10,7 +10,6 @@
 void setup() { 
   Serial.begin(9600);
   BoardInit();
-
   pinMode(GREEN_PIN, INPUT);
   pinMode(RED_PIN, INPUT);
 
@@ -18,7 +17,11 @@ void setup() {
   delay(200);
   attendreDepart();
   Serial.println("GOOOO");
+  
+  //Le robot commence son parcour
+    logic();
 }
+
 
 // Boucle du robot
 void loop() {
