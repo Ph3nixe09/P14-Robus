@@ -63,6 +63,11 @@ void avance(float distance){
   float left_error = 0;
   int accel = 0;
   int slow_distance = 0;
+  float max_speed = 0.7;
+
+  if (distance >= 5){
+    max_speed = 0.8;
+  }
 
   if (distance == 0.5){
     slow_distance = 3000;
@@ -90,7 +95,7 @@ void avance(float distance){
       case 0:
         speed_right += 0.01;
         speed_correct_left += 0.01;
-        if ((speed_right >= 0.7) || distance_right >= (val_expected_distance / 2)){
+        if ((speed_right >= max_speed) || distance_right >= (val_expected_distance / 2)){
           accel = 1;
         };
         break;
@@ -130,136 +135,9 @@ void avance(float distance){
   };
 };
 
-void tourner_et(int angle){
-  float val_expected_turn = (-1380 * angle); 
-  float KPT = 0.0005;
-  float turn_right = 0;  //Pour atteindre la distance voulu
-  float speed_right = 0.05;
-  float speed_correct_left = -0.05;
-  float left_error = 0;
-  int inverter = -1;
-  int accel = 0;
-  int slow_distance = 0;
 
-  //Choix de distance pour ralentir le robot
-  if (angle == -1 || angle == 1){
-      slow_distance = -1000 * angle;    //Moitié à 50cm
-  }
-  else if (angle == -2 || angle == 2){
-    slow_distance = -1000 * angle;      //Tier à 1m
-  }
-  else if (angle == 4){
-    slow_distance = 7000;      //Le reste du temps (3m environ) au septième
-  };
-
-  ENCODER_Reset(0);
-  ENCODER_Reset(1);
-
-  //Serial.print("New line ==============================");
-
-  if (val_expected_turn >= 0){
-    inverter = 1;
-  };
-
-  speed_right = speed_right * inverter;
-  speed_correct_left = speed_correct_left * inverter;
-
-  while (true) {
-    int32_t read_pulse_left = ENCODER_ReadReset(0);
-    int32_t read_pulse_right =  ENCODER_ReadReset(1);
-    //Serial.print("Pulse right / left: ");
-    //Serial.println(read_pulse_right);
-    //Serial.println(read_pulse_left);
-
-    left_error = ((-1 * read_pulse_right) - read_pulse_left) * KPT;
-
-      //Distance reel parcouru
-    turn_right += read_pulse_right;
-    //Serial.print("Distance total: ");
-    //Serial.println(turn_right);
-
-    if (inverter == -1){
-      if (turn_right <= val_expected_turn + 50){
-        arret();
-        //Serial.print("Fini");
-        break;
-      };
-      // Nouveau code d'acceleration à tester
-      /**switch (accel){
-        case 0:
-          speed_right -= 0.1;
-          speed_correct_left += 0.1;
-          if (speed_right <= -0.3){
-            accel = 1;
-          };
-          break;
-
-        case 1:
-          if (turn_right <= (slow_distance)){
-            speed_right += 0.1;
-            speed_correct_left -= 0.1;
-            if (speed_right >= -0.1){
-              speed_right = -0.05;
-              speed_correct_left = 0.05;
-              accel = 2;
-            };
-          break;
-          };
-        case 2:
-          break;
-      };*/
-    }
-    else if (inverter == 1){
-      if (turn_right >= val_expected_turn - 50){
-        arret();
-        //Serial.print("fini");
-        break;
-      };
-      // Nouveau code d'acceleration à tester
-      /**switch (accel){
-        case 0:
-          speed_right += 0.1;
-          speed_correct_left -= 0.1;
-          if (speed_right >= 0.3){
-            accel = 1;
-          };
-          break;
-
-        case 1:
-          if (turn_right >= (slow_distance)){
-            speed_right -= 0.1;
-            speed_correct_left += 0.1;
-            if (speed_right <= 0.1){
-              speed_right = 0.05;
-              speed_correct_left = -0.05;
-              accel = 2;
-            };
-          break;
-          };
-        case 2:
-          break;
-      };*/
-    };
-    
-
-    //Ajustement de la vitesse
-    speed_correct_left += left_error;
-    //Serial.print("Error left / speed correct left: ");
-    //Serial.println(left_error);
-    //Serial.println(speed_correct_left);
-    
-    //Ajustement de la vitesse
-    MOTOR_SetSpeed(RIGHT,speed_right);
-    MOTOR_SetSpeed(LEFT, speed_correct_left);
-  };
-
-  ENCODER_Reset(0);
-  ENCODER_Reset(1);
-
-};
-
-void tourner(int angle) {
-  float val_expected_turn = -1990.0 * angle;
+void tourner(float angle) {
+  float val_expected_turn = -1980.0 * angle;
   float KPT = 0.0005;   // Correction proportionnelle sur l'écart de distance total
   float KIT = 0.00005;  // Correction intégrale pour compenser l'asymétrie des moteurs
   
@@ -339,21 +217,20 @@ int last_state = 0;
 
 void retourne(){
   //Sortir de la ligne d'arrivé
-  avance(0.5);
   //0
   if (positionX == 0){
-    tourner(1);
+    tourner(0.98);
     avance(0.5);
-    tourner(1);
-    avance(5);
+    tourner(0.98);
+    avance(5.5);
   }
   //2
   else{
     //Gauche
     tourner(-1);
     avance(0.5);
-    tourner(-1);
-    avance(5);
+    tourner(-0.98);
+    avance(5.5);
   };
 };
 
@@ -369,14 +246,14 @@ void verif_y(){
     } else if(not detection_infrarouge()) { //avance et enregistre le path valide en ajoutant 1 au porte valide
       
       
-      if (positionX == 1 && positionY == 0){
+      if (positionX == 1 && portes[((positionY + 3 )+ positionX)] == 0){  // si le robot est en positionX 1 et que la porte devant est fermé, retourne a dirchoice
           break;
       }
       
       portes[((positionY + 3 )+ positionX)] = 2; //pos porte valide
       if (positionY == 24){
         positionY += 3;
-        avance(0.5);
+        avance(1);
       }
       else{
       
@@ -399,7 +276,7 @@ void verif_xMoins(){
       tourner(1);
     }
     else if(positionX == 0){//
-      tourner(-1);
+      tourner(1);
     }
     else{
       portes[(positionY + positionX)] =2;
