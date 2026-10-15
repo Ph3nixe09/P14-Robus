@@ -369,7 +369,7 @@ void verif_y(){
     } else if(not detection_infrarouge()) { //avance et enregistre le path valide en ajoutant 1 au porte valide
       
       
-      if (positionX == 1 && positionY == 0){
+      if (positionX == 1 && portes[((positionY + 3 )+ positionX)] == 0){  // si le robot est en positionX 1 et que la porte devant est fermé, retourne a dirchoice
           break;
       }
       
