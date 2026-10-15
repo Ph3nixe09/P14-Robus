@@ -338,30 +338,95 @@ int portes[30] = {1,1,1,  1,1,1,  1,1,1,  1,1,1,   1,1,1,   1,1,1,   1,1,1,   1,
 int last_state = 0;
 
 void retourne(){
+  last_state = 0;
   //Sortir de la ligne d'arrivé
   avance(0.5);
-  Serial.println(positionX);
-  Serial.println(positionY);
-  //0
-  if (positionX == 0){
-    //Droite
-    tourner(1);
-    avance(0.5);
-    tourner(1);
-    avance(5);
-    positionX = 0;
-    positionY = 0;
-  }
-  //2
-  else{
-    //Gauche
-    tourner(-1);
-    avance(0.5);
-    tourner(-1);
-    avance(5);
-    positionX = 0;
-    positionY = 0;
-  }
+  positionY -= 3;
+  while (positionY != 0){
+    Serial.println(positionX);
+    Serial.println(positionY);
+    //0
+    if (portes[(positionY - 3) + positionX] == 2){
+      //Avance
+      portes[positionY + positionX] = 3;
+      positionY -= 6;
+      /**if (last_state == 1){
+        tourner(1);
+        avance(1);
+      }
+      else if (last_state == 2){
+        tourner(-1);
+        avance(1);
+      }
+      else{
+        avance(1);
+      }*/
+      avance(1);
+      last_state = 0;
+      Serial.println("Passage en avant");
+    }
+    //1
+    else if (portes[(positionY + (positionX + 1))] == 2){
+      //Gauche
+      portes[positionY + positionX] = 3;
+      positionX += 1;
+      if (last_state == 0){
+        tourner(-1);
+        avance(0.5);
+      }
+      else if (last_state == 3){
+        tourner(1);
+        avance(0.5);
+        tourner(1);
+      }
+      else{
+        avance(0.5);
+        tourner(1);
+      };
+      last_state = 1;
+      Serial.println("Passage a gauche");
+    }
+    //2
+    else if (portes[(positionY + (positionX - 1))] == 2){
+      //Droite
+      portes[positionY + positionX] = 3;
+      positionX -= 1;
+      if (last_state == 0){
+        tourner(1);
+        avance(0.5);
+      }
+      else if (last_state == 3){
+        tourner(-1);
+        avance(0.5);
+        tourner(-1);
+      }
+      else{
+        avance(0.5);
+        tourner(-1);
+      };
+      last_state = 2;
+      Serial.println("Passage a droite");
+    }
+    //3
+    //Pour éviter recule dans le finish
+    else if (positionY < 24){
+      if (portes[(positionY + 3) + positionX] == 2){
+        //Recule
+        portes[(positionY + 3) + positionX] = 3;
+        positionY += 6;
+        if (last_state == 1){
+          tourner(-1);
+          avance(1);
+        }
+        else{
+          tourner(1);
+          avance(1);
+        };
+      };
+      last_state = 3;
+      Serial.println("Passage en arriere");
+    };
+  };
 };
 
 void verif_y(){
@@ -553,6 +618,7 @@ void path(){
     Serial.println(val);
     }
   }
+  tourner(2);
   //reverse path
   retourne();
 };
