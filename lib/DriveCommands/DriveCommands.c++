@@ -144,3 +144,8 @@ void driveDistance(float distance) {
     delay(20);
   }
 }
+
+// Suivre une ligne au sol
+void followLine() {
+
+}
