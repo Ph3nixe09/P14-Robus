@@ -45,6 +45,7 @@ void stop(){
   delay(200);
 };
 
+// Meme vitesse pour les deux moteurs
 void move(float speed, bool backwards = false) { // Ajouter True si en arrière
   if (backwards) {
     speed*=-1;

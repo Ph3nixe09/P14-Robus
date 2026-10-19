@@ -13,6 +13,7 @@ const float WHEEL_CIRCUMFERENCE = WHEEL_CIRCUMFERENCE_INCHES * 25.4; // mm
 const float PULSES_PER_ROTATION = 3200;
 
 // Commands
+// La commande change les vitesses de chaques roues selon les valeurs d'encodeurs pour aller droit
 void driveStraight(float speed = 0.5) {
   float kp = 0.00075 * speed;
   float ki = 0.00015;
@@ -37,30 +38,7 @@ void driveStraight(float speed = 0.5) {
   last_right = right;
 }
 
-void turnStraight(float speed = 0.3) {
-  float kp = 0.00075 * speed;
-  float ki = 0.00015;
-  
-  int left = -getEncoderLeft();
-  int right = getEncoderRight();
-  
-  float p = ((right - last_right) - (left - last_left)) * kp;
-  float i = (right - left) * ki;
-
-  float speed_left = speed + p + i;
-  float speed_right = speed - p - i;
-
-  Serial.print("P: ");
-  Serial.println(p);
-  Serial.print("I: ");
-  Serial.println(i);
-
-  moveIndependant(speed_left, -speed_right);
-  
-  last_left = left;
-  last_right = right;
-}
-
+// Touner précisement à droite (horaire) selon un angle
 // Angle en degrées
 void turnAngleRight(float angle) {
   ResetEncoderAll();
@@ -87,6 +65,7 @@ void turnAngleRight(float angle) {
   delay(200);
 }
 
+// Touner précisement à gauche (anti-horaire) selon un angle
 // Angle en degrées
 void turnAngleLeft(float angle) {
   ResetEncoderAll();
@@ -113,6 +92,7 @@ void turnAngleLeft(float angle) {
   delay(200);
 }
 
+// Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
 // Retourne le nombre de metres parcourus
 int driveToWall() {
   ResetEncoderAll();
@@ -137,6 +117,7 @@ int driveToWall() {
   return count;
 }
 
+// Avancer avec PID d'une distance fixe
 // Distance en cm
 void driveDistance(float distance) {
   ResetEncoderAll();
