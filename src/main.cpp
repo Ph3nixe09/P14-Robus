@@ -3,6 +3,7 @@
 #include <Drivetrain.h>
 #include <DriveCommands.h>
 #include <LED.h>
+#include <Yellow.h>
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -19,5 +20,18 @@ void setup() {
 
 // Boucle du robot
 void loop() {
-  sapinNoel();
+  if (getBumberRear()) {
+    yellow();
+  } 
+  // else if (getBumberLeft()) {
+  //   // spinLeft(0.3);
+  //   turnAngleLeft(90);
+  //   // left();
+  // } else if (getBumberRight()) {
+  //   // spinRight(0.3);
+  //   turnAngleRight(90);
+  //   // right();
+  // } else if (getBumberFront()) {
+  //   driveDistance(100);
+  // }
 }
