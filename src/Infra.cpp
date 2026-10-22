@@ -1,6 +1,6 @@
 #include <LibRobus.h>
 #include <Arduino.h>
-#include <IRremote.hpp>
+#include <IRremote.h>
 
 #define IR_SEND_PIN 2
 
@@ -27,7 +27,7 @@ void setup(){
     pinMode(2, INPUT);
     pinMode(3, INPUT);
     pinMode(4, INPUT);
-    IrSender.begin(IR_SEND_PIN);
+    IRsend.enableIROut();
 }
 
 void loop(){
