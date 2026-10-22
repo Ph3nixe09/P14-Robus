@@ -1,8 +1,11 @@
 #include <LibRobus.h>
 #include <Arduino.h>
-#include <IRremote.h>
 
-#define IR_SEND_PIN 2
+//Pin 3 == Signal Envoyé
+//Pin 4 == bouton 2 
+//Pin 5 == bouton 1
+
+IRsend irSend;
 
 bool BP1 = 0;
 bool BP2 = 0;
@@ -24,10 +27,8 @@ void setup(){
     Serial.begin(9600);
     delay(50);
     Serial.print("HEllo");
-    pinMode(2, INPUT);
-    pinMode(3, INPUT);
     pinMode(4, INPUT);
-    IRsend.enableIROut();
+    pinMode(5, INPUT);
 }
 
 void loop(){
@@ -40,10 +41,9 @@ void loop(){
         Serial.print("TRUE BP2 ");
     }
 
-    uint16_t address = 0x0102;
-    uint8_t command = 0x34;
-  
-    IrSender.sendNEC(address, command, 0);
+    uint16_t address = 0xA90;
+    
+    irSend.sendNEC(address, 12);
     delay(5000);
 
 }
