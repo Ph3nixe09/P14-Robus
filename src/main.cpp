@@ -3,12 +3,14 @@
 #include <Drivetrain.h>
 #include <DriveCommands.h>
 #include <LED.h>
+#include <ColorDetection.h>
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
   Serial.begin(9600);
   BoardInit();
   ledInit();
+  detectColorInit();
 
   pinMode(GREEN_PIN, INPUT);
   pinMode(RED_PIN, INPUT);
@@ -19,10 +21,12 @@ void setup() {
 
 // Boucle du robot
 void loop() {
-  greenOn();
+  printRGB();
   delay(1000);
-  allLedOff();
-  delay(1000);
+  // greenOn();
+  // delay(1000);
+  // allLedOff();
+  // delay(1000);
   // if (getBumberRear()) {
   //   driveDistance(500);
   // } 
