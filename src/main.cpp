@@ -5,6 +5,14 @@
 #include <LED.h>
 #include <Yellow.h>
 
+enum Color {
+  GREEN,
+  RED,
+  BLUE,
+  ORANGE,
+  YELLOW
+};
+
 // Fonction actionner quand le robot s'allume
 void setup() { 
   Serial.begin(9600);
@@ -20,9 +28,33 @@ void setup() {
 
 // Boucle du robot
 void loop() {
-  if (getBumberRear()) {
-    yellow();
-  } 
+  enum Color color = BLUE;
+
+  // if color...
+
+  switch (color)
+  {
+  case GREEN:
+    /* code */
+    break;
+  case RED:
+    /* code */
+    break;
+  case BLUE:
+    /* code */
+    break;
+  case ORANGE:
+    /* code */
+    break;
+  case YELLOW:
+    /* code */
+    break;
+  }
+
+
+  // if (getBumberRear()) {
+  //   yellow();
+  // } 
   // else if (getBumberLeft()) {
   //   // spinLeft(0.3);
   //   turnAngleLeft(90);
