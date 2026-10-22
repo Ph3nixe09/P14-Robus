@@ -3,7 +3,16 @@
 #include <Drivetrain.h>
 #include <DriveCommands.h>
 #include <LED.h>
+#include <Yellow.h>
 #include <ColorDetection.h>
+
+enum Color {
+  GREEN,
+  RED,
+  BLUE,
+  ORANGE,
+  YELLOW
+};
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -21,6 +30,30 @@ void setup() {
 
 // Boucle du robot
 void loop() {
+  enum Color color = BLUE;
+
+  // if color...
+
+  switch (color)
+  {
+  case GREEN:
+    /* code */
+    break;
+  case RED:
+    /* code */
+    break;
+  case BLUE:
+    /* code */
+    break;
+  case ORANGE:
+    /* code */
+    break;
+  case YELLOW:
+    /* code */
+    break;
+  }
+
+
   printRGB();
   delay(1000);
   // greenOn();
@@ -28,7 +61,7 @@ void loop() {
   // allLedOff();
   // delay(1000);
   // if (getBumberRear()) {
-  //   driveDistance(500);
+  //   yellow();
   // } 
   // else if (getBumberLeft()) {
   //   // spinLeft(0.3);
