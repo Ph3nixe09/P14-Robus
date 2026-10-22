@@ -1,10 +1,6 @@
 #include <LibRobus.h>
 #include <Arduino.h>
 
-//Pin 3 == Signal Envoyé
-//Pin 4 == bouton 2 
-//Pin 5 == bouton 1
-
 IRsend irSend;
 
 bool BP1 = 0;
@@ -27,8 +23,9 @@ void setup(){
     Serial.begin(9600);
     delay(50);
     Serial.print("HEllo");
-    pinMode(4, INPUT);
-    pinMode(5, INPUT);
+    pinMode(2, OUTPUT); // Commande envoyé LED Verte
+    pinMode(4, INPUT); // Bouton 1 Départ
+    pinMode(5, INPUT); // Bouton 2 Réveil
 }
 
 void loop(){
@@ -43,7 +40,7 @@ void loop(){
 
     uint16_t address = 0xA90;
     
-    irSend.sendNEC(address, 12);
+    irSend.sendNEC(address, 32);
     delay(5000);
 
 }
