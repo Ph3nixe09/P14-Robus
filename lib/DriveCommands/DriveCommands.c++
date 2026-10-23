@@ -5,7 +5,7 @@
 int goBackListe[5] = {0,0,0,0,0};
 
 // Constants
-const float WHEEL_SPACE = 190.5; // mm
+const float WHEEL_SPACE = 191.5; // mm
 const float WHEEL_SPACE_CIRCUMFERENCE = 3.141592 * WHEEL_SPACE; // mm
 const float WHEEL_DIAMETER = 3;
 const float WHEEL_CIRCUMFERENCE_INCHES = WHEEL_DIAMETER * 3.141592; // inches
@@ -141,6 +141,9 @@ void driveDistance(float distance) {
 
 // 
 bool endMoving() {
+  if (!moving) {
+    delay(100);
+  }
   return !moving;
 }
 

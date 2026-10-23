@@ -1,6 +1,7 @@
 #ifndef YELLOW_H
 #define YELLOW_H
 
-void yellow();
+void yellow(bool init = false);
+bool endYellow();
 
 #endif
