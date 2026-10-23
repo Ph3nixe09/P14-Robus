@@ -12,6 +12,15 @@ const float WHEEL_CIRCUMFERENCE_INCHES = WHEEL_DIAMETER * 3.141592; // inches
 const float WHEEL_CIRCUMFERENCE = WHEEL_CIRCUMFERENCE_INCHES * 25.4; // mm
 const float PULSES_PER_ROTATION = 3200;
 
+// Global variables
+float distance_pulses;
+bool moving = false;
+float encoder = 0;
+const int turning_error = 10;
+float arc;
+float arc_pulses;
+
+
 // Commands
 // La commande change les vitesses de chaques roues selon les valeurs d'encodeurs pour aller droit
 void driveStraight(float speed = 0.5) {
@@ -27,11 +36,6 @@ void driveStraight(float speed = 0.5) {
   float speed_left = speed + p + i;
   float speed_right = speed - p - i;
 
-  Serial.print("P: ");
-  Serial.println(p);
-  Serial.print("I: ");
-  Serial.println(i);
-
   moveIndependant(speed_left, speed_right);
   
   last_left = left;
@@ -40,56 +44,50 @@ void driveStraight(float speed = 0.5) {
 
 // Touner précisement à droite (horaire) selon un angle
 // Angle en degrées
-void turnAngleRight(float angle) {
-  ResetEncoderAll();
-  float arc = ((angle - 1.4) / 360) * WHEEL_SPACE_CIRCUMFERENCE;
-  float arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
-  float encoder = 0;
-  int error = 10;
-  bool turning = true;
-  while (turning) {
-    encoder = -getEncoderRight();
-    Serial.println(encoder);
-    if (arc_pulses - error < encoder && encoder < arc_pulses + error) {
-      stop();
-      turning = false;
-    } else if (encoder <= arc_pulses - 1000) {
-      spinRight(0.3);
-    } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + error) {
-      spinRight(0.13);
-    } else {
-      spinLeft(0.13);
-    }
-    delay(20);
-  } 
-  delay(200);
+void turnAngleRight(float angle = 0) {
+  if (angle != 0) {
+    ResetEncoderAll();
+    arc = ((angle - 1.4) / 360) * WHEEL_SPACE_CIRCUMFERENCE;
+    arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
+    moving = true;
+    encoder = 0;
+  }
+
+  encoder = -getEncoderRight();
+  if (arc_pulses - turning_error < encoder && encoder < arc_pulses + turning_error) {
+    stop();
+    moving = false;
+  } else if (encoder <= arc_pulses - 1000) {
+    spinRight(0.3);
+  } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + turning_error) {
+    spinRight(0.13);
+  } else {
+    spinLeft(0.13);
+  }
 }
 
 // Touner précisement à gauche (anti-horaire) selon un angle
 // Angle en degrées
 void turnAngleLeft(float angle) {
-  ResetEncoderAll();
-  float arc = ((angle - 0.4) / 360) * WHEEL_SPACE_CIRCUMFERENCE;
-  float arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
-  float encoder = 0;
-  int error = 10;
-  bool turning = true;
-  while (turning) {
-    encoder = getEncoderRight();
-    Serial.println(encoder);
-    if (arc_pulses - error < encoder && encoder < arc_pulses + error) {
-      stop();
-      turning = false;
-    } else if (encoder <= arc_pulses - 1000) {
-      spinLeft(0.3);
-    } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + error) {
-      spinLeft(0.13);
-    } else {
-      spinRight(0.13);
-    }
-    delay(20);
-  } 
-  delay(200);
+  if (angle != 0) {
+    ResetEncoderAll();
+    arc = ((angle - 1.4) / 360) * WHEEL_SPACE_CIRCUMFERENCE;
+    arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
+    moving = true;
+    encoder = 0;
+  }
+
+  encoder = getEncoderRight();
+  if (arc_pulses - turning_error < encoder && encoder < arc_pulses + turning_error) {
+    stop();
+    moving = false;
+  } else if (encoder <= arc_pulses - 1000) {
+    spinLeft(0.3);
+  } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + turning_error) {
+    spinLeft(0.13);
+  } else {
+    spinRight(0.13);
+  }
 }
 
 // Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
@@ -117,30 +115,37 @@ int driveToWall() {
   return count;
 }
 
-// Avancer avec PID d'une distance fixe
-// Distance en cm
+// Distance en cm seulement en initialisant
 void driveDistance(float distance) {
-  ResetEncoderAll();
+  if (distance != 0) {
+    ResetEncoderAll();
+    distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
+    moving = true;
+    encoder = 0;
+  }
   
-  float distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
-  bool moving = true;
-  float encoder = 0;
-  driveStraight(0.2);
-  delay(200);
-  driveStraight(0.3);
-  delay(200);
-  driveStraight(0.4);
-  delay(200);
-  while (moving) {
-    encoder = (getEncoderLeft() + getEncoderRight()) / 2;
+  encoder = (getEncoderLeft() + getEncoderRight()) / 2;
     if (distance_pulses - 100 < encoder) {
         stop();
         moving = false;
+    } else if (encoder < 200) {
+      driveStraight(0.2);
+    } else if (encoder < 400) {
+      driveStraight(0.4);
     } else if (encoder < distance_pulses - 1500) {
       driveStraight(0.6);
     } else {
       driveStraight(0.3);
     }
-    delay(20);
-  }
 }
+
+// 
+bool endMoving() {
+  return !moving;
+}
+
+// Suivre une ligne au sol
+// void followLine(float speed = 0.5) {
+//   if ()
+//   moveIndependant(speed, speed);
+// }
