@@ -5,6 +5,8 @@ IRsend irSend;
 
 bool BP1 = 0;
 bool BP2 = 0;
+unsigned long signal1 = 0x01;
+unsigned long signal2 = 0x02;
 
 bool Read_BP (int pin){
     bool BP = digitalRead(pin);
@@ -24,7 +26,7 @@ void setup(){
     delay(50);
     Serial.print("HEllo");
     pinMode(2, OUTPUT); // Commande envoyé LED Verte
-    irSend.enableIROut(38);
+    irSend.enableIROut(38); // fréquence de 38Hz mais pin == 46
     pinMode(4, INPUT); // Bouton 1 Départ
     pinMode(5, INPUT); // Bouton 2 Réveil
 }
@@ -36,18 +38,16 @@ void loop(){
     if(BP1 == true){
         Serial.print("TRUE BP1 ");
         digitalWrite(2, 0);
-    
-        irSend.sendNEC(0x01, 32);
-        delay(1000);
+        irSend.sendNEC(signal1, 32);
+        delay(300);
 
     }
     BP2 = Read_BP(5);
     if(BP2 == true){
         Serial.print("TRUE BP2 ");
         digitalWrite(2, 0);
-    
-        irSend.sendNEC(0x02, 32);
-        delay(1000);
+        irSend.sendNEC(signal2, 32);
+        delay(300);
     }
 
 }
