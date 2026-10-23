@@ -24,6 +24,8 @@ enum Color {
 enum RobotState state;
 enum Color color;
 
+bool bumper_safety;
+
 // Fonction actionner quand le robot s'allume
 void setup() { 
   Serial.begin(9600);
@@ -33,6 +35,7 @@ void setup() {
   drivetrainInit();
 
   state = WAITING_FOR_IR;
+  bumper_safety = true;
 
   beep(3);
   delay(200);
@@ -45,14 +48,17 @@ void loop() {
     /* code */
     // if (recois signal manette) {
     if (getBumberRear()) { // placeholder de la manette
-      turnAngleLeft(90);
+      driveDistance(100);
       state = FOLLOWING_LINE;
     } 
     break;
 
     case FOLLOWING_LINE:
-    turnAngleLeft();
+    driveDistance();
     if (endMoving()) {
+      state = WAITING_FOR_IR;
+    } else if (bumper_safety && getBumberAny()) {
+      stop();
       state = WAITING_FOR_IR;
     }
     // if (vois un carton de couleur) {changer l'état à COLOR_COMMAND et à la couleur vue}, 
@@ -78,4 +84,5 @@ void loop() {
           break;
     }
   }
+  delay(20);
 }

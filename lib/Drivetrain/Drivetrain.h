@@ -19,6 +19,7 @@ bool getBumberRear();
 bool getBumberFront();
 bool getBumberLeft();
 bool getBumberRight();
+bool getBumberAny();
 
 // Motors
 void stop();

@@ -40,6 +40,10 @@ bool getBumberRight() {
   return ROBUS_IsBumper(1);
 }
 
+bool getBumberAny() {
+  return getBumberRear() || getBumberFront() || getBumberLeft() || getBumberRight();
+}
+
 
 // Motors
 void stop(){
