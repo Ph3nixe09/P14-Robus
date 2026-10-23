@@ -6,8 +6,11 @@ int last_left = 0;
 int last_right = 0; 
 
 // Pins
-extern const int GREEN_PIN = 48;
-extern const int RED_PIN = 49;
+extern const int GREEN_DETECT_PIN = 48;
+extern const int RED_DETECT_PIN = 49;
+extern const int U1_PIN = 37; // fil Jaune
+extern const int U2_PIN = 39; // fil Vert
+extern const int U3_PIN = 41; // fil Brun
 
 // Buzzer
 void beep(int count){
@@ -108,5 +111,27 @@ void ResetEncoderAll() {
 // objectDetection
 bool detectWall() {
   // La fonctions retourne true si le capteur ne détecte pas de murs
-  return (digitalRead(GREEN_PIN) == 1 and digitalRead(RED_PIN) == 1);
+  return (digitalRead(GREEN_DETECT_PIN) == 1 and digitalRead(RED_DETECT_PIN) == 1);
+}
+
+// line follower
+bool getLineLeft() {
+  return !digitalRead(U1_PIN);
+}
+
+bool getLineMid() {
+  return !digitalRead(U2_PIN);
+}
+
+bool getLineRight() {
+  return !digitalRead(U3_PIN);
+}
+
+// Init
+void drivetrainInit() {
+  pinMode(GREEN_DETECT_PIN, INPUT);
+  pinMode(RED_DETECT_PIN, INPUT);
+  pinMode(U1_PIN, INPUT);
+  pinMode(U2_PIN, INPUT);
+  pinMode(U3_PIN, INPUT);
 }

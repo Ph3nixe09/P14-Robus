@@ -1,11 +1,11 @@
 #ifndef LED_H
 #define LED_H
 
-extern const int GREEN;
-extern const int RED;
-extern const int BLUE;
-extern const int ORANGE;
-extern const int YELLOW;
+extern const int GREEN_PIN;
+extern const int RED_PIN;
+extern const int BLUE_PIN;
+extern const int ORANGE_PIN;
+extern const int YELLOW_PIN;
 
 void greenOn();
 void redOn();

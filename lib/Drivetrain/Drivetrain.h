@@ -40,4 +40,10 @@ void ResetEncoderAll();
 // Object detection
 bool detectWall();
 
+bool getLineLeft();
+bool getLineMid();
+bool getLineRight();
+
+void drivetrainInit();
+
 #endif

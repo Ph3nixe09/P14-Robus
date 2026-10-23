@@ -6,6 +6,13 @@
 #include <Yellow.h>
 #include <ColorDetection.h>
 
+enum RobotState {
+  WAITING_FOR_IR,
+  FOLLOWING_LINE,
+  COLOR_COMMAND,
+  END
+};
+
 enum Color {
   GREEN,
   RED,
@@ -14,15 +21,18 @@ enum Color {
   YELLOW
 };
 
+enum RobotState state;
+enum Color color;
+
 // Fonction actionner quand le robot s'allume
 void setup() { 
   Serial.begin(9600);
   BoardInit();
   ledInit();
-  detectColorInit();
+//   detectColorInit();
+  drivetrainInit();
 
-  pinMode(GREEN_PIN, INPUT);
-  pinMode(RED_PIN, INPUT);
+  state = WAITING_FOR_IR;
 
   beep(3);
   delay(200);
@@ -30,48 +40,42 @@ void setup() {
 
 // Boucle du robot
 void loop() {
-  enum Color color = BLUE;
+  switch (state) {
+    case WAITING_FOR_IR:
+    /* code */
+    // if (recois signal manette) {
+    if (getBumberRear()) { // placeholder de la manette
+      turnAngleLeft(90);
+      state = FOLLOWING_LINE;
+    } 
+    break;
 
-  // if color...
+    case FOLLOWING_LINE:
+    turnAngleLeft();
+    if (endMoving()) {
+      state = WAITING_FOR_IR;
+    }
+    // if (vois un carton de couleur) {changer l'état à COLOR_COMMAND et à la couleur vue}, 
+    /* code */
+    break;
 
-  switch (color)
-  {
-  case GREEN:
-    /* code */
-    break;
-  case RED:
-    /* code */
-    break;
-  case BLUE:
-    /* code */
-    break;
-  case ORANGE:
-    /* code */
-    break;
-  case YELLOW:
-    /* code */
-    break;
+    case COLOR_COMMAND:
+      switch (color) {
+        case GREEN:
+          /* code */
+          break;
+        case RED:
+          /* code */
+          break;
+        case BLUE:
+          /* code */
+          break;
+        case ORANGE:
+          /* code */
+          break;
+        case YELLOW:
+          /* code */
+          break;
+    }
   }
-
-
-  printRGB();
-  delay(1000);
-  // greenOn();
-  // delay(1000);
-  // allLedOff();
-  // delay(1000);
-  // if (getBumberRear()) {
-  //   yellow();
-  // } 
-  // else if (getBumberLeft()) {
-  //   // spinLeft(0.3);
-  //   turnAngleLeft(90);
-  //   // left();
-  // } else if (getBumberRight()) {
-  //   // spinRight(0.3);
-  //   turnAngleRight(90);
-  //   // right();
-  // } else if (getBumberFront()) {
-  //   driveDistance(100);
-  // }
 }

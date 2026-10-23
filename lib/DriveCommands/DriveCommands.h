@@ -15,10 +15,11 @@ extern const float PULSES_PER_ROTATION;
 void driveStraight(float speed = 0.5);
 void turnStraight(float speed = 0.3);
 
-void turnAngleRight(float angle);
-void turnAngleLeft(float angle);
+void turnAngleRight(float angle = 0);
+void turnAngleLeft(float angle = 0);
 
 int driveToWall();
-void driveDistance(float distance);
+void driveDistance(float distance = 0);
+bool endMoving();
 
 #endif
