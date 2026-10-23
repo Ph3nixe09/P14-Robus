@@ -2,6 +2,7 @@
 #include <Arduino.h>
 
 IRsend irSend;
+IRrecv irReceiv;
 
 bool BP1 = 0;
 bool BP2 = 0;
@@ -23,24 +24,12 @@ void setup(){
     Serial.begin(9600);
     delay(50);
     Serial.print("HEllo");
-    pinMode(2, OUTPUT); // Commande envoyé LED Verte
-    pinMode(4, INPUT); // Bouton 1 Départ
-    pinMode(5, INPUT); // Bouton 2 Réveil
+    irReceiv.enableIRIn();
 }
 
 void loop(){
-    BP1 = Read_BP(3);
-    if(BP1 == true){
-        Serial.print("TRUE BP1 ");
-    }
-    BP2 = Read_BP(4);
-    if(BP1 == true){
-        Serial.print("TRUE BP2 ");
-    }
-
-    uint16_t address = 0xA90;
     
-    irSend.sendNEC(address, 32);
-    delay(5000);
-
+    Serial.print(REMOTE_read());
+    delay(1000);
+    
 }
