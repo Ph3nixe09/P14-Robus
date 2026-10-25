@@ -7,6 +7,9 @@ const int BLUE_PIN = 32;
 const int ORANGE_PIN = 33;
 const int YELLOW_PIN = 34;
 
+long start_time;
+bool timer_on = false;
+
 void greenOn() {
     digitalWrite(GREEN_PIN, LOW);
 }
@@ -26,7 +29,6 @@ void orangeOn() {
 void yellowOn() {
     digitalWrite(YELLOW_PIN, LOW);
 }
-
 
 void allLedOff() {
     digitalWrite(GREEN_PIN, HIGH);
@@ -60,4 +62,25 @@ void sapinNoel() {
     delay(delta);
     allLedOff();
     delay(delta);
+}
+
+void greenOn10(bool init = false) {
+    if (init) {
+        allLedOff();
+        orangeOn();
+        start_time = millis();
+        timer_on = true;
+    }
+
+    long delta = millis() - start_time;
+    Serial.println(delta);
+
+    if (delta > 5000) {
+        allLedOff();
+        timer_on = false;
+    }
+}
+
+bool endLED() {
+    return !timer_on;
 }

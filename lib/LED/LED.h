@@ -17,4 +17,7 @@ void allLedOff();
 void ledInit();
 void sapinNoel();
 
+void greenOn10(bool init = false);
+void endLED();
+
 #endif

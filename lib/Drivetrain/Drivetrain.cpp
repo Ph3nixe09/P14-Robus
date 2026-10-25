@@ -49,7 +49,6 @@ bool getBumberAny() {
 void stop(){
   MOTOR_SetSpeed(RIGHT, 0);
   MOTOR_SetSpeed(LEFT, 0);
-  delay(200);
 };
 
 // Meme vitesse pour les deux moteurs

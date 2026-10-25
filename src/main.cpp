@@ -50,11 +50,13 @@ void loop() {
       // if (recois signal manette) {
       if (getBumberRear()) { // placeholder de la manette
         yellow(true);
+        greenOn10(true);
         state = TEST_COMMAND;
       } 
       break;
 
     case TEST_COMMAND:
+      greenOn10();
       yellow();
 
       if (endYellow()) {

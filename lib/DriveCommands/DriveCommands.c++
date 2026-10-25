@@ -116,7 +116,7 @@ int driveToWall() {
 }
 
 // Distance en cm seulement en initialisant
-void driveDistance(float distance) {
+void driveDistance(float distance = 0) {
   if (distance != 0) {
     ResetEncoderAll();
     distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
@@ -141,9 +141,9 @@ void driveDistance(float distance) {
 
 // 
 bool endMoving() {
-  if (!moving) {
-    delay(100);
-  }
+  // if (!moving) {
+  //   delay(100); // délais pour ne pas saccadé le mouvements
+  // }
   return !moving;
 }
 
