@@ -12,6 +12,17 @@ extern const int U1_PIN = 37; // fil Jaune
 extern const int U2_PIN = 39; // fil Vert
 extern const int U3_PIN = 41; // fil Brun
 
+// Timer
+long drive_start_time;
+bool drive_timer_on = false;
+long drive_timer_duration;
+
+void startDriveTimer(long duration = 200) { // temps en millis
+    drive_start_time = millis();
+    drive_timer_on = true;
+    drive_timer_duration = duration;
+}
+
 // Buzzer
 void beep(int count){
   for(int i=0;i<count;i++){
@@ -46,9 +57,17 @@ bool getBumberAny() {
 
 
 // Motors
-void stop(){
+bool stop() { // MUST TEST
   MOTOR_SetSpeed(RIGHT, 0);
   MOTOR_SetSpeed(LEFT, 0);
+
+  long delta = millis() - drive_start_time;
+
+  if (delta > drive_timer_duration) {
+      return true; // retourne True si le temps est atteint
+  } else {
+      return false;
+  }
 };
 
 // Meme vitesse pour les deux moteurs
@@ -130,8 +149,7 @@ bool getLineRight() {
   return !digitalRead(U3_PIN);
 }
 
-// Timer
-// void startTimer() 
+
 
 // Init
 void drivetrainInit() {

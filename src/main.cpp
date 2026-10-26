@@ -63,8 +63,9 @@ void loop() {
       if (endYellow()) {
         state = WAITING_FOR_IR;
       } else if (bumper_safety && getBumberAny()) {
-        stop();
-        state = WAITING_FOR_IR;
+        if (stop()) {
+          state = WAITING_FOR_IR;
+        }
       }
 
     case FOLLOWING_LINE:

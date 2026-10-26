@@ -7,8 +7,8 @@ const int BLUE_PIN = 32;
 const int ORANGE_PIN = 33;
 const int YELLOW_PIN = 34;
 
-long start_time;
-bool timer_on = false;
+long led_start_time;
+bool led_timer_on = false;
 long led_timer_duration;
 
 void greenOn() {
@@ -69,13 +69,13 @@ void sapinNoel() {
 // Timers 
 // CES FONCTIONS PEUVENT ÊTRE RECRÉÉS POUR TOUS LES AUTRES SYSTÈMES
 void startLedTimer(long duration = 10000) { // temps en millis
-    start_time = millis();
-    timer_on = true;
+    led_start_time = millis();
+    led_timer_on = true;
     led_timer_duration = duration;
 }
 
 bool endLed() {
-    long delta = millis() - start_time;
+    long delta = millis() - led_start_time;
 
     if (delta > led_timer_duration) {
         allLedOff();

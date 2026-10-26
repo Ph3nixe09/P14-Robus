@@ -55,8 +55,9 @@ void turnAngleRight(float angle = 0) {
 
   encoder = -getEncoderRight();
   if (arc_pulses - turning_error < encoder && encoder < arc_pulses + turning_error) {
-    stop();
-    moving = false;
+    if (stop()) {
+      moving = false;
+    }
   } else if (encoder <= arc_pulses - 1000) {
     spinRight(0.3);
   } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + turning_error) {
@@ -79,7 +80,9 @@ void turnAngleLeft(float angle) {
 
   encoder = getEncoderRight();
   if (arc_pulses - turning_error < encoder && encoder < arc_pulses + turning_error) {
-    stop();
+    if (stop()) {
+      moving = false;
+    }
     moving = false;
   } else if (encoder <= arc_pulses - 1000) {
     spinLeft(0.3);
@@ -92,7 +95,7 @@ void turnAngleLeft(float angle) {
 
 // Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
 // Retourne le nombre de metres parcourus
-int driveToWall() {
+int driveToWall() { // NE PAS UTILISÉ
   ResetEncoderAll();
 
   move(0.3);
@@ -126,8 +129,9 @@ void driveDistance(float distance = 0) {
   
   encoder = (getEncoderLeft() + getEncoderRight()) / 2;
     if (distance_pulses - 100 < encoder) {
-        stop();
+      if (stop()) {
         moving = false;
+      }
     } else if (encoder < 200) {
       driveStraight(0.2);
     } else if (encoder < 400) {
@@ -141,9 +145,6 @@ void driveDistance(float distance = 0) {
 
 // 
 bool endMoving() {
-  // if (!moving) {
-  //   delay(100); // délais pour ne pas saccadé le mouvements
-  // }
   return !moving;
 }
 
