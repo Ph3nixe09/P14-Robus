@@ -21,5 +21,6 @@ void turnAngleLeft(float angle = 0);
 int driveToWall();
 void driveDistance(float distance = 0);
 bool endMoving();
+void followLine(float speed = 0.5)
 
 #endif

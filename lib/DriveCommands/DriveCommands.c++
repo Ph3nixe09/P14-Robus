@@ -20,6 +20,15 @@ const int turning_error = 10;
 float arc;
 float arc_pulses;
 
+enum Correction {
+  STRAIGHT,
+  SOFTLEFT,
+  SOFTRIGHT,
+  HARDLEFT,
+  HARDRIGHT
+};
+
+enum Correction last_correction = STRAIGHT;
 
 // Commands
 // La commande change les vitesses de chaques roues selon les valeurs d'encodeurs pour aller droit
@@ -152,8 +161,66 @@ bool endMoving() {
   }
 }
 
+
+
+// MUST TEST
 // Suivre une ligne au sol
-// void followLine(float speed = 0.5) {
-//   if ()
-//   moveIndependant(speed, speed);
-// }
+// La condition de fin sera dans le système de détection de couleurs
+void followLine(float speed = 0.5) {
+  bool left = getLineLeft();
+  bool mid = getLineMid();
+  bool right = getLineRight();
+  enum Correction current;
+  float speed_left = speed;
+  float speed_right = speed;
+  float k = 0.02; // facteur de correction
+
+
+  // Choix du facteur de correction de vitesse
+  // 8 combinaisons possibles
+  if (left && mid && right) { // tous
+    current = STRAIGHT;
+  } else if (left && mid) {
+    current = SOFTRIGHT;
+  } else if (right && mid) {
+    current = SOFTLEFT;
+  } else if (left && right) { // ne devrait pas arriver
+    current = STRAIGHT;
+  } else if (left) {
+    current = SOFTRIGHT;
+  } else if (right) {
+    current = SOFTLEFT;
+  } else if (mid) {
+    current = STRAIGHT;
+  } else { // aucun, 5 combinaison réduit à 3
+    if (last_correction == SOFTRIGHT || last_correction == HARDRIGHT) {
+      current = HARDRIGHT;
+    } else if (last_correction == SOFTLEFT || last_correction == HARDLEFT) {
+      current = HARDLEFT;
+    } else {
+      current = STRAIGHT;
+    }
+  }
+
+  // Ajusté les vitesses selon le facteur de correction (k)
+  switch (current) {
+    case SOFTLEFT:
+      speed_right += k;
+      break;
+
+    case SOFTRIGHT:
+      speed_left += k;
+      break;
+
+    case HARDLEFT:
+      speed_right += (k * 3);
+      break;
+
+    case HARDRIGHT:
+      speed_left += (k * 3);
+      break;
+  }
+
+  last_correction = current;
+  moveIndependant(speed_left, speed_right); 
+}
