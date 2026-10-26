@@ -130,6 +130,9 @@ bool getLineRight() {
   return !digitalRead(U3_PIN);
 }
 
+// Timer
+// void startTimer() 
+
 // Init
 void drivetrainInit() {
   pinMode(GREEN_DETECT_PIN, INPUT);
