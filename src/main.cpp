@@ -56,7 +56,6 @@ void loop() {
       break;
 
     case TEST_COMMAND:
-      greenOn10();
       yellow();
       endLed();
 

@@ -55,9 +55,8 @@ void turnAngleRight(float angle = 0) {
 
   encoder = -getEncoderRight();
   if (arc_pulses - turning_error < encoder && encoder < arc_pulses + turning_error) {
-    if (stop()) {
-      moving = false;
-    }
+    startDriveTimer();
+    moving = false;
   } else if (encoder <= arc_pulses - 1000) {
     spinRight(0.3);
   } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + turning_error) {
@@ -80,9 +79,7 @@ void turnAngleLeft(float angle) {
 
   encoder = getEncoderRight();
   if (arc_pulses - turning_error < encoder && encoder < arc_pulses + turning_error) {
-    if (stop()) {
-      moving = false;
-    }
+    startDriveTimer();
     moving = false;
   } else if (encoder <= arc_pulses - 1000) {
     spinLeft(0.3);
@@ -129,9 +126,8 @@ void driveDistance(float distance = 0) {
   
   encoder = (getEncoderLeft() + getEncoderRight()) / 2;
     if (distance_pulses - 100 < encoder) {
-      if (stop()) {
-        moving = false;
-      }
+      startDriveTimer();
+      moving = false;
     } else if (encoder < 200) {
       driveStraight(0.2);
     } else if (encoder < 400) {
@@ -145,7 +141,15 @@ void driveDistance(float distance = 0) {
 
 // 
 bool endMoving() {
-  return !moving;
+  if (moving) {
+    return false;
+  } else {
+    if (stop()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 // Suivre une ligne au sol
