@@ -27,7 +27,7 @@ jobs:
       - name: Create a depend.list file
         run: |
           # eg: echo "<repo>" >> depend.list
-
+          echo "Seeed-Studio/Grove_Chainable_RGB_LED" >> depend.list
 
 
           
