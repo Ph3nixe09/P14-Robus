@@ -10,6 +10,7 @@ enum RobotState {
   WAITING_FOR_IR,
   FOLLOWING_LINE,
   COLOR_COMMAND,
+  TEST_COMMAND,
   END
 };
 
@@ -45,22 +46,29 @@ void setup() {
 void loop() {
   switch (state) {
     case WAITING_FOR_IR:
-    /* code */
-    // if (recois signal manette) {
-    if (getBumberRear()) { // placeholder de la manette
-      driveDistance(100);
-      state = FOLLOWING_LINE;
-    } 
-    break;
+      /* code */
+      // if (recois signal manette) {
+      if (getBumberRear()) { // placeholder de la manette
+        yellow(true);
+        greenOn10();
+        state = TEST_COMMAND;
+      } 
+      break;
+
+    case TEST_COMMAND:
+      yellow();
+      endLed();
+
+      if (endYellow()) {
+        state = WAITING_FOR_IR;
+      } else if (bumper_safety && getBumberAny()) {
+        if (stop()) {
+          state = WAITING_FOR_IR;
+        }
+      }
 
     case FOLLOWING_LINE:
-    driveDistance();
-    if (endMoving()) {
-      state = WAITING_FOR_IR;
-    } else if (bumper_safety && getBumberAny()) {
-      stop();
-      state = WAITING_FOR_IR;
-    }
+
     // if (vois un carton de couleur) {changer l'état à COLOR_COMMAND et à la couleur vue}, 
     /* code */
     break;
@@ -80,9 +88,13 @@ void loop() {
           /* code */
           break;
         case YELLOW:
-          /* code */
+          yellow();
+
+          if (endYellow()) {
+            state = WAITING_FOR_IR;
+          }
           break;
     }
   }
-  delay(20);
+  delay(20); // clock de la boucle
 }

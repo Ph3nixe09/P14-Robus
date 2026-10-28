@@ -7,6 +7,10 @@ const int BLUE_PIN = 32;
 const int ORANGE_PIN = 33;
 const int YELLOW_PIN = 34;
 
+long led_start_time;
+bool led_timer_on = false;
+long led_timer_duration;
+
 void greenOn() {
     digitalWrite(GREEN_PIN, LOW);
 }
@@ -26,7 +30,6 @@ void orangeOn() {
 void yellowOn() {
     digitalWrite(YELLOW_PIN, LOW);
 }
-
 
 void allLedOff() {
     digitalWrite(GREEN_PIN, HIGH);
@@ -60,4 +63,30 @@ void sapinNoel() {
     delay(delta);
     allLedOff();
     delay(delta);
+}
+
+// MUST TEST
+// Timers 
+// CES FONCTIONS PEUVENT ÊTRE RECRÉÉS POUR TOUS LES AUTRES SYSTÈMES
+void startLedTimer(long duration = 10000) { // temps en millis
+    led_start_time = millis();
+    led_timer_on = true;
+    led_timer_duration = duration;
+}
+
+bool endLed() {
+    long delta = millis() - led_start_time;
+
+    if (delta > led_timer_duration) {
+        allLedOff();
+        return true; // retourne True si le temps est atteint
+    } else {
+        return false;
+    }
+}
+
+void greenOn10() {
+    allLedOff();
+    orangeOn();
+    startLedTimer(5000);
 }

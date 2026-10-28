@@ -5,7 +5,7 @@
 int goBackListe[5] = {0,0,0,0,0};
 
 // Constants
-const float WHEEL_SPACE = 190.5; // mm
+const float WHEEL_SPACE = 191.5; // mm
 const float WHEEL_SPACE_CIRCUMFERENCE = 3.141592 * WHEEL_SPACE; // mm
 const float WHEEL_DIAMETER = 3;
 const float WHEEL_CIRCUMFERENCE_INCHES = WHEEL_DIAMETER * 3.141592; // inches
@@ -30,6 +30,16 @@ int inverter;
 float speed_right;
 float base_speed_left;
 float integral_error;
+
+enum Correction {
+  STRAIGHT,
+  SOFTLEFT,
+  SOFTRIGHT,
+  HARDLEFT,
+  HARDRIGHT
+};
+
+enum Correction last_correction = STRAIGHT;
 
 // Commands
 // La commande change les vitesses de chaques roues selon les valeurs d'encodeurs pour aller droit
@@ -106,7 +116,7 @@ void tourner(float angle, float speed) {
 //================================================================================================
 // Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
 // Retourne le nombre de metres parcourus
-int driveToWall() {
+int driveToWall() { // NE PAS UTILISÉ
   ResetEncoderAll();
 
   move(0.3);
@@ -161,7 +171,15 @@ void driveDistance(float distance, float vitesse) {
 
 // 
 bool endMoving() {
-  return !moving;
+  if (moving) {
+    return false;
+  } else {
+    if (stop()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
@@ -174,7 +192,62 @@ float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
 }
 
 // Suivre une ligne au sol
-// void followLine(float speed = 0.5) {
-//   if ()
-//   moveIndependant(speed, speed);
-// }
+// La condition de fin sera dans le système de détection de couleurs
+void followLine(float speed = 0.5) {
+  bool left = getLineLeft();
+  bool mid = getLineMid();
+  bool right = getLineRight();
+  enum Correction current;
+  float speed_left = speed;
+  float speed_right = speed;
+  float k = 0.02; // facteur de correction
+
+
+  // Choix du facteur de correction de vitesse
+  // 8 combinaisons possibles
+  if (left && mid && right) { // tous
+    current = STRAIGHT;
+  } else if (left && mid) {
+    current = SOFTRIGHT;
+  } else if (right && mid) {
+    current = SOFTLEFT;
+  } else if (left && right) { // ne devrait pas arriver
+    current = STRAIGHT;
+  } else if (left) {
+    current = SOFTRIGHT;
+  } else if (right) {
+    current = SOFTLEFT;
+  } else if (mid) {
+    current = STRAIGHT;
+  } else { // aucun, 5 combinaison réduit à 3
+    if (last_correction == SOFTRIGHT || last_correction == HARDRIGHT) {
+      current = HARDRIGHT;
+    } else if (last_correction == SOFTLEFT || last_correction == HARDLEFT) {
+      current = HARDLEFT;
+    } else {
+      current = STRAIGHT;
+    }
+  }
+
+  // Ajusté les vitesses selon le facteur de correction (k)
+  switch (current) {
+    case SOFTLEFT:
+      speed_right += k;
+      break;
+
+    case SOFTRIGHT:
+      speed_left += k;
+      break;
+
+    case HARDLEFT:
+      speed_right += (k * 3);
+      break;
+
+    case HARDRIGHT:
+      speed_left += (k * 3);
+      break;
+  }
+
+  last_correction = current;
+  moveIndependant(speed_left, speed_right); 
+}
