@@ -6,13 +6,13 @@ bool runningYellow;
 void yellow(bool init = false) {
     if (init) { // parametres initiales
         runningYellow = true;
-        turnAngleRight(90); // lancer la premiere commande
+        tourner(90); // lancer la premiere commande
         step = 1; // changer d'étape
     }
 
     switch (step) { // sélectionne la bonne étape
     case 1: // étape 1
-        turnAngleRight();
+        tourner();
         if (endMoving()) { // si la condition de fin est atteinte
             driveDistance(50); // lancer la deuxieme commande
             step++; // changer d'étape
@@ -21,12 +21,12 @@ void yellow(bool init = false) {
     case 2:
         driveDistance();
         if (endMoving()) {
-            turnAngleLeft(90);;
+            tourner(-90);;
             step++;
         }
         break;
     case 3:
-        turnAngleLeft();
+        tourner();
         if (endMoving()) {
             driveDistance(25);
             step++;
@@ -35,12 +35,12 @@ void yellow(bool init = false) {
     case 4:
         driveDistance();
         if (endMoving()) {
-            turnAngleLeft(90);;
+            tourner(-90);;
             step++;
         }
         break;
     case 5:
-        turnAngleLeft();
+        tourner();
         if (endMoving()) {
             driveDistance(50);
             step++;
@@ -49,12 +49,12 @@ void yellow(bool init = false) {
     case 6:
         driveDistance();
         if (endMoving()) {
-            turnAngleRight(90);;
+            tourner(90);;
             step++;
         }
         break;
     case 7: // dernière étape
-        turnAngleRight();
+        tourner();
         if (endMoving()) { // si la condition de fin est atteinte
             runningYellow = false; // Changer la valeur de fin de la  commande couleur
         }
