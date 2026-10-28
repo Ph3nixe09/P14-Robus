@@ -4,6 +4,8 @@
 #include <DriveCommands.h>
 #include <LED.h>
 #include <Yellow.h>
+#include <Green.h>
+#include <Rose.h>
 #include <ColorDetection.h>
 
 enum RobotState {
@@ -76,10 +78,10 @@ void loop() {
     case COLOR_COMMAND:
       switch (color) {
         case GREEN:
-          /* code */
+          green();
           break;
         case RED:
-          /* code */
+          rose();
           break;
         case BLUE:
           /* code */
