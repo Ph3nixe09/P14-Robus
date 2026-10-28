@@ -19,6 +19,17 @@ float encoder = 0;
 const int turning_error = 10;
 float arc;
 float arc_pulses;
+//Tourner
+float val_expected_turn;
+float KPT = 0.0005;   // Pour tourner
+float KIT = 0.00005;
+float turn_right;
+float turn_left;
+float base_speed;
+int inverter;
+float speed_right;
+float base_speed_left;
+float integral_error;
 
 enum Correction {
   STRAIGHT,
@@ -51,54 +62,58 @@ void driveStraight(float speed = 0.5) {
   last_right = right;
 }
 
-// Touner précisement à droite (horaire) selon un angle
-// Angle en degrées
-void turnAngleRight(float angle = 0) {
-  if (angle != 0) {
-    ResetEncoderAll();
-    arc = ((angle - 1.4) / 360) * WHEEL_SPACE_CIRCUMFERENCE;
-    arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
-    moving = true;
+//================================================================================================
+void tourner(float angle, float speed) {
+  if (angle != 0){
+    val_expected_turn = -22.05 * angle; //En nombre de degré dans les deux sens (+ droite et - gauche)
+    
+    turn_right = 0;
+    turn_left = 0;
+    
+    base_speed = 0.3; 
+    inverter = (val_expected_turn >= 0) ? 1 : -1;
+
+    if (speed != 0 ){
+      base_speed = speed;
+    }
+
+    speed_right = base_speed * inverter;
+    base_speed_left = -base_speed * inverter;
+    integral_error = 0;
     encoder = 0;
-  }
-
-  encoder = -getEncoderRight();
-  if (arc_pulses - turning_error < encoder && encoder < arc_pulses + turning_error) {
-    startDriveTimer();
-    moving = false;
-  } else if (encoder <= arc_pulses - 1000) {
-    spinRight(0.3);
-  } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + turning_error) {
-    spinRight(0.13);
-  } else {
-    spinLeft(0.13);
-  }
-}
-
-// Touner précisement à gauche (anti-horaire) selon un angle
-// Angle en degrées
-void turnAngleLeft(float angle) {
-  if (angle != 0) {
-    ResetEncoderAll();
-    arc = ((angle - 1.4) / 360) * WHEEL_SPACE_CIRCUMFERENCE;
-    arc_pulses = (arc * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
     moving = true;
-    encoder = 0;
+    ResetEncoderAll();
   }
 
-  encoder = getEncoderRight();
-  if (arc_pulses - turning_error < encoder && encoder < arc_pulses + turning_error) {
-    startDriveTimer();
+  int32_t read_pulse_left = ENCODER_ReadReset(0);
+  int32_t read_pulse_right = ENCODER_ReadReset(1);
+
+  // Distances totales parcourues par roue
+  turn_left += read_pulse_left;
+  turn_right += read_pulse_right;
+
+  // Distance moyenne parcourue par les deux roues (angle du robot plus précis)
+  encoder  = (abs(turn_right) + abs(turn_left)) / 2.0;
+
+  //terminer le mouvement
+  if (encoder >= (abs(val_expected_turn) - 50)) {
+    stop();
     moving = false;
-  } else if (encoder <= arc_pulses - 1000) {
-    spinLeft(0.3);
-  } else if (arc_pulses - 1000 <= encoder && encoder <= arc_pulses + turning_error) {
-    spinLeft(0.13);
-  } else {
-    spinRight(0.13);
+    return;
   }
-}
 
+  // Écart de position total entre les roues
+  float total_pos_error = (-1.0 * turn_right) - turn_left;
+  integral_error += total_pos_error;
+
+  // Calcul de la vitesse gauche pour le PID
+  float speed_correct_left = base_speed_left + (total_pos_error * KPT) + (integral_error * KIT);
+
+  MOTOR_SetSpeed(RIGHT, speed_right);
+  MOTOR_SetSpeed(LEFT, speed_correct_left);
+
+}
+//================================================================================================
 // Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
 // Retourne le nombre de metres parcourus
 int driveToWall() { // NE PAS UTILISÉ
@@ -125,19 +140,24 @@ int driveToWall() { // NE PAS UTILISÉ
 }
 
 // Distance en cm seulement en initialisant
-void driveDistance(float distance = 0) {
+void driveDistance(float distance, float vitesse) {
   if (distance != 0) {
     ResetEncoderAll();
     distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
     moving = true;
     encoder = 0;
   }
-  
+
   encoder = (getEncoderLeft() + getEncoderRight()) / 2;
-    if (distance_pulses - 100 < encoder) {
-      startDriveTimer();
+  if (distance_pulses - 100 < encoder) {
+      stop();
       moving = false;
-    } else if (encoder < 200) {
+  }
+  if (vitesse != 0){
+    driveStraight(vitesse);
+  }
+  else{
+    if (encoder < 200) {
       driveStraight(0.2);
     } else if (encoder < 400) {
       driveStraight(0.4);
@@ -146,6 +166,7 @@ void driveDistance(float distance = 0) {
     } else {
       driveStraight(0.3);
     }
+  }
 }
 
 // 
@@ -161,9 +182,15 @@ bool endMoving() {
   }
 }
 
+float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
+  if (type == 0){
+    return (encoder / 22.05);
+  }
+  else{
+    return (encoder * WHEEL_CIRCUMFERENCE / 10 / PULSES_PER_ROTATION);
+  }
+}
 
-
-// MUST TEST
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
 void followLine(float speed = 0.5) {
