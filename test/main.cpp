@@ -27,14 +27,13 @@ void setup() {
   Serial.begin(9600);
   BoardInit();
   ledInit();
-//   detectColorInit();
+  detectColorInit();
   drivetrainInit();
   InfraReceivInit();
 
 
   state = WAITING_FOR_IR;
-  bumper_safety = true;
-  color = GREEN;
+  bumper_safety = false;
 
   beep(3);
   delay(200);
@@ -48,6 +47,7 @@ void loop() {
     case WAITING_FOR_IR:
       /* code */
       // if (recois signal manette) {
+      delay(100);
       if (getBumberRear()) { // placeholder de la manette
         state = FOLLOWING_LINE;
       } 
@@ -70,15 +70,11 @@ void loop() {
       break;
 
     case TEST_COMMAND:
-      yellow();
-
-      if (endYellow()) {
-        state = WAITING_FOR_IR;
-      } else if (bumper_safety && getBumberAny()) {
-        if (stop()) {
-          state = WAITING_FOR_IR;
-        }
-      }
+      colorValues();
+      state = WAITING_FOR_IR;
+      //if (bumper_safety && getBumberAny()) {
+        
+      //}
 
     case FOLLOWING_LINE:
       followLine();
