@@ -14,12 +14,10 @@ extern const int U3_PIN = 41; // fil Brun
 
 // Timer
 long drive_start_time;
-bool drive_timer_on = false;
 long drive_timer_duration;
 
 void startDriveTimer(long duration = 200) { // temps en millis
     drive_start_time = millis();
-    drive_timer_on = true;
     drive_timer_duration = duration;
 }
 

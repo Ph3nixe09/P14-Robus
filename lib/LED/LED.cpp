@@ -88,5 +88,5 @@ void endLed() {
 void greenOn10() {
     allLedOff();
     orangeOn();
-    startLedTimer(5000);
+    startLedTimer();
 }
