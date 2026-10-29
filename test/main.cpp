@@ -12,10 +12,9 @@
 
 enum RobotState {
   WAITING_FOR_IR,
+  TEST_COMMAND,
   FOLLOWING_LINE,
   COLOR_COMMAND,
-  TEST_COMMAND,
-  END
 };
 
 enum Color {
@@ -55,7 +54,7 @@ void loop() {
       /* code */
       // if (recois signal manette) {
       if (getBumberRear()) { // placeholder de la manette
-        followLine();
+        greenOn10();
         state = FOLLOWING_LINE;
       } 
       break;
@@ -105,13 +104,6 @@ void loop() {
           break;
     }
   }
-
-  if (bumper_safety && getBumberAny()) {
-      if (stop()) {
-        state = WAITING_FOR_IR;
-      }
-    }
-
   endLed();
   delay(20); // clock de la boucle
 }

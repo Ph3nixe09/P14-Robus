@@ -196,14 +196,14 @@ float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
 
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
-void followLine(float speed = 0.3) {
+void followLine(float speed = 0.2) {
   bool left = getLineLeft();
   bool mid = getLineMid();
   bool right = getLineRight();
   enum Correction current;
-  float speed_left = speed;
-  float speed_right = speed;
-  float k = 0.02; // facteur de correction
+  float speed_left;
+  float speed_right;
+  float k = 0.15; // facteur de correction
 
 
   // Choix du facteur de correction de vitesse
@@ -235,22 +235,38 @@ void followLine(float speed = 0.3) {
   // Ajusté les vitesses selon le facteur de correction (k)
   switch (current) {
     case SOFTLEFT:
-      speed_right += k;
+      Serial.println("SOFTLEFT");
+      speed_left = speed - k;
+      speed_right = speed + k;
       break;
 
     case SOFTRIGHT:
-      speed_left += k;
+      Serial.println("SOFTRIGHT");
+      speed_left = speed + k;
+      speed_right = speed - k;
       break;
 
     case HARDLEFT:
-      speed_right += (k * 3);
+      Serial.println("HARDLEFT");
+      speed_left = 0;
+      speed_right = speed + 3 * k;
       break;
 
     case HARDRIGHT:
-      speed_left += (k * 3);
+      Serial.println("HARDRIGHT");
+      speed_left = speed + 3 * k;
+      speed_right = 0;
       break;
+
+    case STRAIGHT:
+      Serial.println("STRAIGHT");
+      speed_left = speed;
+      speed_right = speed;
   }
 
-  last_correction = current;
+  if (last_correction != STRAIGHT) {
+    last_correction = current;
+  }
+  
   moveIndependant(speed_left, speed_right); 
 }
