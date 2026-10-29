@@ -63,7 +63,6 @@ void loop() {
 
     case TEST_COMMAND:
       yellow();
-      endLed();
 
       if (endYellow()) {
         state = WAITING_FOR_IR;
@@ -106,5 +105,7 @@ void loop() {
           break;
     }
   }
+
+  endLed();
   delay(20); // clock de la boucle
 }

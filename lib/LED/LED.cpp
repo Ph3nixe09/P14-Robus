@@ -74,14 +74,14 @@ void startLedTimer(long duration = 10000) { // temps en millis
     led_timer_duration = duration;
 }
 
-bool endLed() {
-    long delta = millis() - led_start_time;
-
-    if (delta > led_timer_duration) {
-        allLedOff();
-        return true; // retourne True si le temps est atteint
-    } else {
-        return false;
+void endLed() {
+    if (led_timer_on) {
+        long delta = millis() - led_start_time;
+    
+        if (delta > led_timer_duration) {
+            allLedOff();
+            led_timer_on = false;
+        }
     }
 }
 

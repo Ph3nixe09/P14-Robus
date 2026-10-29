@@ -18,6 +18,6 @@ void ledInit();
 void sapinNoel();
 
 void greenOn10();
-bool endLed();
+void endLed();
 
 #endif
