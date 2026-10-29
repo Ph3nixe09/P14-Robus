@@ -54,10 +54,9 @@ void loop() {
     case WAITING_FOR_IR:
       /* code */
       // if (recois signal manette) {
-      if (demarrage()) { // placeholder de la manette
-        yellow(true);
-        greenOn10();
-        state = TEST_COMMAND;
+      if (getBumberRear()) { // placeholder de la manette
+        followLine();
+        state = FOLLOWING_LINE;
       } 
       break;
 
@@ -73,7 +72,8 @@ void loop() {
       }
 
     case FOLLOWING_LINE:
-
+      followLine();
+      
     // if (vois un carton de couleur) {changer l'état à COLOR_COMMAND et à la couleur vue}, 
     /* code */
     break;
@@ -105,6 +105,12 @@ void loop() {
           break;
     }
   }
+
+  if (bumper_safety && getBumberAny()) {
+      if (stop()) {
+        state = WAITING_FOR_IR;
+      }
+    }
 
   endLed();
   delay(20); // clock de la boucle

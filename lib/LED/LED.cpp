@@ -1,11 +1,11 @@
 #include <LibRobus.h>
 #include <Arduino.h>
 
-const int GREEN_PIN = 30;
-const int RED_PIN = 31;
-const int BLUE_PIN = 32;
-const int ORANGE_PIN = 33;
-const int YELLOW_PIN = 34;
+const int GREEN_PIN = 38;
+const int RED_PIN = 39;
+const int BLUE_PIN = 40;
+const int ORANGE_PIN = 41;
+const int YELLOW_PIN = 42;
 
 long led_start_time;
 bool led_timer_on = false;
