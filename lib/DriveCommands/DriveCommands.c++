@@ -235,31 +235,26 @@ void followLine(float speed = 0.2) {
   // Ajusté les vitesses selon le facteur de correction (k)
   switch (current) {
     case SOFTLEFT:
-      Serial.println("SOFTLEFT");
       speed_left = speed - k;
       speed_right = speed + k;
       break;
 
     case SOFTRIGHT:
-      Serial.println("SOFTRIGHT");
       speed_left = speed + k;
       speed_right = speed - k;
       break;
 
     case HARDLEFT:
-      Serial.println("HARDLEFT");
       speed_left = 0;
       speed_right = speed + 3 * k;
       break;
 
     case HARDRIGHT:
-      Serial.println("HARDRIGHT");
       speed_left = speed + 3 * k;
       speed_right = 0;
       break;
 
     case STRAIGHT:
-      Serial.println("STRAIGHT");
       speed_left = speed;
       speed_right = speed;
   }

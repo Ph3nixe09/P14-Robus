@@ -32,7 +32,8 @@ typedef enum {
   RED,
   BLUE,
   ORANGE,
-  YELLOW
+  YELLOW,
+  NONE
 } Color;
 
 // On

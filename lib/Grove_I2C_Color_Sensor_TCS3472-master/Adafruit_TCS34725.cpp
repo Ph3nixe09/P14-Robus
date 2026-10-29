@@ -229,7 +229,7 @@ void Adafruit_TCS34725::getRawData(uint16_t* r, uint16_t* g, uint16_t* b, uint16
             delay(3);
             break;
         case TCS34725_INTEGRATIONTIME_24MS:
-            delay(24);
+            //delay(24);
             break;
         case TCS34725_INTEGRATIONTIME_50MS:
             delay(50);
