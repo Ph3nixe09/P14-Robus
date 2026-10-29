@@ -98,7 +98,7 @@ void tourner(float angle, float speed) {
   
     //terminer le mouvement
     if (encoder >= (abs(val_expected_turn) - 50)) {
-      stop();
+      startDriveTimer();
       moving = false;
       return;
     }
@@ -152,7 +152,7 @@ void driveDistance(float distance, float vitesse) {
   if (moving) {
     encoder = (getEncoderLeft() + getEncoderRight()) / 2;
     if (distance_pulses - 100 < encoder) {
-        stop();
+        startDriveTimer();
         moving = false;
     }
     if (vitesse != 0){
