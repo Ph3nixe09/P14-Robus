@@ -43,15 +43,9 @@ void loop() {
     case WAITING_FOR_IR:
       /* code */
       // if (recois signal manette) {
-      delay(100);
       if (getBumberRear()) { // placeholder de la manette
-        state = TEST_COMMAND;
-      } 
-
-      /*if (getBumberRear()) { // placeholder de la manette
         state = FOLLOWING_LINE;
-        ledOn10(ORANGE);
-      } */
+      } 
 
       if (getBumberFront()) { // placeholder de la manette
         ledOn10(GREEN);
@@ -72,36 +66,49 @@ void loop() {
         
       //}
 
-    case FOLLOWING_LINE:
-      followLine();
-      
-    // if (vois un carton de couleur) {changer l'état à COLOR_COMMAND et à la couleur vue}, 
-    /* code */
-    break;
+    case FOLLOWING_LINE: {
+      Color current = colorValues();
+      if (current == NONE) {
+        Serial.println("PLANCHER");
+        followLine();
+      } else {
+        state = COLOR_COMMAND;
+        color = current;
+      }
+      break;
+    }
 
     case COLOR_COMMAND:
       switch (color) {
         case GREEN:
-          green();
+          ledOn10(color);
+          state = FOLLOWING_LINE;          
           break;
         case RED:
-          rose();
+          ledOn10(color);
+          state = FOLLOWING_LINE;          
           break;
         case BLUE:
-          /* code */
+          ledOn10(color);
+          state = FOLLOWING_LINE;          
           break;
         case ORANGE:
-          /* code */
+          ledOn10(color);
+          state = FOLLOWING_LINE;          
           break;
         case YELLOW:
-          yellow();
+          ledOn10(color);
+          state = FOLLOWING_LINE;          
 
-          if (endYellow()) {
-            state = WAITING_FOR_IR;
-          }
+          // yellow();
+
+          // if (endYellow()) {
+          //   state = WAITING_FOR_IR;
+          // }
           break;
+          
     }
-  }
+  };
   endLed();
   delay(20); // clock de la boucle
 }
