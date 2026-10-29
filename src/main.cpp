@@ -45,13 +45,13 @@ void loop() {
       // if (recois signal manette) {
       delay(100);
       if (getBumberRear()) { // placeholder de la manette
-        state = FOLLOWING_LINE;
+        state = TEST_COMMAND;
       } 
 
-      if (getBumberRear()) { // placeholder de la manette
+      /*if (getBumberRear()) { // placeholder de la manette
         state = FOLLOWING_LINE;
         ledOn10(ORANGE);
-      } 
+      } */
 
       if (getBumberFront()) { // placeholder de la manette
         ledOn10(GREEN);
@@ -67,7 +67,7 @@ void loop() {
 
     case TEST_COMMAND:
       colorValues();
-      state = WAITING_FOR_IR;
+      break;
       //if (bumper_safety && getBumberAny()) {
         
       //}

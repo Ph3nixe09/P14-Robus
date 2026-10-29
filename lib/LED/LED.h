@@ -12,7 +12,8 @@ enum Color {
   RED,
   BLUE,
   ORANGE,
-  YELLOW
+  YELLOW,
+  NONE
 };
 
 void greenOn();
