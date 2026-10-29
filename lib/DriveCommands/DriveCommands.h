@@ -21,6 +21,6 @@ int driveToWall();
 void driveDistance(float distance = 0, float vitesse = 0);
 bool endMoving();
 float distanceAtteint(int type = 0);
-void followLine(float speed = 0.5);
+void followLine(float speed = 0.2);
 
 #endif
