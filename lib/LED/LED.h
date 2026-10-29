@@ -7,6 +7,14 @@ extern const int BLUE_PIN;
 extern const int ORANGE_PIN;
 extern const int YELLOW_PIN;
 
+enum Color {
+  GREEN,
+  RED,
+  BLUE,
+  ORANGE,
+  YELLOW
+};
+
 void greenOn();
 void redOn();
 void blueOn();
@@ -17,7 +25,7 @@ void allLedOff();
 void ledInit();
 void sapinNoel();
 
-void greenOn10();
+void ledOn10(Color color);
 void endLed();
 
 #endif

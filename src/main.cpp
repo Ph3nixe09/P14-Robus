@@ -15,14 +15,6 @@ enum RobotState {
   COLOR_COMMAND,
 };
 
-enum Color {
-  GREEN,
-  RED,
-  BLUE,
-  ORANGE,
-  YELLOW
-};
-
 enum RobotState state;
 enum Color color;
 
@@ -38,9 +30,12 @@ void setup() {
 
   state = WAITING_FOR_IR;
   bumper_safety = true;
+  color = GREEN;
 
   beep(3);
   delay(200);
+
+  
 }
 
 // Boucle du robot
@@ -50,8 +45,23 @@ void loop() {
       /* code */
       // if (recois signal manette) {
       if (getBumberRear()) { // placeholder de la manette
-        greenOn10();
         state = FOLLOWING_LINE;
+      } 
+
+      if (getBumberRear()) { // placeholder de la manette
+        state = FOLLOWING_LINE;
+        ledOn10(ORANGE);
+      } 
+
+      if (getBumberFront()) { // placeholder de la manette
+        ledOn10(GREEN);
+      } 
+      if (getBumberLeft()) { // placeholder de la manette
+        ledOn10(RED);
+      } 
+
+      if (getBumberRight()) { // placeholder de la manette
+        ledOn10(BLUE);
       } 
       break;
 
