@@ -50,6 +50,7 @@ Color colorValues() {
       sum_G += g;
       sum_B += b;
       n++;
+      return NONE;
       }
       else{
     
