@@ -5,6 +5,12 @@
 #include <LED.h>
 #include <Yellow.h>
 #include <ColorDetection.h>
+#include <InfraReceiv.h>
+
+// Récepteur InfraRouge devant robot
+IRrecv irReceiv(pinReciv);
+decode_results results;
+const int pinReciv = 37;
 
 enum RobotState {
   WAITING_FOR_IR,
@@ -31,6 +37,10 @@ void setup() {
   Serial.begin(9600);
   BoardInit();
   ledInit();
+
+// Activer le récepteur devant le robot
+  irReceiv.enableIRIn();
+
 //   detectColorInit();
   drivetrainInit();
 
