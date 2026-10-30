@@ -2,7 +2,9 @@
 #include <Arduino.h>
 
 IRsend irSend;
-
+/*
+POUR LA TÉLÉCOMMANDE UNIQUEMENT
+*/
 bool BP1 = 0;
 bool BP2 = 0;
 unsigned long signal1 = 0xA35C;
