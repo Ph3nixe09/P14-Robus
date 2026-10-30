@@ -1,7 +1,8 @@
 #ifndef InfraReceiv_h 
 #define InfraReceiv_h
+void InfraReceivInit();
 
-bool start();
+bool demarrage();
 bool wakeUp();
 
 #endif

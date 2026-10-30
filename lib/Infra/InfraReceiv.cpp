@@ -1,23 +1,44 @@
 #include <LibRobus.h>
 #include <Arduino.h>
-const int pinReciv = 37;
+#include <Drivetrain.h>
+#include <DriveCommands.h>
+const int pinRecive = 37;
 
-IRrecv irReceiv(pinReciv);
+IRrecv irReceive(pinRecive);
 decode_results results;
+void InfraReceivInit(){
+    irReceive.enableIRIn();
+}
 
-bool start (){
-    if (results.value == 0x01){
-        Serial.print("Départ Reçu");
-        return true;
+bool demarrage (){
+    bool recieved =false;
+    if(irReceive.decode(&results)){
+        
+        if (results.value == 0xA35C){
+            Serial.print("Départ Reçu");
+            beep(2);
+            recieved = true;
+        }else if (results.value == 0xB76D){
+            beep(3);
+        }
+        irReceive.resume(); 
+        return recieved;
     }
-    irReceiv.resume();
+    
 }
 bool wakeUp (){
-    if (results.value == 0x02){
-        Serial.print("Wake Up Reçu");
-        return true;
+    bool recieved = false;
+    if(irReceive.decode(&results)){
+        if (results.value == 0xB76D){
+            Serial.print("Wake Up Reçu");
+            beep(3);
+            recieved = true;
+        }else if (results.value == 0xA35C){
+            beep(2);
+        }
+        irReceive.resume(); 
+        return recieved;
     }
-    irReceiv.resume();
 }
 /*
 void setup(){ 

@@ -7,10 +7,6 @@
 #include <ColorDetection.h>
 #include <InfraReceiv.h>
 
-// Récepteur InfraRouge devant robot
-IRrecv irReceiv(pinReciv);
-decode_results results;
-const int pinReciv = 37;
 
 enum RobotState {
   WAITING_FOR_IR,
@@ -37,9 +33,7 @@ void setup() {
   Serial.begin(9600);
   BoardInit();
   ledInit();
-
-// Activer le récepteur devant le robot
-  irReceiv.enableIRIn();
+  InfraReceivInit();
 
 //   detectColorInit();
   drivetrainInit();
@@ -57,24 +51,26 @@ void loop() {
     case WAITING_FOR_IR:
     /* code */
     // if (recois signal manette) {
-    if (getBumberRear()) { // placeholder de la manette
+    if (demarrage()) { // placeholder de la manette
       driveDistance(100);
       state = FOLLOWING_LINE;
     } 
     break;
 
     case FOLLOWING_LINE:
-    driveDistance();
-    if (endMoving()) {
-      state = WAITING_FOR_IR;
-    } else if (bumper_safety && getBumberAny()) {
-      stop();
-      state = WAITING_FOR_IR;
-    }
+    if(wakeUp()){
+      driveDistance();
+      if (endMoving()) {
+        state = WAITING_FOR_IR;
+      } else if (bumper_safety && getBumberAny()) {
+        stop();
+        state = WAITING_FOR_IR;
+      }
     // if (vois un carton de couleur) {changer l'état à COLOR_COMMAND et à la couleur vue}, 
     /* code */
-    break;
-
+      break;
+    }
+    
     case COLOR_COMMAND:
       switch (color) {
         case GREEN:
