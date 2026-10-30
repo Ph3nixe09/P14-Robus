@@ -4,6 +4,8 @@
 #include <DriveCommands.h>
 #include <LED.h>
 #include <Yellow.h>
+#include <BLeu.h>
+#include <InfraReceiv.h>
 #include <ColorDetection.h>
 
 enum RobotState {
@@ -34,6 +36,8 @@ void setup() {
   ledInit();
 //   detectColorInit();
   drivetrainInit();
+  InfraReceivInit();
+
 
   state = WAITING_FOR_IR;
   bumper_safety = true;
@@ -48,7 +52,7 @@ void loop() {
     case WAITING_FOR_IR:
       /* code */
       // if (recois signal manette) {
-      if (getBumberRear()) { // placeholder de la manette
+      if (demarrage()) { // placeholder de la manette
         yellow(true);
         greenOn10();
         state = TEST_COMMAND;
@@ -82,7 +86,11 @@ void loop() {
           /* code */
           break;
         case BLUE:
-          /* code */
+          bleu();
+          if (endBleu()){
+            state=WAITING_FOR_IR;
+          }
+
           break;
         case ORANGE:
           /* code */

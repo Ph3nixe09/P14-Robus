@@ -21,7 +21,7 @@ void yellow(bool init = false) {
     case 2:
         driveDistance();
         if (endMoving()) {
-            turnAngleLeft(90);;
+           turnAngleLeft(90);
             step++;
         }
         break;
@@ -35,12 +35,12 @@ void yellow(bool init = false) {
     case 4:
         driveDistance();
         if (endMoving()) {
-            turnAngleLeft(90);;
+           turnAngleLeft(90);
             step++;
         }
         break;
     case 5:
-        turnAngleLeft();
+       turnAngleLeft();
         if (endMoving()) {
             driveDistance(50);
             step++;
@@ -49,7 +49,7 @@ void yellow(bool init = false) {
     case 6:
         driveDistance();
         if (endMoving()) {
-            turnAngleRight(90);;
+           turnAngleRight(90);
             step++;
         }
         break;
