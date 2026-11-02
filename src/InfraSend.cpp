@@ -34,7 +34,7 @@ void setup(){
 
 void loop(){
     
-    digitalWrite(2, 1);
+    digitalWrite(7, 1);
     BP1 = Read_BP(5);
     if(BP1 == true){
         Serial.print("TRUE BP1 ");
