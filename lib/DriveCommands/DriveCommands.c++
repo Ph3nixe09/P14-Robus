@@ -235,13 +235,13 @@ void followLine(float speed = 0.2) {
   // Ajusté les vitesses selon le facteur de correction (k)
   switch (current) {
     case SOFTLEFT:
-      speed_left = speed - k;
+      speed_left = -speed;
       speed_right = speed + k;
       break;
 
     case SOFTRIGHT:
       speed_left = speed + k;
-      speed_right = speed - k;
+      speed_right = -speed;
       break;
 
     case HARDLEFT:

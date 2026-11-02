@@ -45,12 +45,12 @@ void loop() {
     case WAITING_FOR_IR:
       /* code */
       // if (recois signal manette) {
-      if (getBumberRear()) { // placeholder de la manette
+      if (demarrage()) { // placeholder de la manette
         state = FOLLOWING_LINE;
       } 
 
     case TEST_COMMAND:
-      colorValues();
+      testLineSensor();
       break;
       //if (bumper_safety && getBumberAny()) {
         

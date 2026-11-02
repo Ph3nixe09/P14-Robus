@@ -154,6 +154,7 @@ void testLineSensor() {
   Serial.println(getLineMid());
   Serial.print("Right :");
   Serial.println(getLineRight());
+  delay(500);
 }
 
 
