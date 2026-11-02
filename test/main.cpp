@@ -37,8 +37,6 @@ void setup() {
 
   beep(3);
   delay(200);
-
-  
 }
 
 // Boucle du robot
@@ -50,18 +48,6 @@ void loop() {
       if (getBumberRear()) { // placeholder de la manette
         state = FOLLOWING_LINE;
       } 
-
-      if (getBumberFront()) { // placeholder de la manette
-        ledOn10(GREEN);
-      } 
-      if (getBumberLeft()) { // placeholder de la manette
-        ledOn10(RED);
-      } 
-
-      if (getBumberRight()) { // placeholder de la manette
-        ledOn10(BLUE);
-      } 
-      break;
 
     case TEST_COMMAND:
       colorValues();
