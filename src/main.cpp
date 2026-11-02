@@ -59,7 +59,7 @@ void loop() {
     case FOLLOWING_LINE: {
       Color current = colorValues();
       if (current == NONE) {
-        Serial.println("PLANCHER");
+        // Serial.println("PLANCHER");
         followLine();
       } else {
         state = COLOR_COMMAND;
@@ -80,7 +80,12 @@ void loop() {
           break;
         case BLUE:
           ledOn10(color);
-          state = FOLLOWING_LINE;          
+          blue();
+          Serial.print(endBlue());
+          if (endBlue()){
+            Serial.print("NNA");
+          state = FOLLOWING_LINE;   
+          }       
           break;
         case ORANGE:
           ledOn10(color);
