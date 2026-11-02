@@ -8,18 +8,16 @@ int last_right = 0;
 // Pins
 extern const int GREEN_DETECT_PIN = 48;
 extern const int RED_DETECT_PIN = 49;
-extern const int U1_PIN = 37; // fil Jaune
-extern const int U2_PIN = 39; // fil Vert
-extern const int U3_PIN = 41; // fil Brun
+extern const int U1_PIN = 43; // fil Jaune
+extern const int U2_PIN = 45; // fil Vert
+extern const int U3_PIN = 47; // fil Brun
 
 // Timer
 long drive_start_time;
-bool drive_timer_on = false;
 long drive_timer_duration;
 
 void startDriveTimer(long duration = 200) { // temps en millis
     drive_start_time = millis();
-    drive_timer_on = true;
     drive_timer_duration = duration;
 }
 
@@ -149,6 +147,14 @@ bool getLineRight() {
   return !digitalRead(U3_PIN);
 }
 
+void testLineSensor() {
+   Serial.print("Left :");
+  Serial.println(getLineLeft());
+  Serial.print("Middle :");
+  Serial.println(getLineMid());
+  Serial.print("Right :");
+  Serial.println(getLineRight());
+}
 
 
 // Init

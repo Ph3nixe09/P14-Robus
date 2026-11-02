@@ -184,46 +184,51 @@ bool endRose(){
 //=========================================================
 //Code pour faire les test
 
-enum RobotState {
-    ATTEND,
-    AFFICHE
-};
+// bool test = false;
 
-enum RobotState state;
+// if (test) {
+//     enum RobotState {
+//         ATTEND,
+//         AFFICHE
+//     };
+    
+//     enum RobotState state;
+    
+//     void setup() { 
+//       Serial.begin(9600);
+//       BoardInit();
+//     //   detectColorInit();
+//       drivetrainInit();
+    
+//       etape = CHERCHE;
+//       deplacement = START;
+    
+//       beep(3);
+//       delay(200);
+//     };
+    
+//     // Boucle du robot
+//     void loop() {
+//       //infrarouge = ROBUS_ReadIR(0);
+//         if (getBumberRear()){ // placeholder de la manette
+//           state = AFFICHE;
+//           etape = CHERCHE;
+//           deplacement = START;
+//         }
+//         if (getBumberFront()) {
+//             state = ATTEND;
+//             stop();
+//         }
+    
+//         if (state == AFFICHE){
+//             Serial.println(infrarouge);
+//             rose();
+//         }
+//         if (endRose()){
+//           stop();
+//           state = ATTEND;
+//         }
+//         delay(20);
+//     }
 
-void setup() { 
-  Serial.begin(9600);
-  BoardInit();
-//   detectColorInit();
-  drivetrainInit();
-
-  etape = CHERCHE;
-  deplacement = START;
-
-  beep(3);
-  delay(200);
-};
-
-// Boucle du robot
-void loop() {
-  //infrarouge = ROBUS_ReadIR(0);
-    if (getBumberRear()){ // placeholder de la manette
-      state = AFFICHE;
-      etape = CHERCHE;
-      deplacement = START;
-    }
-    if (getBumberFront()) {
-        state = ATTEND;
-        stop();
-    }
-
-    if (state == AFFICHE){
-        Serial.println(infrarouge);
-        rose();
-    }
-    if (endRose()){
-      stop();
-      state = ATTEND;
-    }
-    delay(20);
-}
+// }

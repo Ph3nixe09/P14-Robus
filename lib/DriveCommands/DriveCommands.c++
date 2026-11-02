@@ -85,33 +85,34 @@ void tourner(float angle, float speed) {
     ResetEncoderAll();
   }
 
-  int32_t read_pulse_left = ENCODER_ReadReset(0);
-  int32_t read_pulse_right = ENCODER_ReadReset(1);
-
-  // Distances totales parcourues par roue
-  turn_left += read_pulse_left;
-  turn_right += read_pulse_right;
-
-  // Distance moyenne parcourue par les deux roues (angle du robot plus précis)
-  encoder  = (abs(turn_right) + abs(turn_left)) / 2.0;
-
-  //terminer le mouvement
-  if (encoder >= (abs(val_expected_turn) - 50)) {
-    stop();
-    moving = false;
-    return;
+  if (moving) {
+    int32_t read_pulse_left = ENCODER_ReadReset(0);
+    int32_t read_pulse_right = ENCODER_ReadReset(1);
+  
+    // Distances totales parcourues par roue
+    turn_left += read_pulse_left;
+    turn_right += read_pulse_right;
+  
+    // Distance moyenne parcourue par les deux roues (angle du robot plus précis)
+    encoder  = (abs(turn_right) + abs(turn_left)) / 2.0;
+  
+    //terminer le mouvement
+    if (encoder >= (abs(val_expected_turn) - 50)) {
+      startDriveTimer();
+      moving = false;
+      return;
+    }
+  
+    // Écart de position total entre les roues
+    float total_pos_error = (-1.0 * turn_right) - turn_left;
+    integral_error += total_pos_error;
+  
+    // Calcul de la vitesse gauche pour le PID
+    float speed_correct_left = base_speed_left + (total_pos_error * KPT) + (integral_error * KIT);
+  
+    MOTOR_SetSpeed(RIGHT, speed_right);
+    MOTOR_SetSpeed(LEFT, speed_correct_left);
   }
-
-  // Écart de position total entre les roues
-  float total_pos_error = (-1.0 * turn_right) - turn_left;
-  integral_error += total_pos_error;
-
-  // Calcul de la vitesse gauche pour le PID
-  float speed_correct_left = base_speed_left + (total_pos_error * KPT) + (integral_error * KIT);
-
-  MOTOR_SetSpeed(RIGHT, speed_right);
-  MOTOR_SetSpeed(LEFT, speed_correct_left);
-
 }
 //================================================================================================
 // Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
@@ -148,23 +149,25 @@ void driveDistance(float distance, float vitesse) {
     encoder = 0;
   }
 
-  encoder = (getEncoderLeft() + getEncoderRight()) / 2;
-  if (distance_pulses - 100 < encoder) {
-      stop();
-      moving = false;
-  }
-  if (vitesse != 0){
-    driveStraight(vitesse);
-  }
-  else{
-    if (encoder < 200) {
-      driveStraight(0.2);
-    } else if (encoder < 400) {
-      driveStraight(0.4);
-    } else if (encoder < distance_pulses - 1500) {
-      driveStraight(0.6);
-    } else {
-      driveStraight(0.3);
+  if (moving) {
+    encoder = (getEncoderLeft() + getEncoderRight()) / 2;
+    if (distance_pulses - 100 < encoder) {
+        startDriveTimer();
+        moving = false;
+    }
+    if (vitesse != 0){
+      driveStraight(vitesse);
+    }
+    else {
+      if (encoder < 200) {
+        driveStraight(0.2);
+      } else if (encoder < 400) {
+        driveStraight(0.4);
+      } else if (encoder < distance_pulses - 1500) {
+        driveStraight(0.6);
+      } else {
+        driveStraight(0.3);
+      }
     }
   }
 }
@@ -193,14 +196,14 @@ float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
 
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
-void followLine(float speed = 0.5) {
+void followLine(float speed = 0.2) {
   bool left = getLineLeft();
   bool mid = getLineMid();
   bool right = getLineRight();
   enum Correction current;
-  float speed_left = speed;
-  float speed_right = speed;
-  float k = 0.02; // facteur de correction
+  float speed_left;
+  float speed_right;
+  float k = 0.15; // facteur de correction
 
 
   // Choix du facteur de correction de vitesse
@@ -232,22 +235,33 @@ void followLine(float speed = 0.5) {
   // Ajusté les vitesses selon le facteur de correction (k)
   switch (current) {
     case SOFTLEFT:
-      speed_right += k;
+      speed_left = speed - k;
+      speed_right = speed + k;
       break;
 
     case SOFTRIGHT:
-      speed_left += k;
+      speed_left = speed + k;
+      speed_right = speed - k;
       break;
 
     case HARDLEFT:
-      speed_right += (k * 3);
+      speed_left = 0;
+      speed_right = speed + 3 * k;
       break;
 
     case HARDRIGHT:
-      speed_left += (k * 3);
+      speed_left = speed + 3 * k;
+      speed_right = 0;
       break;
+
+    case STRAIGHT:
+      speed_left = speed;
+      speed_right = speed;
   }
 
-  last_correction = current;
+  if (last_correction != STRAIGHT) {
+    last_correction = current;
+  }
+  
   moveIndependant(speed_left, speed_right); 
 }
