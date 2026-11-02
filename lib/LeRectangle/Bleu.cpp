@@ -13,8 +13,6 @@ void bleu(bool init =false){
     switch (step)
     {
     case 1:
-            MOTOR_SetSpeed(1,0);
-            MOTOR_SetSpeed(0,0);
         if(wakeUp()){
             step++;
         }
