@@ -17,7 +17,8 @@ void turnStraight(float speed = 0.3);
 
 void tourner(float angle = 0, float speed = 0);
 
-int driveToWall();
+void driveToWall(bool init = false);
+void followWall(bool init = false);
 void driveDistance(float distance = 0, float vitesse = 0);
 bool endMoving();
 float distanceAtteint(int type = 0);

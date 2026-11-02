@@ -129,9 +129,22 @@ void ResetEncoderAll() {
 }
 
 // objectDetection
-bool detectWall() {
-  // La fonctions retourne true si le capteur ne détecte pas de murs
-  return (digitalRead(GREEN_DETECT_PIN) == 1 and digitalRead(RED_DETECT_PIN) == 1);
+int getIRFront() {
+  return ROBUS_ReadIR(0);
+}
+
+int getIRRight() {
+  return ROBUS_ReadIR(1);
+}
+
+bool detectWallFront() {
+    Serial.println(getIRFront());
+  return getIRFront() > 300;
+}
+
+bool detectWallRight() {
+    Serial.println(getIRFront());
+  return getIRRight() > 300;
 }
 
 // line follower

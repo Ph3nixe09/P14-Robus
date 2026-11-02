@@ -114,30 +114,36 @@ void tourner(float angle, float speed) {
     MOTOR_SetSpeed(LEFT, speed_correct_left);
   }
 }
-//================================================================================================
+
 // Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
-// Retourne le nombre de metres parcourus
-int driveToWall() { // NE PAS UTILISÉ
-  ResetEncoderAll();
+void driveToWall(bool init = false) {
+  if (init) {
+    ResetEncoderAll();
+    moving = true;
+  }
 
-  move(0.3);
-  delay(200);
-  while (detectWall()) {
+  if (moving) {
     driveStraight();
-    delay(200);
+    if (detectWallFront()) {
+      startDriveTimer();
+      moving = false;
+    }
   }
-  move(0.3);
-  delay(200);
-  stop();
+}
 
-  float encoder = (getEncoderLeft() + getEncoderRight()) / 2;
-  float meter_pulses = (1100 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE; // 1.10m en pulses
-  int count = 0;
-  while (meter_pulses < encoder) {
-    count++;
-    encoder = encoder - meter_pulses;
+void followWall(bool init = false) {
+  if (init) {
+    ResetEncoderAll();
+    moving = true;
   }
-  return count;
+
+  if (moving) {
+    driveStraight();
+    if (!detectWallRight()) {
+      startDriveTimer();
+      moving = false;
+    }
+  }
 }
 
 // Distance en cm seulement en initialisant

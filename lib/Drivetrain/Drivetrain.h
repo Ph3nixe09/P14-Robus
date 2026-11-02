@@ -42,7 +42,10 @@ void resetEncoderRight();
 void ResetEncoderAll();
 
 // Object detection
-bool detectWall();
+int getIRFront();
+int getIRRight();
+bool detectWallFront();
+bool detectWallRight();
 
 bool getLineLeft();
 bool getLineMid();

@@ -46,11 +46,16 @@ void loop() {
       /* code */
       // if (recois signal manette) {
       if (getBumberRear()) { // placeholder de la manette
-        state = FOLLOWING_LINE;
+        driveToWall(true);
+        state = TEST_COMMAND;
       } 
+      break;
 
     case TEST_COMMAND:
-      colorValues();
+      followWall(); 
+      if (endMoving()) {
+        state = WAITING_FOR_IR;
+      }
       break;
       //if (bumper_safety && getBumberAny()) {
         
