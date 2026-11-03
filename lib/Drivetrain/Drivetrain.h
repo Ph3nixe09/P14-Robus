@@ -44,12 +44,14 @@ void ResetEncoderAll();
 // Object detection
 int getIRFront();
 int getIRRight();
-bool detectWallFront();
+bool detectWallFront(int distance = 275);
 bool detectWallRight();
 
 bool getLineLeft();
 bool getLineMid();
 bool getLineRight();
+
+void testLineSensor();
 
 void drivetrainInit();
 

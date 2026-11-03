@@ -137,9 +137,9 @@ int getIRRight() {
   return ROBUS_ReadIR(1);
 }
 
-bool detectWallFront() {
+bool detectWallFront(int distance = 275) {
     Serial.println(getIRFront());
-  return getIRFront() > 300;
+  return getIRFront() > distance;
 }
 
 bool detectWallRight() {
@@ -167,6 +167,7 @@ void testLineSensor() {
   Serial.println(getLineMid());
   Serial.print("Right :");
   Serial.println(getLineRight());
+  delay(1000);
 }
 
 

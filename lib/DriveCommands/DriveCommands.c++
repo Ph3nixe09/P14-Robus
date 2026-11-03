@@ -123,7 +123,7 @@ void driveToWall(bool init = false) {
   }
 
   if (moving) {
-    driveStraight();
+    driveStraight(0.2);
     if (detectWallFront()) {
       startDriveTimer();
       moving = false;
@@ -140,6 +140,21 @@ void followWall(bool init = false) {
   if (moving) {
     driveStraight();
     if (!detectWallRight()) {
+      startDriveTimer();
+      moving = false;
+    }
+  }
+}
+
+void driveToLine(bool init = false) {
+  if (init) {
+    ResetEncoderAll();
+    moving = true;
+  }
+
+  if (moving) {
+    driveStraight();
+    if (!getLineLeft() || !getLineMid() || !getLineRight()) {
       startDriveTimer();
       moving = false;
     }
