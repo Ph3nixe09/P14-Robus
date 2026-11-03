@@ -4,6 +4,8 @@
 #include <DriveCommands.h>
 #include <LED.h>
 #include <Yellow.h>
+#include <BLeu.h>
+#include <InfraReceiv.h>
 #include <Green.h>
 #include <Rose.h>
 #include <ColorDetection.h>
@@ -27,6 +29,8 @@ void setup() {
   ledInit();
   detectColorInit();
   drivetrainInit();
+  InfraReceivInit();
+
 
   state = WAITING_FOR_IR;
   bumper_safety = false;
@@ -44,6 +48,8 @@ void loop() {
       /* code */
       // if (recois signal manette) {
       if (getBumberRear()) { // placeholder de la manette
+        // yellow(true);
+        driveToLine(true);
         state = FOLLOWING_LINE;
       } 
 
@@ -60,11 +66,11 @@ void loop() {
       break;
 
     case TEST_COMMAND:
-      colorValues();
+      driveToLine();
+      if (endMoving()) {
+        state = WAITING_FOR_IR;
+      }
       break;
-      //if (bumper_safety && getBumberAny()) {
-        
-      //}
 
     case FOLLOWING_LINE: {
       Color current = colorValues();
@@ -74,6 +80,15 @@ void loop() {
       } else {
         state = COLOR_COMMAND;
         color = current;
+        switch (color)
+        {
+        case YELLOW:
+          yellow(true);
+          break;
+        
+        default:
+          break;
+        }
       }
       break;
     }
@@ -98,13 +113,11 @@ void loop() {
           break;
         case YELLOW:
           ledOn10(color);
-          state = FOLLOWING_LINE;          
+          yellow();
 
-          // yellow();
-
-          // if (endYellow()) {
-          //   state = WAITING_FOR_IR;
-          // }
+          if (endYellow()) {
+            state = FOLLOWING_LINE;
+          }
           break;
           
     }

@@ -2,58 +2,76 @@
 
 int step;
 bool runningYellow;
+int wallLenght;
 
 void yellow(bool init = false) {
     if (init) { // parametres initiales
         runningYellow = true;
-        tourner(90); // lancer la premiere commande
-        step = 1; // changer d'étape
+        driveToWall(true); // lancer la premiere commande
+        step = 0; // changer d'étape
     }
 
     switch (step) { // sélectionne la bonne étape
+    case 0:
+        driveToWall();
+        if (endMoving()) {
+            tourner(90);
+            step++;
+        }
+        break;
+    
     case 1: // étape 1
         tourner();
         if (endMoving()) { // si la condition de fin est atteinte
-            driveDistance(50); // lancer la deuxieme commande
+            followWall(true); // lancer la deuxieme commande
             step++; // changer d'étape
         }
         break;
     case 2:
-        driveDistance();
+        followWall();
         if (endMoving()) {
-            tourner(-90);;
+            driveDistance(10);
             step++;
         }
         break;
+
     case 3:
+        driveDistance();
+        if (endMoving()) {
+            tourner(-90);
+            step++;
+        }
+        break;
+
+    case 4:
         tourner();
         if (endMoving()) {
-            driveDistance(25);
-            step++;
-        }
-        break;
-    case 4:
-        driveDistance();
-        if (endMoving()) {
-            tourner(-90);;
+            driveDistance(55);
             step++;
         }
         break;
     case 5:
-        tourner();
+        driveDistance();
         if (endMoving()) {
-            driveDistance(50);
+            tourner(-90);;
             step++;
         }
         break;
     case 6:
-        driveDistance();
+        tourner();
+        if (endMoving()) {
+            driveToLine(true);
+            step++;
+        }
+        break;
+    case 7:
+        driveToLine();
         if (endMoving()) {
             tourner(90);;
             step++;
         }
         break;
-    case 7: // dernière étape
+    case 8: // dernière étape
         tourner();
         if (endMoving()) { // si la condition de fin est atteinte
             runningYellow = false; // Changer la valeur de fin de la  commande couleur
