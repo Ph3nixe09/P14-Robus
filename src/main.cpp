@@ -46,7 +46,9 @@ void loop() {
       /* code */
       // if (recois signal manette) {
       if (getBumberRear()) { // placeholder de la manette
-        state = TEST_COMMAND;
+        // yellow(true);
+        driveToLine(true);
+        state = FOLLOWING_LINE;
       } 
 
       if (getBumberFront()) { // placeholder de la manette
@@ -62,11 +64,9 @@ void loop() {
       break;
 
     case TEST_COMMAND:
-      ledOn10(color);
-      if(firstRun){
-        green(true);
-        firstRun = false;
-        Serial.println("first run");
+      driveToLine();
+      if (endMoving()) {
+        state = WAITING_FOR_IR;
       }
       else{
         green();
@@ -79,9 +79,6 @@ void loop() {
       }
       
       break;
-      //if (bumper_safety && getBumberAny()) {
-        
-      //}
 
     case FOLLOWING_LINE: {
       Color current = colorValues();
@@ -91,6 +88,15 @@ void loop() {
       } else {
         state = COLOR_COMMAND;
         color = current;
+        switch (color)
+        {
+        case YELLOW:
+          yellow(true);
+          break;
+        
+        default:
+          break;
+        }
       }
       break;
     }
@@ -120,12 +126,10 @@ void loop() {
           break;
         case YELLOW:
           ledOn10(color);
-          //state = FOLLOWING_LINE;          
-
           yellow();
 
           if (endYellow()) {
-            state = WAITING_FOR_IR;
+            state = FOLLOWING_LINE;
           }
           break;
           

@@ -120,11 +120,12 @@ void tourner(float angle, float speed) {
 int driveToWall() { // NE PAS UTILISÉ
   ResetEncoderAll();
 
-  move(0.3);
-  delay(200);
-  while (detectWall()) {
-    driveStraight();
-    delay(200);
+  if (moving) {
+    driveStraight(0.2);
+    if (detectWallFront()) {
+      startDriveTimer();
+      moving = false;
+    }
   }
   move(0.3);
   delay(200);
@@ -138,6 +139,21 @@ int driveToWall() { // NE PAS UTILISÉ
     encoder = encoder - meter_pulses;
   }
   return count;
+}
+
+void driveToLine(bool init = false) {
+  if (init) {
+    ResetEncoderAll();
+    moving = true;
+  }
+
+  if (moving) {
+    driveStraight();
+    if (!getLineLeft() || !getLineMid() || !getLineRight()) {
+      startDriveTimer();
+      moving = false;
+    }
+  }
 }
 
 // Distance en cm seulement en initialisant

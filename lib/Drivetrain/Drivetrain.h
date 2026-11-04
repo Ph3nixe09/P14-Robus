@@ -42,11 +42,16 @@ void resetEncoderRight();
 void ResetEncoderAll();
 
 // Object detection
-bool detectWall();
+int getIRFront();
+int getIRRight();
+bool detectWallFront(int distance = 275);
+bool detectWallRight();
 
 bool getLineLeft();
 bool getLineMid();
 bool getLineRight();
+
+void testLineSensor();
 
 void drivetrainInit();
 
