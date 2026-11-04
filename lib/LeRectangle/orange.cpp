@@ -25,7 +25,8 @@ enum OrangeState {
 
 enum Deplacement {
   START,
-  FIN
+  FIN,
+  PRISE
 };
 
 enum OrangeState etape;
@@ -39,7 +40,7 @@ void orange(){
         switch (deplacement){
           case START:
             allumerBras();
-            baisserBras();
+            leverBras();
             ouvrirPince();
             tourner(360, 0.1);
             deplacement = FIN;
@@ -50,14 +51,13 @@ void orange(){
             tourner(0,0.1);     //Update mouvement
             Serial.println("Update mouvement");
             if (endMoving()){   //Si on a rien trouver, ce n'est pas possible, on recommence
-              stop();
               deplacement = START;
               etape = CHERCHE;
               Serial.println("tourne_fin");
             }
         }
         
-        if (infrarouge > 150){    //Quand on détecte quelque chose d'assez proche
+        if (infrarouge > 200){    //Quand on détecte quelque chose d'assez proche
           //Valeur d'econdeur pour savoir combien tourner à ajouter *************************************************************
           stop();
           deplacement = START;
@@ -78,7 +78,7 @@ void orange(){
 
         case FIN:
           driveDistance(0,0.2);
-          if (infrarouge > 600){    //Quand on détecte quelque chose d'assez proche
+          if (infrarouge > 400){    //Quand on détecte quelque chose d'assez proche
      //On vérifie si ce n'est pas abérant
               //Valeur d'econdeur pour savoir combien tourner à ajouter *************************************************************
               stop();
@@ -92,7 +92,6 @@ void orange(){
             
           }
           else if (endMoving()){
-            stop();
             distance_atteint = distanceAtteint(1);
             etape = ACTION;
             deplacement = START;
@@ -110,16 +109,27 @@ void orange(){
           break;
  
         case FIN:
+          tourner();                 // update du mouvement
+          if (endMoving()){
+          tempsDebut = millis();   // le chrono démarre APRÈS le tour
+          deplacement = PRISE;
+        }
+        break;
       
-          if (millis() - tempsDebut >= 1000)
+        case PRISE:
+          if (millis() - tempsDebut < 600){
+          baisserBras();
+          }
+          
+          else if (millis() - tempsDebut >= 800)
           {
             fermerPince();
-          }
-          if (millis() - tempsDebut >= 1200)
+          }       
+          else if (millis() - tempsDebut >= 1200)
           {
-            leverBras();          
+            leverBras();     
           }
-          if (millis() - tempsDebut > 1500)
+          else
            {
             etape = TOURNER;
             deplacement = START;
@@ -131,13 +141,13 @@ void orange(){
     case TOURNER:
       switch (deplacement){
         case START:
+          tourner(0);
           deplacement = FIN;
           break;
 
         case FIN:
           tourner();     //Update mouvement
           if (endMoving()){
-            stop();
             deplacement = START;
             etape = AVANCER;
           }
@@ -197,51 +207,46 @@ bool endOrange(){
 //=========================================================
 //Code pour faire les test
 
-// bool test = false;
 
-// if (test) {
-//     enum RobotState {
-//         ATTEND,
-//         AFFICHE
-//     };
+  enum RobotState {
+      ATTEND,
+      AFFICHE
+    };
     
-//     enum RobotState state;
+   enum RobotState state;
     
-//     void setup() { 
-//       Serial.begin(9600);
-//       BoardInit();
-//     //   detectColorInit();
-//       drivetrainInit();
+    void setup() { 
+       Serial.begin(9600);
+       BoardInit();
+       drivetrainInit();
     
-//       etape = CHERCHE;
-//       deplacement = START;
+       etape = CHERCHE;
+       deplacement = START;
     
-//       beep(3);
-//       delay(200);
-//     };
+       beep(3);
+       delay(200);
+     };
     
-//     // Boucle du robot
-//     void loop() {
-//       //infrarouge = ROBUS_ReadIR(0);
-//         if (getBumberRear()){ // placeholder de la manette
-//           state = AFFICHE;
-//           etape = CHERCHE;
-//           deplacement = START;
-//         }
-//         if (getBumberFront()) {
-//             state = ATTEND;
-//             stop();
-//         }
+ // Boucle du robot
+    void loop() {
+      infrarouge = ROBUS_ReadIR(0);
+         if (getBumberRear()){ // placeholder de la manette
+          state = AFFICHE;
+          etape = CHERCHE;
+          deplacement = START;
+         }
+        if (getBumberFront()) {
+             state = ATTEND;
+            stop();
+         }
     
-//         if (state == AFFICHE){
-//             Serial.println(infrarouge);
-//             orange();
-//         }
-//         if (endOrange()){
-//           stop();
-//           state = ATTEND;
-//         }
-//         delay(20);
-//     }
-
-// }
+         if (state == AFFICHE){
+            Serial.println(infrarouge);
+            orange();
+        }
+        if (endOrange()){
+          stop();
+           state = ATTEND;
+         }
+        delay(20);
+     }
