@@ -4,11 +4,11 @@
 #include <DriveCommands.h>
 #include <LED.h>
 #include <Yellow.h>
-#include <BLeu.h>
-#include <InfraReceiv.h>
 #include <Green.h>
 #include <Rose.h>
 #include <ColorDetection.h>
+
+bool firstRun = true;
 
 enum RobotState {
   WAITING_FOR_IR,
@@ -29,14 +29,14 @@ void setup() {
   ledInit();
   detectColorInit();
   drivetrainInit();
-  InfraReceivInit();
-
 
   state = WAITING_FOR_IR;
   bumper_safety = false;
 
   beep(3);
   delay(200);
+
+  
 }
 
 // Boucle du robot
@@ -49,21 +49,41 @@ void loop() {
         state = FOLLOWING_LINE;
       } 
 
+      if (getBumberFront()) { // placeholder de la manette
+        ledOn10(GREEN);
+      } 
+      if (getBumberLeft()) { // placeholder de la manette
+        ledOn10(RED);
+      } 
+
+      if (getBumberRight()) { // placeholder de la manette
+        ledOn10(BLUE);
+      } 
+      break;
+
     case TEST_COMMAND:
       testLineSensor();
       break;
-      //if (bumper_safety && getBumberAny()) {
-        
-      //}
 
     case FOLLOWING_LINE: {
       Color current = colorValues();
       if (current == NONE) {
-        // Serial.println("PLANCHER");
         followLine();
       } else {
         state = COLOR_COMMAND;
         color = current;
+        switch (color) // INIT des fonctions de couleurs
+        {
+        case GREEN:
+          green(true);
+          break;
+        case YELLOW:
+          yellow(true);
+          break;
+        
+        default:
+          break;
+        }
       }
       break;
     }
@@ -72,12 +92,17 @@ void loop() {
       switch (color) {
         case GREEN:
           ledOn10(color);
-          state = FOLLOWING_LINE;          
+          green();
+          if (endGreen()){
+            state = FOLLOWING_LINE;
+          }
           break;
+
         case RED:
           ledOn10(color);
           state = FOLLOWING_LINE;          
           break;
+
         case BLUE:
           ledOn10(color);
           blue();
@@ -87,19 +112,17 @@ void loop() {
           state = FOLLOWING_LINE;   
           }       
           break;
+
         case ORANGE:
           ledOn10(color);
           state = FOLLOWING_LINE;          
           break;
         case YELLOW:
           ledOn10(color);
-          state = FOLLOWING_LINE;          
-
-          // yellow();
-
-          // if (endYellow()) {
-          //   state = WAITING_FOR_IR;
-          // }
+          yellow();
+          if (endYellow()) {
+            state = FOLLOWING_LINE;
+          }
           break;
           
     }

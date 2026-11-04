@@ -134,6 +134,20 @@ bool detectWall() {
   return (digitalRead(GREEN_DETECT_PIN) == 1 and digitalRead(RED_DETECT_PIN) == 1);
 }
 
+int getIRRight() {
+  return ROBUS_ReadIR(1);
+}
+
+bool detectWallFront(int distance = 275) {
+    Serial.println(getIRFront());
+  return getIRFront() > distance;
+}
+
+bool detectWallRight() {
+    Serial.println(getIRFront());
+  return getIRRight() > 300;
+}
+
 // line follower
 bool getLineLeft() {
   return !digitalRead(U1_PIN);
@@ -154,7 +168,7 @@ void testLineSensor() {
   Serial.println(getLineMid());
   Serial.print("Right :");
   Serial.println(getLineRight());
-  delay(500);
+  delay(1000);
 }
 
 
