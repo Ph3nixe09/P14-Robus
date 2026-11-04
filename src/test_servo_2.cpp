@@ -11,7 +11,8 @@ void setup()
     SERVO_Enable(0);
     
 //changer l'angle
-    SERVO_SetAngle(0, 90);
+    SERVO_SetAngle(0, 20);
+    SERVO_Disable(0);
 }
 
 void loop()
