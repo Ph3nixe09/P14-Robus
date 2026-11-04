@@ -14,14 +14,6 @@ int step;
 bool runningBlue;
 
 void blue(){
-    bool init = false;
-    if (!init){// parametres initiales
-        stop();
-        Serial.print(runningBlue);
-        runningBlue = true;
-        step = 1; // changer d'étape
-        init=true;
-    }
     if (wakeUp()){
         runningBlue = false;
     }

@@ -2,5 +2,6 @@
 #define ROSE_H
 
 void rose();
+bool endRose();
 
 #endif

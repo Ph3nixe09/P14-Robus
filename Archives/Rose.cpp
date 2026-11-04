@@ -52,7 +52,7 @@ void rose(){
             }
         }
         
-        if (infrarouge > 150){    //Quand on détecte quelque chose d'assez proche
+        if (infrarouge > 200){    //Quand on détecte quelque chose d'assez proche
           //Valeur d'econdeur pour savoir combien tourner à ajouter *************************************************************
           stop();
           deplacement = START;

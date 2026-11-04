@@ -50,6 +50,7 @@ bool detectWallRight();
 bool getLineLeft();
 bool getLineMid();
 bool getLineRight();
+
 void testLineSensor();
 
 void drivetrainInit();

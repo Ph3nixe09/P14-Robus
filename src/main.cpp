@@ -9,9 +9,9 @@
 #include <Green.h>
 #include <Rose.h>
 #include <orange.h>
+#include <Red.h>
 #include <ColorDetection.h>
-
-bool firstRun = true;
+#include <InfraReceiv.h>
 
 enum RobotState {
   WAITING_FOR_IR,
@@ -23,7 +23,8 @@ enum RobotState {
 enum RobotState state;
 enum Color color;
 
-bool bumper_safety;
+bool bumper_safety = false;
+bool testing = true;
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -34,38 +35,29 @@ void setup() {
   drivetrainInit();
 
   state = WAITING_FOR_IR;
-  bumper_safety = false;
 
   beep(3);
-  delay(200);
-
-  
+  delay(200);  
 }
 
 // Boucle du robot
 void loop() {
   switch (state) {
     case WAITING_FOR_IR:
-      /* code */
-      // if (recois signal manette) {
-      if (demarrage()) { // placeholder de la manette
-        state = FOLLOWING_LINE;
-      } 
+      if (getBumberRear() && testing) { // POUR TESTER
+        state = TEST_COMMAND;
+      }
 
-      if (getBumberFront()) { // placeholder de la manette
-        ledOn10(GREEN);
-      } 
-      if (getBumberLeft()) { // placeholder de la manette
-        ledOn10(RED);
-      } 
-
-      if (getBumberRight()) { // placeholder de la manette
-        ledOn10(BLUE);
-      } 
+      // if (demarrage()) { // placeholder de la manette
+      //   state = FOLLOWING_LINE;
+      // } 
       break;
 
     case TEST_COMMAND:
-      testLineSensor();
+      state = COLOR_COMMAND;
+      color = RED;
+      ledOn10(RED);
+      red(true);
       break;
 
     case FOLLOWING_LINE: {
@@ -75,10 +67,17 @@ void loop() {
       } else {
         state = COLOR_COMMAND;
         color = current;
+        ledOn10(color);
         switch (color) // INIT des fonctions de couleurs
         {
         case GREEN:
           green(true);
+          break;
+        case RED:
+          green(true);
+          break;
+        case BLUE:
+          stop();
           break;
         case YELLOW:
           yellow(true);
@@ -94,7 +93,6 @@ void loop() {
     case COLOR_COMMAND:
       switch (color) {
         case GREEN:
-          ledOn10(color);
           green();
           if (endGreen()){
             state = FOLLOWING_LINE;
@@ -102,26 +100,22 @@ void loop() {
           break;
 
         case RED:
-          ledOn10(color);
-          state = FOLLOWING_LINE;          
+          red();
+          if (endRed()) {
+            state = FOLLOWING_LINE;
+          } 
           break;
 
         case BLUE:
-          ledOn10(color);
-          blue();
-          Serial.print(endBlue());
-          if (endBlue()){
-            Serial.print("NNA");
-          state = FOLLOWING_LINE;   
+          if (wakeUp()){
+            state = FOLLOWING_LINE;   
           }       
           break;
 
         case ORANGE:
-          ledOn10(color);
           state = FOLLOWING_LINE;          
           break;
         case YELLOW:
-          ledOn10(color);
           yellow();
           if (endYellow()) {
             state = FOLLOWING_LINE;
