@@ -1,29 +1,31 @@
-#include <Arduino.h>
 #include <LibRobus.h>
+#include <Arduino.h>
+#include <Drivetrain.h>
+#include <DriveCommands.h>
+#include <LED.h>
+#include <Yellow.h>
+#include <BLeu.h>
 #include <InfraReceiv.h>
+#include <Green.h>
+#include <Rose.h>
+#include <ColorDetection.h>
 
 int step;
-bool runningBleu;
+bool runningBlue;
 
-void bleu(bool init =false){
-    if (init){// parametres initiales
-        runningBleu = true;
+void blue(){
+    bool init = false;
+    if (!init){// parametres initiales
+        stop();
+        Serial.print(runningBlue);
+        runningBlue = true;
         step = 1; // changer d'étape
+        init=true;
     }
-    switch (step)
-    {
-    case 1:
-            MOTOR_SetSpeed(1,0);
-            MOTOR_SetSpeed(0,0);
-        if(wakeUp()){
-            step++;
-        }
-        break;
-    case 2:
-        runningBleu = false;
-        break;
+    if (wakeUp()){
+        runningBlue = false;
     }
 }
-bool endBleu(){
-    return !runningBleu;
+bool endBlue(){
+    return !runningBlue;
 }
