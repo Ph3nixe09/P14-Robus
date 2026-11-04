@@ -83,13 +83,15 @@ void loop() {
     case FOLLOWING_LINE: {
       Color current = colorValues();
       if (current == NONE) {
-        Serial.println("PLANCHER");
         followLine();
       } else {
         state = COLOR_COMMAND;
         color = current;
-        switch (color)
+        switch (color) // INIT des fonctions de couleurs
         {
+        case GREEN:
+          green(true);
+          break;
         case YELLOW:
           yellow(true);
           break;
@@ -105,21 +107,22 @@ void loop() {
       switch (color) {
         case GREEN:
           ledOn10(color);
-          
           green();
           if (endGreen()){
             state = FOLLOWING_LINE;
           }
-          
           break;
+
         case RED:
           ledOn10(color);
           state = FOLLOWING_LINE;          
           break;
+
         case BLUE:
           ledOn10(color);
           state = FOLLOWING_LINE;          
           break;
+
         case ORANGE:
           ledOn10(color);
           state = FOLLOWING_LINE;          
@@ -127,7 +130,6 @@ void loop() {
         case YELLOW:
           ledOn10(color);
           yellow();
-
           if (endYellow()) {
             state = FOLLOWING_LINE;
           }
