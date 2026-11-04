@@ -2,7 +2,6 @@
 
 int step;
 bool runningYellow;
-int wallLenght;
 
 void yellow(bool init = false) {
     if (init) { // parametres initiales

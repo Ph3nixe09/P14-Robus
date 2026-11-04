@@ -5,7 +5,7 @@
 #include <LED.h>
 #include <Yellow.h>
 #include <Green.h>
-#include <Rose.h>
+#include <Red.h>
 #include <ColorDetection.h>
 #include <InfraReceiv.h>
 
@@ -31,12 +31,9 @@ void setup() {
   drivetrainInit();
 
   state = WAITING_FOR_IR;
-  bumper_safety = false;
 
   beep(3);
-  delay(200);
-
-  
+  delay(200);  
 }
 
 // Boucle du robot
@@ -47,16 +44,16 @@ void loop() {
         state = TEST_COMMAND;
       }
 
-      if (demarrage()) { // placeholder de la manette
-        state = FOLLOWING_LINE;
-      } 
+      // if (demarrage()) { // placeholder de la manette
+      //   state = FOLLOWING_LINE;
+      // } 
       break;
 
     case TEST_COMMAND:
       state = COLOR_COMMAND;
-      color = GREEN;
-      ledOn10(GREEN);
-      green(true);
+      color = RED;
+      ledOn10(RED);
+      red(true);
       break;
 
     case FOLLOWING_LINE: {
@@ -70,6 +67,9 @@ void loop() {
         switch (color) // INIT des fonctions de couleurs
         {
         case GREEN:
+          green(true);
+          break;
+        case RED:
           green(true);
           break;
         case BLUE:
@@ -96,7 +96,10 @@ void loop() {
           break;
 
         case RED:
-          state = FOLLOWING_LINE;          
+          red();
+          if (endRed()) {
+            state = FOLLOWING_LINE;
+          } 
           break;
 
         case BLUE:
