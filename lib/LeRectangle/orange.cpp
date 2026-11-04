@@ -41,7 +41,6 @@ void orange(){
             allumerBras();
             baisserBras();
             ouvrirPince();
-            eteindreBras();
             tourner(360, 0.1);
             deplacement = FIN;
             Serial.println("tourne");
@@ -105,30 +104,26 @@ void orange(){
     case ACTION:                //Pourrait ajouter un if pour le orange sans faire nouveau code complet
       switch (deplacement){
         case START:
-          tourner(10);   // Centre le bras au verre
+          tourner(180);   // Centre le bras au verre
           tempsDebut = millis();
-          if (millis() - tempsDebut >= 100)
-          {
-            allumerBras();
-            fermerPince();
-          }
-          if (millis() - tempsDebut >= 500)
-          {
-            leverBras();
-            eteindreBras();
-            
-          }
-
           deplacement = FIN;
           break;
  
         case FIN:
-          driveDistance();     //Update mouvement
-          if (endMoving()){
-            stop();
-            deplacement = START;
-            etape = TOURNER;
+      
+          if (millis() - tempsDebut >= 1000)
+          {
+            fermerPince();
           }
+          if (millis() - tempsDebut >= 1200)
+          {
+            leverBras();          
+          }
+          if (millis() - tempsDebut > 1500)
+           {
+            etape = TOURNER;
+            deplacement = START;
+           }
           break;
       }
       break;
@@ -136,7 +131,6 @@ void orange(){
     case TOURNER:
       switch (deplacement){
         case START:
-          tourner(170);   //U-turn
           deplacement = FIN;
           break;
 
@@ -241,7 +235,7 @@ bool endOrange(){
     
 //         if (state == AFFICHE){
 //             Serial.println(infrarouge);
-//             rose();
+//             orange();
 //         }
 //         if (endOrange()){
 //           stop();
