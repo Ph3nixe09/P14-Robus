@@ -114,11 +114,13 @@ void tourner(float angle, float speed) {
     MOTOR_SetSpeed(LEFT, speed_correct_left);
   }
 }
-//================================================================================================
+
 // Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
-// Retourne le nombre de metres parcourus
-int driveToWall() { // NE PAS UTILISÉ
-  ResetEncoderAll();
+void driveToWall(bool init = false) {
+  if (init) {
+    ResetEncoderAll();
+    moving = true;
+  }
 
   if (moving) {
     driveStraight(0.2);
@@ -127,18 +129,21 @@ int driveToWall() { // NE PAS UTILISÉ
       moving = false;
     }
   }
-  move(0.3);
-  delay(200);
-  stop();
+}
 
-  float encoder = (getEncoderLeft() + getEncoderRight()) / 2;
-  float meter_pulses = (1100 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE; // 1.10m en pulses
-  int count = 0;
-  while (meter_pulses < encoder) {
-    count++;
-    encoder = encoder - meter_pulses;
+void followWall(bool init = false) {
+  if (init) {
+    ResetEncoderAll();
+    moving = true;
   }
-  return count;
+
+  if (moving) {
+    driveStraight();
+    if (!detectWallRight()) {
+      startDriveTimer();
+      moving = false;
+    }
+  }
 }
 
 void driveToLine(bool init = false) {
@@ -251,13 +256,13 @@ void followLine(float speed = 0.2) {
   // Ajusté les vitesses selon le facteur de correction (k)
   switch (current) {
     case SOFTLEFT:
-      speed_left = -speed;
+      speed_left = speed - k;
       speed_right = speed + k;
       break;
 
     case SOFTRIGHT:
       speed_left = speed + k;
-      speed_right = -speed;
+      speed_right = speed - k;
       break;
 
     case HARDLEFT:
