@@ -17,6 +17,7 @@ unsigned long tempsDebut = 0;
 enum StepOrange{
     CHERCHE,   //Tourner sur lui même pour trouver la quille 
     CORRECTION,
+    RECULE,
     TROUVER,   //Avancer jusqu'à la quille
     ACTION,
     PRISE,    //Rentre dedans dans ce cas-ci, pour le orange => ramasse
@@ -41,22 +42,36 @@ void orange(bool init = false) {
             case CHERCHE:
                 tourner();
                 if (getIRFront() > 290) {
-                    angle_orange = distanceAtteint(0) - 9;
-                    tourner(-9);
-                    stepOrange = CORRECTION;
+                    if (getIRFront() > 330) {
+                        stepOrange = RECULE;
+                        driveDistanceBackward(15, 0.4);
+                    } else {
+                        angle_orange = distanceAtteint(0) - 6;
+                        tourner(-6);
+                        stepOrange = CORRECTION;
+                    }
                 }
                 break;
 
             case CORRECTION:
                 tourner();
                 if (endMoving()) {
+                    stepOrange = RECULE;
+                    driveDistanceBackward(15, 0.4);
+                }
+                break;
+            
+            case RECULE:
+                driveDistanceBackward();
+                if (endMoving()) {
                     stepOrange = TROUVER;
                 }
                 break;
             
+            
             case TROUVER:
                 driveStraight(0.1);
-                if (getIRFront() > 280) {
+                if (getIRFront() > 285) {
                     stop();
                     stepOrange = ACTION;
                     tourner(170);

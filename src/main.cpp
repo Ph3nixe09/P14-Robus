@@ -25,7 +25,7 @@ enum RobotState state;
 enum Color color;
 
 bool bumper_safety = false;
-bool testing = true;
+bool testing = false;
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -43,6 +43,7 @@ void setup() {
   Color past;
 // Boucle du robot
 void loop() {
+  Serial.println(getIRFront());
   if (count == 5){
     state = WAITING_FOR_IR;
     baisserBras();
@@ -51,26 +52,23 @@ void loop() {
   }
 
   switch (state) {
-    case WAITING_FOR_IR
-    :
+    case WAITING_FOR_IR:
       if (getBumberRear() && testing) { // POUR TESTER
         state = TEST_COMMAND;
+        orange(true);
       }
 
-      if (demarrage()) {
-        state = TEST_COMMAND; //réajustement des valeurs de couleur
+      if (demarrage() && !testing) {
+        state = FOLLOWING_LINE; //réajustement des valeurs de couleur
         //state = FOLLOWING_LINE;
        } 
       break;
 
     case TEST_COMMAND:
-    colorValues();//réajustement des valeurs de couleur
-    //Serial.println(getIRFront());
-    //delay(200);
-      /*state = COLOR_COMMAND;
-      color = ORANGE;
-      ledOn10(ORANGE);
-      orange(true);*/
+      orange();
+      if (endOrange()) {
+        state = WAITING_FOR_IR;
+      }     
       break;
 
     case FOLLOWING_LINE: {
