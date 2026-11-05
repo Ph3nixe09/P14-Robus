@@ -19,15 +19,31 @@ enum RobotState {
   FOLLOWING_LINE,
   COLOR_COMMAND,
 };
-int count = 0;
+int count;
 enum RobotState state;
 enum Color color;
 enum Color current;
-enum Color past;
-
 
 bool bumper_safety = false;
 bool testing = false;
+
+enum Color colorList[5] = {NONE, NONE, NONE, NONE, NONE};
+
+bool checkList(enum Color color) {
+  for (int i = 0; i < 5; i++) {
+    if (colorList[i] = color) {
+      Serial.println("tu troll");
+      return false;
+    }
+  }
+  return true;
+}
+
+void endColor(enum Color color) {
+  state = FOLLOWING_LINE;
+  colorList[count] = color;
+  count ++;
+}
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -36,6 +52,7 @@ void setup() {
   ledInit();
   detectColorInit();
   drivetrainInit();
+  count = 0;
 
   state = WAITING_FOR_IR;
   beep(3);
@@ -66,7 +83,7 @@ void loop() {
       if (demarrage() && !testing) {
         state = FOLLOWING_LINE; //réajustement des valeurs de couleur
         //state = FOLLOWING_LINE;
-        } 
+      } 
       break;
 
     case TEST_COMMAND:
@@ -78,9 +95,7 @@ void loop() {
 
     case FOLLOWING_LINE: {
       current = colorValues();
-      if (current == NONE or current == past) { // continue si il revoit la meme couleur que l'etape precedante
-        followLine();
-      } else {
+      if (current != NONE && checkList(current)) { // continue si il revoit la meme couleur que l'etape precedante
         state = COLOR_COMMAND;
         color = current;
         ledOn10(color);
@@ -104,7 +119,10 @@ void loop() {
         default:
           break;
         }
+      } else {
+        followLine();
       }
+      
       break;
     }
 
@@ -113,46 +131,38 @@ void loop() {
         case GREEN:
           green();
           if (endGreen()){
-            state = FOLLOWING_LINE;
-            count ++;
-            past = GREEN;
+            endColor(color);
           }
           break;
 
         case RED:
           red();
           if (endRed()) {
-            state = FOLLOWING_LINE;
-            count ++;
-            past = RED;
+            endColor(color);
           } 
           break;
 
         case BLUE:
           if (wakeUp()){
-            state = FOLLOWING_LINE;
-            count ++;  
-            past = BLUE; 
+            endColor(color);
           }       
           break;
 
         case ORANGE:
           orange(); 
           if (endOrange()) {
-            state = FOLLOWING_LINE;
-            count ++;
-            past = ORANGE;
+            endColor(color);
           }         
           break;
         case YELLOW:
           yellow();
           if (endYellow()) {
-            state = FOLLOWING_LINE;
-            count ++;
-            past = YELLOW;
+            endColor(color);
           }
           break;
-          
+
+        case NONE:
+          break;
     }
   };
   endLed();
