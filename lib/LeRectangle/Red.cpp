@@ -17,7 +17,7 @@ float angle;
 bool runningRed;
 float angle_atteint_red;
 float distance_atteint_red;
-int buffer_red;
+//int buffer_red;
 
 void red(bool init = false) {
     if (init) {
@@ -31,20 +31,21 @@ void red(bool init = false) {
         switch (stepRed) {
             case SEARCH:
                 tourner();
-                if (getIRFront() > 300) {
-                    buffer_red ++;
+                if (getIRFront() > 400) {
+                    //buffer_red ++;
+                    angle = distanceAtteint(0) - 7;
+                    tourner(-7);
+                    stepRed = CORRECTION;
 
-                if (buffer_red == 15){
+                /*if (buffer_red == 15){
                     angle = distanceAtteint(0) - 7;
                     tourner(-7);
                     stepRed = CORRECTION;
+                }*/
                 }
-                }
-                if (endMoving){
-                    angle = distanceAtteint(0) - 7;
-                    tourner(-7);
-                    stepRed = CORRECTION;
-                }
+                //if (endMoving){
+                    
+                //}
                 break;
 
             case CORRECTION:
@@ -82,7 +83,7 @@ void red(bool init = false) {
                 break;
             
             case RETURN:
-                driveDistance(distance_atteint_red + 10, 0.2);   //Revient
+                driveDistance(distance_atteint_red, 0.2);   //Revient driveDistance(distance_atteint_red + 10, 0.2);
                 stepRed = RETURNTWO;
                 break;
                 

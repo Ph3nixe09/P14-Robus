@@ -12,7 +12,7 @@ int sum_G=0;
 int sum_B=0;
 
 bool inTol(int target, int value){
-  int tolerance = 16;
+  int tolerance = 18;
   int min = target - (tolerance/2);
   int max = target + (tolerance/2);
 
@@ -68,7 +68,7 @@ Color colorValues() {
     sum_B = 0;
     n=0;
 
-    if (inTol(106, avg_R) && inTol(85, avg_G) && inTol(87, avg_B)) //Red detection
+    if (inTol(128, avg_R) && inTol(100, avg_G) && inTol(100, avg_B)) //Red detection
       {
         Serial.println("Red patch");
         return RED;

@@ -70,7 +70,7 @@ void tourner(float angle, float speed) {
     turn_right = 0;
     turn_left = 0;
     
-    base_speed = 0.3; 
+    base_speed = 0.25; //0.3
     inverter = (val_expected_turn >= 0) ? 1 : -1;
 
     if (speed != 0 ){
@@ -138,7 +138,7 @@ void followWall(bool init = false) {
   }
 
   if (moving) {
-    driveStraight();
+    driveStraight(0.3);
     if (!detectWallRight()) {
       startDriveTimer();
       moving = false;
@@ -153,7 +153,7 @@ void driveToLine(bool init = false) {
   }
 
   if (moving) {
-    driveStraight();
+    driveStraight(0.3);
     if (!getLineLeft() || !getLineMid() || !getLineRight()) {
       startDriveTimer();
       moving = false;
@@ -217,14 +217,14 @@ float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
 
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
-void followLine(float speed = 0.16) {
+void followLine(float speed = 0.06) { //initial 0.2
   bool left = getLineLeft();
   bool mid = getLineMid();
   bool right = getLineRight();
   enum Correction current;
   float speed_left;
   float speed_right;
-  float k = 0.16; // facteur de correction
+  float k = 0.15; // facteur de correction initiale 0.15
 
 
   // Choix du facteur de correction de vitesse
@@ -236,7 +236,7 @@ void followLine(float speed = 0.16) {
   } else if (right && mid) {
     current = SOFTLEFT;
   } else if (left && right) { // ne devrait pas arriver
-    current = STRAIGHT;
+    current = HARDLEFT;//straight
   } else if (left) {
     current = SOFTRIGHT;
   } else if (right) {

@@ -14,7 +14,7 @@ void yellow(bool init = false) {
     case 0:
         driveToWall();
         if (endMoving()) {
-            tourner(90);
+            tourner(90, 0.2);
             step++;
         }
         break;
@@ -29,7 +29,7 @@ void yellow(bool init = false) {
     case 2:
         followWall();
         if (endMoving()) {
-            driveDistance(10);
+            driveDistance(10, 0.2);
             step++;
         }
         break;
@@ -45,7 +45,7 @@ void yellow(bool init = false) {
     case 4:
         tourner();
         if (endMoving()) {
-            driveDistance(55);
+            driveDistance(45, 0.2);//55
             step++;
         }
         break;
@@ -68,7 +68,7 @@ void yellow(bool init = false) {
         if (endMoving()) {
             tourner(90);;
             step++;
-        }
+        }//ajouter un trouver la ligne avec le capteur de ligne case 8
         break;
     case 8: // dernière étape
         tourner();
