@@ -7,7 +7,6 @@
 #include <Bleu.h>
 #include <InfraReceiv.h>
 #include <Green.h>
-#include <Rose.h>
 #include <orange.h>
 #include <Red.h>
 #include <ColorDetection.h>
