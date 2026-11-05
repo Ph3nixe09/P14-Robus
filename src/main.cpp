@@ -20,11 +20,11 @@ enum RobotState {
   COLOR_COMMAND,
 };
 int count = 0;
-
 enum RobotState state;
 enum Color color;
 enum Color current;
 enum Color past;
+
 
 bool bumper_safety = false;
 bool testing = false;
@@ -49,7 +49,9 @@ void loop() {
 
   if (count == 5){
     state = WAITING_FOR_IR;
+    stop();
     baisserBras();
+    delay(600);
     ouvrirPince();
     sapinNoel();
   } 
