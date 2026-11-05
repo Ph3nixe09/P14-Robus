@@ -56,7 +56,7 @@ void detectColorInit() {
 
 Color colorValues() {
   uint16_t r, g, b, c;
-    if(n<8){          //Loop 5 times to sum the values of R, G, B
+    if(n<10){          //Loop 5 times to sum the values of R, G, B
       tcs.getRawData(&r, &g, &b, &c);		//Read RGB values to variables.
       sum_R += r;   
          //Serial.println(sum_R);
@@ -67,14 +67,14 @@ Color colorValues() {
       }
       else{
     
-    int avg_R = sum_R/8;
-    int avg_G = sum_G/8;
-    int avg_B = sum_B/8;
+    int avg_R = sum_R/10;
+    int avg_G = sum_G/10;
+    int avg_B = sum_B/10;
 
-    Serial.print("R: "); Serial.print(avg_R); Serial.print(" "); //réajustement des valeurs de couleur
+    /*Serial.print("R: "); Serial.print(avg_R); Serial.print(" "); //réajustement des valeurs de couleur
     Serial.print("G: "); Serial.print(avg_G); Serial.print(" ");
     Serial.print("B: "); Serial.print(avg_B); Serial.print(" ");
-    Serial.println(" ");
+    Serial.println(" ");*/
     
     sum_R = 0;
     sum_G = 0;

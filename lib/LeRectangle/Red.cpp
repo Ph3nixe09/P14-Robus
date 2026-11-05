@@ -89,11 +89,11 @@ void red(bool init = false) {
                 driveDistance(0,0.2);     //Update mouvement
                 if (endMoving()){
                     stepRed = LINE;
-                    if (angle > 180){
-                        tourner(-angle + 180);
+                    if (angle < 180){
+                        tourner(180 - angle);  //tourne sens horaire  //Replace sur ligne
                     }
                     else{
-                        tourner(175 - angle);   //Replace sur ligne
+                        tourner(-(angle-180));   //Replace sur ligne tourne sens anti-horaire
                     }
                     break;
                 }
