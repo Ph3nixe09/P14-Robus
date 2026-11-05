@@ -5,14 +5,14 @@
 #include <Drivetrain.h>
 #include <LED.h>
 
-Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_24MS, TCS34725_GAIN_4X);
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_2_4MS, TCS34725_GAIN_4X);
 int n=0;
 int sum_R=0;
 int sum_G=0;
 int sum_B=0;
 
 bool inTol(int target, int value){
-  int tolerance = 22;
+  int tolerance = 18;
   int min = target - (tolerance/2);
   int max = target + (tolerance/2);
 
@@ -88,26 +88,26 @@ Color colorValues() {
       }
     else if (inTol(78, avg_R) && inTightTol(81, avg_G) && inTol(71, avg_B))//Orange detection
       {
-        //Serial.println("Orange patch");
+        Serial.println("Orange patch");
         return ORANGE;
       }
     else if (inTol(50, avg_R) && inTol(82, avg_G) && inTol(92, avg_B))//Blue detection
       { 
-        //Serial.println("Blue patch");
+        Serial.println("Blue patch");
         return BLUE;
       }
     else if (inTol(65, avg_R) && inTol(95, avg_G) && inTol(93, avg_B))//Green detection
       {
-        //Serial.println("Green patch");
+        Serial.println("Green patch");
         return GREEN;
       }
     else if (inTol(81, avg_R) && inTightTol(99, avg_G) && inTol(76, avg_B) && getIRFront() > 200)//Yellow detection // detect also the wall
       {
-        //Serial.println("Yellow patch");
+        Serial.println("Yellow patch");
         return YELLOW;
       }
       else{ 
-        //Serial.println("None");
+        Serial.println("None");
         return NONE;
       }
 

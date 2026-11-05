@@ -25,7 +25,7 @@ enum RobotState state;
 enum Color color;
 
 bool bumper_safety = false;
-bool testing = false;
+bool testing = true;
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -58,13 +58,13 @@ void loop() {
       }
 
       if (demarrage()) {
-        //state = TEST_COMMAND; //réajustement des valeurs de couleur
-        state = FOLLOWING_LINE;
+        state = TEST_COMMAND; //réajustement des valeurs de couleur
+        //state = FOLLOWING_LINE;
        } 
       break;
 
     case TEST_COMMAND:
-    //colorValues();//réajustement des valeurs de couleur
+    colorValues();//réajustement des valeurs de couleur
     //Serial.println(getIRFront());
     //delay(200);
       /*state = COLOR_COMMAND;
