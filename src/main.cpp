@@ -25,7 +25,7 @@ enum RobotState state;
 enum Color color;
 
 bool bumper_safety = false;
-bool testing = false;
+bool testing = true;
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
