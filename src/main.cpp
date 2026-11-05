@@ -20,7 +20,7 @@ enum RobotState {
   COLOR_COMMAND,
 };
 int count;
-enum RobotState state;
+enum RobotState state = WAITING_FOR_IR;
 enum Color color;
 enum Color current;
 
@@ -63,6 +63,7 @@ void setup() {
 void loop() {
   // demarrage();
   // wakeUp();
+  colorValues();
 
   if (count == 5){
     state = WAITING_FOR_IR;
@@ -81,6 +82,7 @@ void loop() {
       }
 
       if (demarrage() && !testing) {
+        Serial.println("JPARS");
         state = FOLLOWING_LINE; //réajustement des valeurs de couleur
         //state = FOLLOWING_LINE;
       } 

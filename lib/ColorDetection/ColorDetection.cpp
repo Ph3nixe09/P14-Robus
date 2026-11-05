@@ -25,7 +25,7 @@ bool inTol(int target, int value){
 }
 
 bool inTightTol(int target, int value){
-  int tolerance = 14;
+  int tolerance = 12;
   int min = target - (tolerance/2);
   int max = target + (tolerance/2);
 
@@ -86,12 +86,12 @@ Color colorValues() {
         Serial.println("Red patch");
         return RED;
       }
-    else if (inTightTol(68, avg_R) && inTightTol(70, avg_G) && inTightTol(64, avg_B))//Orange detection
+    else if (inTightTol(78, avg_R) && inTightTol(77, avg_G) && inTightTol(68, avg_B))//Orange detection
       {
         Serial.println("Orange patch");
         return ORANGE;
       }
-    else if (inTol(50, avg_R) && inTol(82, avg_G) && inTol(92, avg_B))//Blue detection
+    else if (inTol(49, avg_R) && inTol(78, avg_G) && inTol(87, avg_B))//Blue detection
       { 
         Serial.println("Blue patch");
         return BLUE;
@@ -101,7 +101,7 @@ Color colorValues() {
         Serial.println("Green patch");
         return GREEN;
       }
-    else if (inTol(72, avg_R) && inTightTol(85, avg_G) && inTol(68, avg_B))//Yellow detection // detect also the wall
+    else if (inTol(78, avg_R) && inTightTol(93, avg_G) && inTol(71, avg_B))//Yellow detection // detect also the wall
       {
         Serial.println("Yellow patch");
         return YELLOW;

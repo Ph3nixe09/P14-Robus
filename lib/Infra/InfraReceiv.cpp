@@ -14,7 +14,7 @@ void InfraReceivInit(){
 bool demarrage (){
     bool recieved =false;
     if(irReceive.decode(&results)){
-        
+        Serial.println(results.value, HEX);
         if (results.value == 0xA35C){
             Serial.print("Départ Reçu");
             beep(2);
@@ -22,10 +22,10 @@ bool demarrage (){
         }else if (results.value == 0xB76D){
             beep(3);
         }
-        irReceive.resume(); 
-        return recieved;
+        irReceive.resume();
+        Serial.print(recieved);
     }
-    
+    return recieved;    
 }
 bool wakeUp (){
     bool recieved = false;
@@ -38,8 +38,9 @@ bool wakeUp (){
             beep(2);
         }
         irReceive.resume(); 
-        return recieved;
     }
+    return recieved;
+    
 }
 /*
 void setup(){ 
