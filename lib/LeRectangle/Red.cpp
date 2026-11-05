@@ -8,12 +8,15 @@ enum StepRed {
     ACTION,    //Rentre dedans dans ce cas-ci, pour le orange => ramasse
     TURN,   //U-turn après avoir rentrer dedans
     RETURN,   //Revient sur ces pas
+    RETURNTWO,
     LINE      //Tourne pour reprendre la ligne
 };
 
 enum StepRed stepRed;
 float angle;
 bool runningRed;
+float angle_atteint_red;
+float distance_atteint_red;
 
 void red(bool init = false) {
     if (init) {
@@ -27,7 +30,7 @@ void red(bool init = false) {
         switch (stepRed) {
             case SEARCH:
                 tourner();
-                if (getIRFront() > 420) {
+                if (getIRFront() > 400) {
                     angle = distanceAtteint(0) - 7;
                     tourner(-7);
                     stepRed = CORRECTION;
@@ -38,13 +41,15 @@ void red(bool init = false) {
                 tourner();
                 if (endMoving()) {
                     stepRed = FOUND;
+                    driveDistance(70,0.2);
                 }
                 break;
             
             case FOUND:
-                driveStraight(0.3);
+                driveDistance(0,0.2);
                 if (getIRFront() > 600) {
                     stop();
+                    distance_atteint_red = distanceAtteint(1) + 15;
                     driveDistance(15, 0.8);
                     stepRed = ACTION;
                 }
@@ -67,13 +72,24 @@ void red(bool init = false) {
                 break;
             
             case RETURN:
-                driveToLine();
-                if (endMoving()) {
-                    tourner(180 - angle);
+                driveDistance(distance_atteint_red + 10, 0.2);   //Revient
+                stepRed = RETURNTWO;
+                break;
+                
+            case RETURNTWO:
+                driveDistance(0,0.2);     //Update mouvement
+                if (endMoving()){
                     stepRed = LINE;
+                    if (angle > 180){
+                        tourner(-angle + 180);
+                    }
+                    else{
+                        tourner(175 - angle);   //Replace sur ligne
+                    }
+                    break;
                 }
                 break;
-    
+
             case LINE:
                 tourner();
                 if(endMoving()) {
