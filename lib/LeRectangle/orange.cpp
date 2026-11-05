@@ -42,7 +42,7 @@ void orange(bool init = false) {
                 tourner();
                 if (getIRFront() > 300) {
                     angle_orange = distanceAtteint(0) - 7;
-                    tourner(-7);
+                    tourner(-9);
                     stepOrange = CORRECTION;
                 }
                 break;
@@ -55,15 +55,16 @@ void orange(bool init = false) {
                 break;
             
             case TROUVER:
-                driveStraight(0.3);
-                if (getIRFront() > 300) {
+                driveStraight(0.1);
+                if (getIRFront() > 290) {
                     stop();
                     stepOrange = ACTION;
+                    tourner(160);
                 }
                 break;
 
             case ACTION:                //Pourrait ajouter un if pour le orange sans faire nouveau code complet
-              tourner(180);                     // update du mouvement
+              tourner();                     // update du mouvement
               if (endMoving()) {
                 tempsDebut = millis();     // le chrono démarre APRÈS le tour
                 stepOrange = PRISE;
@@ -72,6 +73,7 @@ void orange(bool init = false) {
       
           case PRISE:
             if (millis() - tempsDebut < 600) {
+              ouvrirPince();
               baisserBras();
             }
             else if (millis() - tempsDebut < 1000) {

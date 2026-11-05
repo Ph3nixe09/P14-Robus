@@ -2,10 +2,10 @@
 #include <Arduino.h>
 
 
-const uint8_t BRAS_HAUT = 30;
-const uint8_t BRAS_BAS = 120;
-const uint8_t PINCE_OUVERTE = 130;
-const uint8_t PINCE_FERME = 160;
+const uint8_t BRAS_HAUT = 100;
+const uint8_t BRAS_BAS = 10;
+const uint8_t PINCE_OUVERTE = 30;
+const uint8_t PINCE_FERME = 100;
 
 // Fonction du bras qui vont être appeler
 
