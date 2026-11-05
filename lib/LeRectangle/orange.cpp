@@ -65,13 +65,14 @@ void orange(bool init = false) {
                 driveDistanceBackward();
                 if (endMoving()) {
                     stepOrange = TROUVER;
+                    ResetEncoderAll();
                 }
                 break;
             
             
             case TROUVER:
                 driveStraight(0.1);
-                if (getIRFront() > 285) {
+                if (getIRFront() > 285 || distanceAtteint(1) > 50) {
                     stop();
                     stepOrange = ACTION;
                     tourner(170);

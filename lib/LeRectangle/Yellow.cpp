@@ -45,7 +45,7 @@ void yellow(bool init = false) {
     case 4:
         tourner();
         if (endMoving()) {
-            driveDistance(55);//55
+            driveDistance(49);//55
             step++;
         }
         break;

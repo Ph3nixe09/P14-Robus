@@ -56,7 +56,7 @@ void red(bool init = false) {
             
             case FOUND:
                 driveDistance(0,0.2);
-                if (getIRFront() > 600) {
+                if (getIRFront() > 600 || distanceAtteint(1) > 50) {
                     stop();
                     distance_atteint_red = distanceAtteint(1) + 15;
                     driveDistance(15, 0.8);
