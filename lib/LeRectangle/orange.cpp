@@ -20,7 +20,6 @@ enum StepOrange{
     TROUVER,   //Avancer jusqu'à la quille
     ACTION,
     PRISE,    //Rentre dedans dans ce cas-ci, pour le orange => ramasse
-    TOURNER,   //U-turn après avoir rentrer dedans
     AVANCER,   //Revient sur ces pas
     LIGNE      //Tourne pour reprendre la ligne
 };
@@ -110,4 +109,4 @@ void orange(bool init = false) {
 
 bool endOrange() {
     return !runningOrange;
-}
+};

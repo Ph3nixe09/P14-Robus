@@ -4,13 +4,14 @@
 #include <DriveCommands.h>
 #include <LED.h>
 #include <Yellow.h>
-#include <Bleu.h>
+//#include <Bleu.h>
 #include <InfraReceiv.h>
 #include <Green.h>
 #include <orange.h>
 #include <Red.h>
 #include <ColorDetection.h>
 #include <InfraReceiv.h>
+#include <bras.h>
 
 enum RobotState {
   WAITING_FOR_IR,
@@ -23,7 +24,7 @@ enum RobotState state;
 enum Color color;
 
 bool bumper_safety = false;
-bool testing = true;
+bool testing = false;
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -42,14 +43,15 @@ void setup() {
 // Boucle du robot
 void loop() {
   switch (state) {
-    case WAITING_FOR_IR:
+    case WAITING_FOR_IR
+    :
       if (getBumberRear() && testing) { // POUR TESTER
         state = TEST_COMMAND;
       }
 
-      // if (demarrage()) { // placeholder de la manette
-      //   state = FOLLOWING_LINE;
-      // } 
+      if (demarrage()) {
+         state = FOLLOWING_LINE;
+       } 
       break;
 
     case TEST_COMMAND:
@@ -73,7 +75,7 @@ void loop() {
           green(true);
           break;
         case RED:
-          green(true);
+          red(true);
           break;
         case BLUE:
           stop();
