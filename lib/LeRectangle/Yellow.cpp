@@ -66,12 +66,19 @@ void yellow(bool init = false) {
     case 7:
         driveToLine();
         if (endMoving()) {
-            tourner(90);;
+            tourner(90);
             step++;
         }//ajouter un trouver la ligne avec le capteur de ligne case 8
         break;
-    case 8: // dernière étape
+    case 8:
         tourner();
+        if (endMoving()) {
+            turnToLine(true);
+            step++;
+        }//ajouter un trouver la ligne avec le capteur de ligne case 8
+        break;
+    case 9: // dernière étape
+        turnToLine();
         if (endMoving()) { // si la condition de fin est atteinte
             runningYellow = false; // Changer la valeur de fin de la  commande couleur
         }
