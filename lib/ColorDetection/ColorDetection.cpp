@@ -12,7 +12,20 @@ int sum_G=0;
 int sum_B=0;
 
 bool inTol(int target, int value){
-  int tolerance = 18;
+  int tolerance = 22;
+  int min = target - (tolerance/2);
+  int max = target + (tolerance/2);
+
+  if (min < value && value < max) {
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+bool inTightTol(int target, int value){
+  int tolerance = 14;
   int min = target - (tolerance/2);
   int max = target + (tolerance/2);
 
@@ -43,7 +56,7 @@ void detectColorInit() {
 
 Color colorValues() {
   uint16_t r, g, b, c;
-    if(n<5){          //Loop 5 times to sum the values of R, G, B
+    if(n<8){          //Loop 5 times to sum the values of R, G, B
       tcs.getRawData(&r, &g, &b, &c);		//Read RGB values to variables.
       sum_R += r;   
          //Serial.println(sum_R);
@@ -54,9 +67,9 @@ Color colorValues() {
       }
       else{
     
-    int avg_R = sum_R/5;
-    int avg_G = sum_G/5;
-    int avg_B = sum_B/5;
+    int avg_R = sum_R/8;
+    int avg_G = sum_G/8;
+    int avg_B = sum_B/8;
 
     Serial.print("R: "); Serial.print(avg_R); Serial.print(" "); //réajustement des valeurs de couleur
     Serial.print("G: "); Serial.print(avg_G); Serial.print(" ");
@@ -68,33 +81,33 @@ Color colorValues() {
     sum_B = 0;
     n=0;
 
-    if (inTol(128, avg_R) && inTol(100, avg_G) && inTol(100, avg_B)) //Red detection
+    if (inTol(90, avg_R) && inTol(86, avg_G) && inTol(88, avg_B)) //Red detection
       {
         Serial.println("Red patch");
         return RED;
       }
-    else if (inTol(90, avg_R) && inTol(79, avg_G) && inTol(61, avg_B))//Orange detection
+    else if (inTol(81, avg_R) && inTightTol(82, avg_G) && inTol(73, avg_B))//Orange detection
       {
-        Serial.println("Orange patch");
+        //Serial.println("Orange patch");
         return ORANGE;
       }
-    else if (inTol(41, avg_R) && inTol(73, avg_G) && inTol(83, avg_B))//Blue detection
+    else if (inTol(50, avg_R) && inTol(82, avg_G) && inTol(92, avg_B))//Blue detection
       { 
-        Serial.println("Blue patch");
+        //Serial.println("Blue patch");
         return BLUE;
       }
-    else if (inTol(61, avg_R) && inTol(90, avg_G) && inTol(85, avg_B))//Green detection
+    else if (inTol(65, avg_R) && inTol(95, avg_G) && inTol(93, avg_B))//Green detection
       {
-        Serial.println("Green patch");
+        //Serial.println("Green patch");
         return GREEN;
       }
-    else if (inTol(89, avg_R) && inTol(102, avg_G) && inTol(68, avg_B))//Yellow detection
+    else if (inTol(85, avg_R) && inTightTol(102, avg_G) && inTol(80, avg_B) && getIRFront() > 200)//Yellow detection // detect also the wall
       {
-        Serial.println("Yellow patch");
+        //Serial.println("Yellow patch");
         return YELLOW;
       }
       else{ 
-        Serial.println("None");
+        //Serial.println("None");
         return NONE;
       }
 

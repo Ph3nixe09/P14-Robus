@@ -43,7 +43,7 @@ enum Correction last_correction = STRAIGHT;
 
 // Commands
 // La commande change les vitesses de chaques roues selon les valeurs d'encodeurs pour aller droit
-void driveStraight(float speed = 0.5) {
+void driveStraight(float speed = 0.3) {
   float kp = 0.00075 * speed;
   float ki = 0.00015;
   
@@ -217,7 +217,7 @@ float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
 
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
-void followLine(float speed = 0.06) { //initial 0.2
+void followLine(float speed = 0.02) { //initial 0.2
   bool left = getLineLeft();
   bool mid = getLineMid();
   bool right = getLineRight();
@@ -236,7 +236,7 @@ void followLine(float speed = 0.06) { //initial 0.2
   } else if (right && mid) {
     current = SOFTLEFT;
   } else if (left && right) { // ne devrait pas arriver
-    current = HARDLEFT;//straight
+    current = STRAIGHT;//straight
   } else if (left) {
     current = SOFTRIGHT;
   } else if (right) {

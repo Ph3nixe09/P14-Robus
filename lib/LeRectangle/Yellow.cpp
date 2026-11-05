@@ -29,7 +29,7 @@ void yellow(bool init = false) {
     case 2:
         followWall();
         if (endMoving()) {
-            driveDistance(10, 0.2);
+            driveDistance(10);
             step++;
         }
         break;
@@ -45,7 +45,7 @@ void yellow(bool init = false) {
     case 4:
         tourner();
         if (endMoving()) {
-            driveDistance(45, 0.2);//55
+            driveDistance(55);//55
             step++;
         }
         break;

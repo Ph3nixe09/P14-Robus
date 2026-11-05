@@ -7,7 +7,7 @@ bool runningGreen;
 void green(bool init = false) {
     if (init) { // parametres initiales
         runningGreen = true;
-        driveDistance(85, 0.4); // lancer la premiere commande
+        driveDistance(85, 0.3); // lancer la premiere commande
         steps ++;
         //Serial.println("init sequence");
     }

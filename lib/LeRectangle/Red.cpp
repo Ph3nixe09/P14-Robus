@@ -31,21 +31,19 @@ void red(bool init = false) {
         switch (stepRed) {
             case SEARCH:
                 tourner();
-                if (getIRFront() > 400) {
+                if (getIRFront() > 300 && distanceAtteint(0) < 360) {//300
                     //buffer_red ++;
                     angle = distanceAtteint(0) - 7;
                     tourner(-7);
                     stepRed = CORRECTION;
-
-                /*if (buffer_red == 15){
+                } else if(getIRFront() > 110 && distanceAtteint(0) >= 360){ // augmente le range de détection apres un tour de scan
                     angle = distanceAtteint(0) - 7;
                     tourner(-7);
                     stepRed = CORRECTION;
-                }*/
+                } else if(distanceAtteint(0) >= 720){ // si il a fait 2 tours et qu'il n'a rien trouvé, il va continuer sur la ligne
+                    stepRed = LINE;//a tester
                 }
-                //if (endMoving){
-                    
-                //}
+
                 break;
 
             case CORRECTION:
