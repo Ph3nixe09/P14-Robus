@@ -46,6 +46,7 @@ void setup() {
 void loop() {
   if (count == 5){
     state = WAITING_FOR_IR;
+    sapinNoel();
   }
 
   switch (state) {
@@ -56,15 +57,17 @@ void loop() {
       }
 
       if (demarrage()) {
-         state = FOLLOWING_LINE;
+        //state = TEST_COMMAND; //réajustement des valeurs de couleur
+        state = FOLLOWING_LINE;
        } 
       break;
 
     case TEST_COMMAND:
-      state = COLOR_COMMAND;
+    colorValues();//réajustement des valeurs de couleur
+      /*state = COLOR_COMMAND;
       color = ORANGE;
       ledOn10(ORANGE);
-      orange(true);
+      orange(true);*/
       break;
 
     case FOLLOWING_LINE: {

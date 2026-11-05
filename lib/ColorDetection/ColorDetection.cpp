@@ -58,7 +58,7 @@ Color colorValues() {
     int avg_G = sum_G/5;
     int avg_B = sum_B/5;
 
-    Serial.print("R: "); Serial.print(avg_R); Serial.print(" ");
+    Serial.print("R: "); Serial.print(avg_R); Serial.print(" "); //réajustement des valeurs de couleur
     Serial.print("G: "); Serial.print(avg_G); Serial.print(" ");
     Serial.print("B: "); Serial.print(avg_B); Serial.print(" ");
     Serial.println(" ");
@@ -73,7 +73,7 @@ Color colorValues() {
         Serial.println("Red patch");
         return RED;
       }
-    else if (inTol(80, avg_R) && inTol(72, avg_G) && inTol(57, avg_B))//Orange detection
+    else if (inTol(90, avg_R) && inTol(79, avg_G) && inTol(61, avg_B))//Orange detection
       {
         Serial.println("Orange patch");
         return ORANGE;

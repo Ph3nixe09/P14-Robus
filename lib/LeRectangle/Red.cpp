@@ -27,7 +27,7 @@ void red(bool init = false) {
         switch (stepRed) {
             case SEARCH:
                 tourner();
-                if (getIRFront() > 400) {
+                if (getIRFront() > 450) {
                     angle = distanceAtteint(0) - 7;
                     tourner(-7);
                     stepRed = CORRECTION;
