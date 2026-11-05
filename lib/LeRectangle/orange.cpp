@@ -56,7 +56,7 @@ void orange(bool init = false) {
             
             case TROUVER:
                 driveStraight(0.1);
-                if (getIRFront() > 290) {
+                if (getIRFront() > 280) {
                     stop();
                     stepOrange = ACTION;
                     tourner(170);
