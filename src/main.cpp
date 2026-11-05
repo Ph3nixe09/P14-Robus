@@ -31,7 +31,7 @@ enum Color colorList[5] = {NONE, NONE, NONE, NONE, NONE};
 
 bool checkList(enum Color color) {
   for (int i = 0; i < 5; i++) {
-    if (colorList[i] = color) {
+    if (colorList[i] == color) {
       Serial.println("tu troll");
       return false;
     }
