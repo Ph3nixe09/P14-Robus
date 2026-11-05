@@ -40,12 +40,14 @@ void setup() {
   beep(3);
   delay(200);  
 }
-
+  Color current;
+  Color past;
 // Boucle du robot
 void loop() {
   if (count == 5){
     state = WAITING_FOR_IR;
   }
+
   switch (state) {
     case WAITING_FOR_IR
     :
@@ -66,8 +68,8 @@ void loop() {
       break;
 
     case FOLLOWING_LINE: {
-      Color current = colorValues();
-      if (current == NONE) {
+      current = colorValues();
+      if (current == NONE or current == past) {
         followLine();
       } else {
         state = COLOR_COMMAND;
@@ -103,6 +105,7 @@ void loop() {
           green();
           if (endGreen()){
             state = FOLLOWING_LINE;
+            past = current;
             count ++;
           }
           break;
@@ -111,6 +114,7 @@ void loop() {
           red();
           if (endRed()) {
             state = FOLLOWING_LINE;
+            past = current;
             count ++;
           } 
           break;
@@ -118,16 +122,18 @@ void loop() {
         case BLUE:
           if (wakeUp()){
             state = FOLLOWING_LINE;
+            past = current;
             count ++;   
           }       
           break;
 
         case ORANGE:
-          orange();
+          orange(); 
           if (endOrange()) {
             state = FOLLOWING_LINE;
+            past = current;
             count ++;
-          }     
+          }         
           break;
         case YELLOW:
           yellow();
