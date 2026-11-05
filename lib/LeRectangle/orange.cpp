@@ -40,7 +40,7 @@ void orange(bool init = false) {
         switch (stepOrange) {
             case CHERCHE:
                 tourner();
-                if (getIRFront() > 300) {
+                if (getIRFront() > 290) {
                     angle_orange = distanceAtteint(0) - 9;
                     tourner(-9);
                     stepOrange = CORRECTION;
@@ -59,7 +59,7 @@ void orange(bool init = false) {
                 if (getIRFront() > 290) {
                     stop();
                     stepOrange = ACTION;
-                    tourner(160);
+                    tourner(170);
                 }
                 break;
 
@@ -93,8 +93,14 @@ void orange(bool init = false) {
           case AVANCER:
             driveToLine();
             if (endMoving()) {
-              tourner(180 - angle_orange);
-                stepOrange = LIGNE;
+              stepOrange = LIGNE;
+                if (angle_orange < 180){
+                    tourner(180 - angle_orange);  //tourne sens horaire  //Replace sur ligne
+                }
+                else{
+                    tourner(-(angle_orange-180));   //Replace sur ligne tourne sens anti-horaire
+                }
+                break;
           }
           break;
     
