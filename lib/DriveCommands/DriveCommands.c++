@@ -181,11 +181,11 @@ void driveDistance(float distance = 0, float vitesse = 0) {
     }
     else {
       if (encoder < 200) {
-        driveStraight(0.2);
+        driveStraight(0.1);
       } else if (encoder < 400) {
-        driveStraight(0.4);
+        driveStraight(0.2);
       } else if (encoder < distance_pulses - 1500) {
-        driveStraight(0.6);
+        driveStraight(0.4);
       } else {
         driveStraight(0.3);
       }
