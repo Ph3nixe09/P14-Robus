@@ -193,6 +193,36 @@ void driveDistance(float distance, float vitesse) {
   }
 }
 
+void driveDistanceBackward(float distance, float vitesse) {
+  if (distance != 0) {
+    ResetEncoderAll();
+    distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
+    moving = true;
+    encoder = 0;
+  }
+
+  if (moving) {
+    encoder = (getEncoderLeft() + getEncoderRight()) / 2;
+    if (distance_pulses - 100 < encoder) {
+        startDriveTimer();
+        moving = false;
+    }
+    if (vitesse != 0){
+      driveStraight(-vitesse);
+    }
+    else {
+      if (encoder < 200) {
+        driveStraight(-0.2);
+      } else if (encoder < 400) {
+        driveStraight(-0.4);
+      } else if (encoder < distance_pulses - 1500) {
+        driveStraight(-0.6);
+      } else {
+        driveStraight(-0.3);
+      }
+    }
+  }
+}
 // 
 bool endMoving() {
   if (moving) {

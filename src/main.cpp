@@ -36,7 +36,6 @@ void setup() {
   drivetrainInit();
 
   state = WAITING_FOR_IR;
-
   beep(3);
   delay(200);  
 }
@@ -65,7 +64,7 @@ void loop() {
       break;
 
     case TEST_COMMAND:
-    colorValues();//réajustement des valeurs de couleur
+    //colorValues();//réajustement des valeurs de couleur
     //Serial.println(getIRFront());
     //delay(200);
       /*state = COLOR_COMMAND;
