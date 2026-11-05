@@ -115,6 +115,24 @@ void tourner(float angle, float speed) {
   }
 }
 
+void turnToLine(bool init = false, float angle = 40, float speed = 0.2) {
+  if (init) {
+    ResetEncoderAll();
+    moving = true;
+  }
+
+  if (moving) {
+    tourner(angle, speed);
+    if (!getLineMid()) {// détection de la ligne
+      stop();
+      moving = false;
+    } else if (distanceAtteint(0) > angle) { // si le robot a tourné de 40 degrés sans voir la ligne
+      stop();
+      tourner(-(angle * 2), speed); // tourner dans l'autre sens
+    }
+  }
+}
+
 // Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
 void driveToWall(bool init = false) {
   if (init) {

@@ -17,6 +17,7 @@ void turnStraight(float speed = 0.3);
 
 void tourner(float angle = 0, float speed = 0);
 
+void turnToLine(bool init = false, float angle = 40, float speed = 0.2);
 void driveToWall(bool init = false);
 void followWall(bool init = false);
 void driveToLine(bool init = false);
