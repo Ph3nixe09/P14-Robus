@@ -86,7 +86,7 @@ Color colorValues() {
         Serial.println("Red patch");
         return RED;
       }
-    else if (inTightTol(68, avg_R) && inTightTol(70, avg_G) && inTightTol(64, avg_B) && !detectWallFront())//Orange detection
+    else if (inTightTol(68, avg_R) && inTightTol(70, avg_G) && inTightTol(64, avg_B))//Orange detection
       {
         Serial.println("Orange patch");
         return ORANGE;
@@ -101,7 +101,7 @@ Color colorValues() {
         Serial.println("Green patch");
         return GREEN;
       }
-    else if (inTol(72, avg_R) && inTightTol(85, avg_G) && inTol(68, avg_B) && detectWallFront())//Yellow detection // detect also the wall
+    else if (inTol(72, avg_R) && inTightTol(85, avg_G) && inTol(68, avg_B))//Yellow detection // detect also the wall
       {
         Serial.println("Yellow patch");
         return YELLOW;
