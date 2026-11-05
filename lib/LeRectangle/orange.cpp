@@ -93,13 +93,15 @@ void orange(bool init = false) {
           case AVANCER:
             driveToLine();
             if (endMoving()) {
-              stepOrange = LIGNE;
-                if (angle_orange < 180){
+              //stepOrange = LIGNE;
+                /*if (angle_orange < 180){
                     tourner(180 - angle_orange);  //tourne sens horaire  //Replace sur ligne
                 }
                 else{
                     tourner(-(angle_orange-180));   //Replace sur ligne tourne sens anti-horaire
-                }
+                }*/
+               tourner(180 - angle_orange);
+                stepOrange = LIGNE;
                 break;
           }
           break;

@@ -71,10 +71,10 @@ Color colorValues() {
     int avg_G = sum_G/10;
     int avg_B = sum_B/10;
 
-    /*Serial.print("R: "); Serial.print(avg_R); Serial.print(" "); //réajustement des valeurs de couleur
+    Serial.print("R: "); Serial.print(avg_R); Serial.print(" "); //réajustement des valeurs de couleur
     Serial.print("G: "); Serial.print(avg_G); Serial.print(" ");
     Serial.print("B: "); Serial.print(avg_B); Serial.print(" ");
-    Serial.println(" ");*/
+    Serial.println(" ");
     
     sum_R = 0;
     sum_G = 0;
@@ -86,7 +86,7 @@ Color colorValues() {
         Serial.println("Red patch");
         return RED;
       }
-    else if (inTol(81, avg_R) && inTightTol(82, avg_G) && inTol(73, avg_B))//Orange detection
+    else if (inTol(78, avg_R) && inTightTol(81, avg_G) && inTol(71, avg_B))//Orange detection
       {
         //Serial.println("Orange patch");
         return ORANGE;
@@ -101,7 +101,7 @@ Color colorValues() {
         //Serial.println("Green patch");
         return GREEN;
       }
-    else if (inTol(85, avg_R) && inTightTol(102, avg_G) && inTol(80, avg_B) && getIRFront() > 200)//Yellow detection // detect also the wall
+    else if (inTol(81, avg_R) && inTightTol(99, avg_G) && inTol(76, avg_B) && getIRFront() > 200)//Yellow detection // detect also the wall
       {
         //Serial.println("Yellow patch");
         return YELLOW;
