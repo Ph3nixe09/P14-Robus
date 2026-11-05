@@ -24,7 +24,7 @@ enum RobotState state;
 enum Color color;
 
 bool bumper_safety = false;
-bool testing = false;
+bool testing = true;
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -56,9 +56,9 @@ void loop() {
 
     case TEST_COMMAND:
       state = COLOR_COMMAND;
-      color = RED;
-      ledOn10(RED);
-      red(true);
+      color = ORANGE;
+      ledOn10(ORANGE);
+      orange(true);
       break;
 
     case FOLLOWING_LINE: {
@@ -114,7 +114,7 @@ void loop() {
           break;
 
         case ORANGE:
-          state = FOLLOWING_LINE;          
+          orange();          
           break;
         case YELLOW:
           yellow();

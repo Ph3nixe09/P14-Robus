@@ -25,13 +25,13 @@ enum StepOrange{
 };
 
 enum StepOrange stepOrange;
-float angle;
+float angle_orange;
 bool runningOrange;
 
 void orange(bool init = false) {
     if (init) {
         runningOrange = true;
-        stepOrange = TROUVER;
+        stepOrange = CHERCHE;
         tourner(360, 0.1);
         ResetEncoderAll();
     }
@@ -40,8 +40,8 @@ void orange(bool init = false) {
         switch (stepOrange) {
             case CHERCHE:
                 tourner();
-                if (getIRFront() > 200) {
-                    angle = distanceAtteint(0) - 7;
+                if (getIRFront() > 300) {
+                    angle_orange = distanceAtteint(0) - 7;
                     tourner(-7);
                     stepOrange = CORRECTION;
                 }
@@ -56,7 +56,7 @@ void orange(bool init = false) {
             
             case TROUVER:
                 driveStraight(0.3);
-                if (getIRFront() > 400) {
+                if (getIRFront() > 300) {
                     stop();
                     stepOrange = ACTION;
                 }
@@ -91,7 +91,7 @@ void orange(bool init = false) {
           case AVANCER:
             driveToLine();
             if (endMoving()) {
-              tourner(180 - angle);
+              tourner(180 - angle_orange);
                 stepOrange = LIGNE;
           }
           break;
