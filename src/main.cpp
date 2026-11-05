@@ -46,6 +46,8 @@ void setup() {
 void loop() {
   if (count == 5){
     state = WAITING_FOR_IR;
+    baisserBras();
+    ouvrirPince();
     sapinNoel();
   }
 

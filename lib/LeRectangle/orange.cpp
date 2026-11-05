@@ -41,7 +41,7 @@ void orange(bool init = false) {
             case CHERCHE:
                 tourner();
                 if (getIRFront() > 300) {
-                    angle_orange = distanceAtteint(0) - 7;
+                    angle_orange = distanceAtteint(0) - 9;
                     tourner(-9);
                     stepOrange = CORRECTION;
                 }

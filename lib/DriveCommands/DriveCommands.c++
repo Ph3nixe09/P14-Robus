@@ -217,14 +217,14 @@ float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
 
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
-void followLine(float speed = 0.2) {
+void followLine(float speed = 0.19) {
   bool left = getLineLeft();
   bool mid = getLineMid();
   bool right = getLineRight();
   enum Correction current;
   float speed_left;
   float speed_right;
-  float k = 0.15; // facteur de correction
+  float k = 0.155; // facteur de correction
 
 
   // Choix du facteur de correction de vitesse
