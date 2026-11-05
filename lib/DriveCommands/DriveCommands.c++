@@ -41,6 +41,15 @@ enum Correction {
 
 enum Correction last_correction = STRAIGHT;
 
+float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
+  if (type == 0){
+    return (encoder / 22.05);
+  }
+  else{
+    return (encoder * WHEEL_CIRCUMFERENCE / 10 / PULSES_PER_ROTATION);
+  }
+}
+
 // Commands
 // La commande change les vitesses de chaques roues selon les valeurs d'encodeurs pour aller droit
 void driveStraight(float speed = 0.3) {
@@ -120,6 +129,9 @@ void turnToLine(bool init = false, float angle = 40, float speed = 0.2) {
     ResetEncoderAll();
     moving = true;
   }
+
+  speed = speed * -1;
+  
 
   if (moving) {
     tourner(angle, speed);
@@ -251,15 +263,6 @@ bool endMoving() {
     } else {
       return false;
     }
-  }
-}
-
-float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
-  if (type == 0){
-    return (encoder / 22.05);
-  }
-  else{
-    return (encoder * WHEEL_CIRCUMFERENCE / 10 / PULSES_PER_ROTATION);
   }
 }
 

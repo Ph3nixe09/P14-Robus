@@ -22,6 +22,7 @@ enum StepOrange{
     ACTION,
     PRISE,    //Rentre dedans dans ce cas-ci, pour le orange => ramasse
     AVANCER,   //Revient sur ces pas
+    AJUSTEMENT,
     LIGNE      //Tourne pour reprendre la ligne
 };
 
@@ -99,10 +100,20 @@ void orange(bool init = false) {
               leverBras();
             }
             else {
-              driveToLine(true);         // lance le retour
-              stepOrange = AVANCER;
+              stepOrange = AJUSTEMENT;
+              ResetEncoderAll();
             }
             break;
+
+          case AJUSTEMENT:
+            driveStraight(-0.1);
+            if (getLineLeft() || getLineMid() || getLineRight()) {
+                tourner(180 - angle_orange);
+                stepOrange = LIGNE;
+            } else if (-distanceAtteint(1) > 10) {
+                driveToLine(true);         // lance le retour
+                stepOrange = AVANCER;
+            }
            
           
     
