@@ -25,6 +25,6 @@ void driveDistance(float distance = 0, float vitesse = 0);
 void driveDistanceBackward(float distance = 0, float vitesse = 0);
 bool endMoving();
 float distanceAtteint(int type = 0);
-void followLine(float speed = 0.2);
+void followLine(float speed = 0.15);
 
 #endif

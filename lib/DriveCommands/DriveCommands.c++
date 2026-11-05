@@ -247,7 +247,7 @@ float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
 
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
-void followLine(float speed = 0.02) { //initial 0.2
+void followLine(float speed = 0.15) { //initial 0.2
   bool left = getLineLeft();
   bool mid = getLineMid();
   bool right = getLineRight();
