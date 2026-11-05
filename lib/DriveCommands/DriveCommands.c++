@@ -162,7 +162,7 @@ void driveToLine(bool init = false) {
 }
 
 // Distance en cm seulement en initialisant
-void driveDistance(float distance, float vitesse) {
+void driveDistance(float distance = 0, float vitesse = 0) {
   if (distance != 0) {
     ResetEncoderAll();
     distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
@@ -193,7 +193,7 @@ void driveDistance(float distance, float vitesse) {
   }
 }
 
-void driveDistanceBackward(float distance, float vitesse) {
+void driveDistanceBackward(float distance = 0, float vitesse = 0) {
   if (distance != 0) {
     ResetEncoderAll();
     distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
@@ -202,7 +202,7 @@ void driveDistanceBackward(float distance, float vitesse) {
   }
 
   if (moving) {
-    encoder = (getEncoderLeft() + getEncoderRight()) / 2;
+    encoder = -((getEncoderLeft() + getEncoderRight()) / 2);
     if (distance_pulses - 100 < encoder) {
         startDriveTimer();
         moving = false;
