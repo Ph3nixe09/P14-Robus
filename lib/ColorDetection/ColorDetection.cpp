@@ -12,7 +12,7 @@ int sum_G=0;
 int sum_B=0;
 
 bool inTol(int target, int value){
-  int tolerance = 10;
+  int tolerance = 16;
   int min = target - (tolerance/2);
   int max = target + (tolerance/2);
 
@@ -58,17 +58,17 @@ Color colorValues() {
     int avg_G = sum_G/5;
     int avg_B = sum_B/5;
 
-    /*Serial.print("R: "); Serial.print(avg_R); Serial.print(" ");
+    Serial.print("R: "); Serial.print(avg_R); Serial.print(" ");
     Serial.print("G: "); Serial.print(avg_G); Serial.print(" ");
     Serial.print("B: "); Serial.print(avg_B); Serial.print(" ");
-    Serial.println(" ");*/
+    Serial.println(" ");
     
     sum_R = 0;
     sum_G = 0;
     sum_B = 0;
     n=0;
 
-    if (inTol(96, avg_R) && inTol(77, avg_G) && inTol(77, avg_B)) //Red detection
+    if (inTol(106, avg_R) && inTol(85, avg_G) && inTol(87, avg_B)) //Red detection
       {
         Serial.println("Red patch");
         return RED;

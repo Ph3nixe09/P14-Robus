@@ -19,6 +19,7 @@ enum RobotState {
   FOLLOWING_LINE,
   COLOR_COMMAND,
 };
+int count = 0;
 
 enum RobotState state;
 enum Color color;
@@ -55,10 +56,13 @@ void loop() {
       break;
 
     case TEST_COMMAND:
-      state = COLOR_COMMAND;
+      colorValues();
+      delay(50);
+    
+    /*state = COLOR_COMMAND;
       color = RED;
       ledOn10(RED);
-      red(true);
+      red(true);*/
       break;
 
     case FOLLOWING_LINE: {
