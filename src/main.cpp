@@ -43,6 +43,9 @@ void setup() {
 
 // Boucle du robot
 void loop() {
+  if (count == 5){
+    state = WAITING_FOR_IR;
+  }
   switch (state) {
     case WAITING_FOR_IR
     :
@@ -100,6 +103,7 @@ void loop() {
           green();
           if (endGreen()){
             state = FOLLOWING_LINE;
+            count ++;
           }
           break;
 
@@ -107,12 +111,14 @@ void loop() {
           red();
           if (endRed()) {
             state = FOLLOWING_LINE;
+            count ++;
           } 
           break;
 
         case BLUE:
           if (wakeUp()){
-            state = FOLLOWING_LINE;   
+            state = FOLLOWING_LINE;
+            count ++;   
           }       
           break;
 
@@ -123,6 +129,7 @@ void loop() {
           yellow();
           if (endYellow()) {
             state = FOLLOWING_LINE;
+            count ++;
           }
           break;
           
