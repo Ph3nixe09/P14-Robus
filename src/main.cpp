@@ -9,33 +9,13 @@ enum RobotState {
   WAITING_FOR_IR,
   TEST_COMMAND,
   FOLLOWING_LINE,
-  COLOR_COMMAND,
 };
+
 int count;
 enum RobotState state;
-enum Color color;
-enum Color current;
 
 bool bumper_safety = false;
 bool testing = false;
-
-enum Color colorList[5] = {NONE, NONE, NONE, NONE, NONE};
-
-bool checkList(enum Color color) {
-  for (int i = 0; i < 5; i++) {
-    if (colorList[i] == color) {
-      Serial.println("tu troll");
-      return false;
-    }
-  }
-  return true;
-}
-
-void endColor(enum Color color) {
-  state = FOLLOWING_LINE;
-  colorList[count] = color;
-  count ++;
-}
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -65,6 +45,6 @@ void loop() {
     //     state = WAITING_FOR_IR;
     //   }     
     //   break;
-  delay(20); // clock de la boucle
   }
+  delay(20); // clock de la boucle
 }
