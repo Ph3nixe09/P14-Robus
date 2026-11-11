@@ -1,8 +1,6 @@
 #ifndef DRIVE_COMMANDS_H
 #define DRIVE_COMMANDS_H
 
-#include <Arduino.h>
-
 extern int goBackListe[5];
 
 // Constants
@@ -17,10 +15,17 @@ extern const float PULSES_PER_ROTATION;
 void driveStraight(float speed = 0.5);
 void turnStraight(float speed = 0.3);
 
-void turnAngleRight(float angle);
-void turnAngleLeft(float angle);
+void tourner(float angle = 0, float speed = 0);
 
-int driveToWall();
-void driveDistance(float distance);
+void turnToLine(bool init = false, float angle = 40, float speed = 0.2);
+void driveToWall(bool init = false);
+void followWall(bool init = false);
+void driveToLine(bool init = false);
+
+void driveDistance(float distance = 0, float vitesse = 0);
+void driveDistanceBackward(float distance = 0, float vitesse = 0);
+bool endMoving();
+float distanceAtteint(int type = 0);
+void followLine(float speed = 0.15);
 
 #endif

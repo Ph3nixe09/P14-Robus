@@ -11,6 +11,9 @@ extern int last_right;
 extern const int GREEN_PIN;
 extern const int RED_PIN;
 
+// Timer
+void startDriveTimer(long duration = 200);
+
 // Buzzer
 void beep(int count);
 
@@ -19,9 +22,10 @@ bool getBumberRear();
 bool getBumberFront();
 bool getBumberLeft();
 bool getBumberRight();
+bool getBumberAny();
 
 // Motors
-void stop();
+bool stop();
 void move(float speed, bool backwards = false);
 void spinRight(float speed);
 void spinLeft(float speed);
@@ -38,6 +42,17 @@ void resetEncoderRight();
 void ResetEncoderAll();
 
 // Object detection
-bool detectWall();
+int getIRFront();
+int getIRRight();
+bool detectWallFront(int distance = 275);
+bool detectWallRight();
+
+bool getLineLeft();
+bool getLineMid();
+bool getLineRight();
+
+void testLineSensor();
+
+void drivetrainInit();
 
 #endif

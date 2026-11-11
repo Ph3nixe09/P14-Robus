@@ -431,6 +431,13 @@ void path(){
   retourne();
 };
 
+void servo_tourne(float angle){
+  SERVO_Enable(0);
+  SERVO_SetAngle(0, angle);
+  delay(700);
+  SERVO_Disable(0);
+};
+
 //============================================================================================================================
 
 void setup(){
@@ -439,10 +446,7 @@ void setup(){
   //initialisation
   pinMode(vertpin, INPUT);
   pinMode(rougepin, INPUT);
-  delay(100);
-  attendreDepart();
-  beep(3);
-  path();
+
 };
 
 
@@ -472,7 +476,7 @@ void loop() {
   if (bumperArr){
     if (etat == 0){
       beep(1);
-      path();
+      servo_tourne(0);
       etat = 1;
     } 
     else{
@@ -484,14 +488,14 @@ void loop() {
   else if (ROBUS_IsBumper(0)){
     if (etat == 0){
       beep(1);
-      tourner(1);
+      servo_tourne(90);
       etat = 1;
     }
   }
   else if (ROBUS_IsBumper(1)){
     if (etat == 0){
       beep(1);
-      tourner(-1);
+      servo_tourne(180);
       etat = 1;
     }
   }
