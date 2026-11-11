@@ -62,6 +62,15 @@ void driveStraight(float speed = 0.3) {
   last_right = right;
 }
 
+float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
+  if (type == 0){
+    return (encoder / 22.05);
+  }
+  else{
+    return (encoder * WHEEL_CIRCUMFERENCE / 10 / PULSES_PER_ROTATION);
+  }
+}
+
 //================================================================================================
 void tourner(float angle, float speed) {
   if (angle != 0){
@@ -251,15 +260,6 @@ bool endMoving() {
     } else {
       return false;
     }
-  }
-}
-
-float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
-  if (type == 0){
-    return (encoder / 22.05);
-  }
-  else{
-    return (encoder * WHEEL_CIRCUMFERENCE / 10 / PULSES_PER_ROTATION);
   }
 }
 
