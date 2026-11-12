@@ -129,10 +129,11 @@ void ResetEncoderAll() {
 }
 
 // objectDetection
+//Pin 0
 int getIRFront() {
   return ROBUS_ReadIR(0);
 }
-
+//Pin 1
 int getIRRight() {
   return ROBUS_ReadIR(1);
 }
