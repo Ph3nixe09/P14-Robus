@@ -1,5 +1,6 @@
 #include <LibRobus.h>
 #include <Arduino.h>
+// Note : There is still some header files to add here
 
 void dataExtractionOrganiser(){
     /*
@@ -10,4 +11,24 @@ void dataExtractionOrganiser(){
     5. 180° Rotation (Might get included in Pills file)
     6. Pills : (To be determined by the time left) Depending on the answer and data collected, distribute different color tokens / pills
     */
+}
+
+void RFIDAnalyser(){
+    
+}
+
+void ThermoAnalyser(){
+
+}
+
+void CardiacAnalyser(){
+
+}
+
+void QuestionAnalyser(){
+
+}
+
+void PillsOrganiser(){
+    
 }
