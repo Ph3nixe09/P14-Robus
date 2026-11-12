@@ -4,6 +4,9 @@
 #include <DriveCommands.h>
 #include <LED.h>
 #include <InfraReceiv.h>
+#include <rfid.h>
+
+
 
 enum RobotState {
   WAITING_FOR_IR,
@@ -23,6 +26,7 @@ void setup() {
   BoardInit();
   ledInit();
   drivetrainInit();
+  rfidInit();
   count = 0;
 
   state = WAITING_FOR_IR;
@@ -32,6 +36,13 @@ void setup() {
 
 // Boucle du robot
 void loop() {
+  ReadRFID();
+
+  //ReadRFID();
+
+
+
+  /*
   switch (state) {
     case WAITING_FOR_IR:
       if (getBumberRear() && testing) { // POUR TESTER
@@ -47,4 +58,6 @@ void loop() {
     //   break;
   }
   delay(20); // clock de la boucle
+
+  */
 }
