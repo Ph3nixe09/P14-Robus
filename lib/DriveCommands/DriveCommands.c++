@@ -1,336 +1,129 @@
-#include <LibRobus.h>
 #include <Arduino.h>
+#include <LibRobus.h>
 #include <Drivetrain.h>
+#include <DriveCommands.h>   
 
-int goBackListe[5] = {0,0,0,0,0};
-
-// Constants
-const float WHEEL_SPACE = 191.5; // mm
-const float WHEEL_SPACE_CIRCUMFERENCE = 3.141592 * WHEEL_SPACE; // mm
-const float WHEEL_DIAMETER = 3;
-const float WHEEL_CIRCUMFERENCE_INCHES = WHEEL_DIAMETER * 3.141592; // inches
-const float WHEEL_CIRCUMFERENCE = WHEEL_CIRCUMFERENCE_INCHES * 25.4; // mm
-const float PULSES_PER_ROTATION = 3200;
-
-// Global variables
-float distance_pulses;
-bool moving = false;
-float encoder = 0;
-const int turning_error = 10;
-float arc;
-float arc_pulses;
-//Tourner
-float val_expected_turn;
-float KPT = 0.0005;   // Pour tourner
-float KIT = 0.00005;
-float turn_right;
-float turn_left;
-float base_speed;
-int inverter;
-float speed_right;
-float base_speed_left;
-float integral_error;
-
-enum Correction {
-  STRAIGHT,
-  SOFTLEFT,
-  SOFTRIGHT,
-  HARDLEFT,
-  HARDRIGHT
+enum Etat {
+  LIGNE_MILIEU,
+  AVANCER_INTERSECTION,
+  TOURNER_VERS_CHAMBRE,
+  AVANCER_CHAMBRE,
+  PROGRAMME_INTERACTION,
+  RETOUR_LIGNE,
+  AVANCER_RETOUR,
+  TOURNER_VERS_MILIEU,
+  DEMI_TOUR_FINAL,
+  RETOUR_DEPART,
+  FIN
 };
 
-enum Correction last_correction = STRAIGHT;
+Etat etat = LIGNE_MILIEU;
+bool nouveauMouvement = true;
+int nbChambre = 0;
+const int NB_CHAMBRE_TOTAL = 5;
+int coteChambre = 0;   // -1 = gauche, +1 = droite
 
-// Commands
-// La commande change les vitesses de chaques roues selon les valeurs d'encodeurs pour aller droit
-void driveStraight(float speed = 0.3) {
-  float kp = 0.00075 * speed;
-  float ki = 0.00015;
-  
-  int left = getEncoderLeft();
-  int right = getEncoderRight();
-  
-  float p = ((right - last_right) - (left - last_left)) * kp;
-  float i = (right - left) * ki;
-
-  float speed_left = speed + p + i;
-  float speed_right = speed - p - i;
-
-  moveIndependant(speed_left, speed_right);
-  
-  last_left = left;
-  last_right = right;
+void changerEtat(Etat e) {
+  etat = e;
+  nouveauMouvement = true;
 }
 
-float distanceAtteint(int type){    //0 est pour tourner et 1 pour avancer
-  if (type == 0){
-    return (encoder / 22.05);
+// Le bout d'une chambre = la ligne disparaît (stable pendant ~150 ms)
+bool boutDeChambre() {
+  static unsigned long debutPerte = 0;
+  if (!getLineLeft() && !getLineMid() && !getLineRight()) {
+    if (debutPerte == 0) debutPerte = millis();
+    return (millis() - debutPerte) > 150;
   }
-  else{
-    return (encoder * WHEEL_CIRCUMFERENCE / 10 / PULSES_PER_ROTATION);
-  }
+  debutPerte = 0;
+  return false;
 }
 
-//================================================================================================
-void tourner(float angle, float speed) {
-  if (angle != 0){
-    val_expected_turn = -22.05 * angle; //En nombre de degré dans les deux sens (+ droite et - gauche)
-    
-    turn_right = 0;
-    turn_left = 0;
-    
-    base_speed = 0.25; //0.3
-    inverter = (val_expected_turn >= 0) ? 1 : -1;
+void programmeChambre();   // le programme de ton collègue (fait le 180°)
 
-    if (speed != 0 ){
-      base_speed = speed;
-    }
-
-    speed_right = base_speed * inverter;
-    base_speed_left = -base_speed * inverter;
-    integral_error = 0;
-    encoder = 0;
-    moving = true;
-    ResetEncoderAll();
-  }
-
-  if (moving) {
-    int32_t read_pulse_left = ENCODER_ReadReset(0);
-    int32_t read_pulse_right = ENCODER_ReadReset(1);
-  
-    // Distances totales parcourues par roue
-    turn_left += read_pulse_left;
-    turn_right += read_pulse_right;
-  
-    // Distance moyenne parcourue par les deux roues (angle du robot plus précis)
-    encoder  = (abs(turn_right) + abs(turn_left)) / 2.0;
-  
-    //terminer le mouvement
-    if (encoder >= (abs(val_expected_turn) - 50)) {
-      startDriveTimer();
-      moving = false;
-      return;
-    }
-  
-    // Écart de position total entre les roues
-    float total_pos_error = (-1.0 * turn_right) - turn_left;
-    integral_error += total_pos_error;
-  
-    // Calcul de la vitesse gauche pour le PID
-    float speed_correct_left = base_speed_left + (total_pos_error * KPT) + (integral_error * KIT);
-  
-    MOTOR_SetSpeed(RIGHT, speed_right);
-    MOTOR_SetSpeed(LEFT, speed_correct_left);
-  }
+void setup() {
+  BoardInit();
+  drivetrainInit();
 }
 
-void turnToLine(bool init = false, float angle = 40, float speed = 0.2) {
-  if (init) {
-    ResetEncoderAll();
-    moving = true;
-  }
+void loop() {
+  switch (etat) {
 
-  if (moving) {
-    tourner(angle, speed);
-    if (!getLineMid()) {// détection de la ligne
-      stop();
-      moving = false;
-    } else if (distanceAtteint(0) > angle) { // si le robot a tourné de 40 degrés sans voir la ligne
-      stop();
-      tourner(-(angle * 2), speed); // tourner dans l'autre sens
-    }
-  }
-}
-
-// Avancer avec PID jusqu'à ce que un des capteurs voit un obstacle
-void driveToWall(bool init = false) {
-  if (init) {
-    ResetEncoderAll();
-    moving = true;
-  }
-
-  if (moving) {
-    driveStraight(0.2);
-    if (detectWallFront()) {
-      startDriveTimer();
-      moving = false;
-    }
-  }
-}
-
-void followWall(bool init = false) {
-  if (init) {
-    ResetEncoderAll();
-    moving = true;
-  }
-
-  if (moving) {
-    driveStraight(0.3);
-    if (!detectWallRight()) {
-      startDriveTimer();
-      moving = false;
-    }
-  }
-}
-
-void driveToLine(bool init = false) {
-  if (init) {
-    ResetEncoderAll();
-    moving = true;
-  }
-
-  if (moving) {
-    driveStraight(0.3);
-    if (!getLineLeft() || !getLineMid() || !getLineRight()) {
-      startDriveTimer();
-      moving = false;
-    }
-  }
-}
-
-// Distance en cm seulement en initialisant
-void driveDistance(float distance = 0, float vitesse = 0) {
-  if (distance != 0) {
-    ResetEncoderAll();
-    distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
-    moving = true;
-    encoder = 0;
-  }
-
-  if (moving) {
-    encoder = (getEncoderLeft() + getEncoderRight()) / 2;
-    if (distance_pulses - 100 < encoder) {
-        startDriveTimer();
-        moving = false;
-    }
-    if (vitesse != 0){
-      driveStraight(vitesse);
-    }
-    else {
-      if (encoder < 200) {
-        driveStraight(0.1);
-      } else if (encoder < 400) {
-        driveStraight(0.2);
-      } else if (encoder < distance_pulses - 1500) {
-        driveStraight(0.4);
+    case LIGNE_MILIEU:
+      if (nbChambre >= NB_CHAMBRE_TOTAL) {
+        changerEtat(DEMI_TOUR_FINAL);
+      } else if (getLineLeft() || getLineRight()) {   // voir « à tester »
+        coteChambre = getLineLeft() ? -1 : +1;
+        changerEtat(AVANCER_INTERSECTION);
       } else {
-        driveStraight(0.3);
+        followLine(0.15);
       }
-    }
-  }
-}
+      break;
 
-void driveDistanceBackward(float distance = 0, float vitesse = 0) {
-  if (distance != 0) {
-    ResetEncoderAll();
-    distance_pulses = (distance * 10 * PULSES_PER_ROTATION) / WHEEL_CIRCUMFERENCE;
-    moving = true;
-    encoder = 0;
-  }
+    case AVANCER_INTERSECTION:
+      if (nouveauMouvement) { driveDistance(8, 0.2); nouveauMouvement = false; }
+      else                  { driveDistance(0, 0.2); }
+      if (endMoving()) changerEtat(TOURNER_VERS_CHAMBRE);
+      break;
 
-  if (moving) {
-    encoder = -((getEncoderLeft() + getEncoderRight()) / 2);
-    if (distance_pulses - 100 < encoder) {
-        startDriveTimer();
-        moving = false;
-    }
-    if (vitesse != 0){
-      driveStraight(-vitesse);
-    }
-    else {
-      if (encoder < 200) {
-        driveStraight(-0.2);
-      } else if (encoder < 400) {
-        driveStraight(-0.4);
-      } else if (encoder < distance_pulses - 1500) {
-        driveStraight(-0.6);
+    case TOURNER_VERS_CHAMBRE:
+      if (nouveauMouvement) { tourner(coteChambre * 90, 0.25); nouveauMouvement = false; }
+      else                  { tourner(0, 0); }
+      if (endMoving()) changerEtat(AVANCER_CHAMBRE);
+      break;
+
+    case AVANCER_CHAMBRE:
+      if (boutDeChambre()) {
+        stop();
+        changerEtat(PROGRAMME_INTERACTION);
       } else {
-        driveStraight(-0.3);
+        followLine(0.15);
       }
-    }
-  }
-}
-// 
-bool endMoving() {
-  if (moving) {
-    return false;
-  } else {
-    if (stop()) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-}
-
-// Suivre une ligne au sol
-// La condition de fin sera dans le système de détection de couleurs
-void followLine(float speed = 0.15) { //initial 0.2
-  bool left = getLineLeft();
-  bool mid = getLineMid();
-  bool right = getLineRight();
-  enum Correction current;
-  float speed_left;
-  float speed_right;
-  float k = 0.15; // facteur de correction initiale 0.15
-
-
-  // Choix du facteur de correction de vitesse
-  // 8 combinaisons possibles
-  if (left && mid && right) { // tous
-    current = STRAIGHT;
-  } else if (left && mid) {
-    current = SOFTRIGHT;
-  } else if (right && mid) {
-    current = SOFTLEFT;
-  } else if (left && right) { // ne devrait pas arriver
-    current = STRAIGHT;//straight
-  } else if (left) {
-    current = SOFTRIGHT;
-  } else if (right) {
-    current = SOFTLEFT;
-  } else if (mid) {
-    current = STRAIGHT;
-  } else { // aucun, 5 combinaison réduit à 3
-    if (last_correction == SOFTRIGHT || last_correction == HARDRIGHT) {
-      current = HARDRIGHT;
-    } else if (last_correction == SOFTLEFT || last_correction == HARDLEFT) {
-      current = HARDLEFT;
-    } else {
-      current = STRAIGHT;
-    }
-  }
-
-  // Ajusté les vitesses selon le facteur de correction (k)
-  switch (current) {
-    case SOFTLEFT:
-      speed_left = speed - k;
-      speed_right = speed + k;
       break;
 
-    case SOFTRIGHT:
-      speed_left = speed + k;
-      speed_right = speed - k;
+    case PROGRAMME_INTERACTION:
+      programmeChambre();   // bloquant; fait déjà le demi-tour
+      changerEtat(RETOUR_LIGNE);
       break;
 
-    case HARDLEFT:
-      speed_left = 0;
-      speed_right = speed + 3 * k;
+    case RETOUR_LIGNE:
+      // la ligne du milieu est perpendiculaire : les 3 capteurs la voient d'un coup
+      if (getLineLeft() && getLineMid() && getLineRight()) {
+        changerEtat(AVANCER_RETOUR);
+      } else {
+        followLine(0.15);
+      }
       break;
 
-    case HARDRIGHT:
-      speed_left = speed + 3 * k;
-      speed_right = 0;
+    case AVANCER_RETOUR:
+      if (nouveauMouvement) { driveDistance(8, 0.2); nouveauMouvement = false; }
+      else                  { driveDistance(0, 0.2); }
+      if (endMoving()) changerEtat(TOURNER_VERS_MILIEU);
       break;
 
-    case STRAIGHT:
-      speed_left = speed;
-      speed_right = speed;
+    case TOURNER_VERS_MILIEU:
+      if (nouveauMouvement) { tourner(coteChambre * 90, 0.25); nouveauMouvement = false; }
+      else                  { tourner(0, 0); }
+      if (endMoving()) {
+        nbChambre++;
+        changerEtat(LIGNE_MILIEU);
+      }
+      break;
+
+    case DEMI_TOUR_FINAL:
+      if (nouveauMouvement) { tourner(180, 0.25); nouveauMouvement = false; }
+      else                  { tourner(0, 0); }
+      if (endMoving()) changerEtat(RETOUR_DEPART);
+      break;
+
+    case RETOUR_DEPART:
+      if (nouveauMouvement) { ResetEncoderAll(); nouveauMouvement = false; }
+      driveStraight(0.3);   // ignore les branches
+      // TODO : condition d'arrêt -> FIN
+      break;
+
+    case FIN:
+      stop();
+      break;
   }
-
-  if (last_correction != STRAIGHT) {
-    last_correction = current;
-  }
-  
-  moveIndependant(speed_left, speed_right); 
 }
