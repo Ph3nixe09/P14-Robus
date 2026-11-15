@@ -36,7 +36,10 @@ void setup() {
 
 // Boucle du robot
 void loop() {
-  ReadRFID();
+  if(cardPresent()){
+    
+    Serial.println(ReadRFID());
+  }
   //Safety bumper et infrarouge pour la détection d'obstacle
   if (ir_safety){
     if (getIRFront() > 300){
