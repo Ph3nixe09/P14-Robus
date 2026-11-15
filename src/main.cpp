@@ -3,6 +3,7 @@
 #include <Drivetrain.h>
 #include <DriveCommands.h>
 #include <LED.h>
+#include <rfid.h>
 #include <InfraReceiv.h>
 
 enum RobotState {
@@ -25,6 +26,7 @@ void setup() {
   BoardInit();
   ledInit();
   drivetrainInit();
+  rfidInit();
   count = 0;
 
   state = WAITING_FOR_IR;
@@ -34,6 +36,7 @@ void setup() {
 
 // Boucle du robot
 void loop() {
+  ReadRFID();
   //Safety bumper et infrarouge pour la détection d'obstacle
   if (ir_safety){
     if (getIRFront() > 300){
