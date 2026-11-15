@@ -38,7 +38,6 @@ void setup() {
 void loop() {
   ReadRFID();
 
-  //ReadRFID();
 
 
 
