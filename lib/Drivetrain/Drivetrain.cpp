@@ -11,6 +11,12 @@ extern const int RED_DETECT_PIN = 49;
 extern const int U1_PIN = 43; // fil Jaune
 extern const int U2_PIN = 45; // fil Vert
 extern const int U3_PIN = 47; // fil Brun
+//const int U1_Left_PIN = --; // fil --
+//const int U2_Left_PIN = --; // fil --
+//const int U3_Left_PIN = --; // fil --
+//const int U1_Right_PIN = --; //fil --
+//const int U2_Right_PIN = --; //fil --
+//const int U3_Right_PIN = --; //fil --
 
 // Timer
 long drive_start_time;
@@ -149,8 +155,11 @@ bool detectWallRight() {
 }
 
 // line follower
+//les fonctions retournent false si une ligne noir est détecté
+
+//CENTRAL LINE FOLLOWER
 bool getLineLeft() {
-  return !digitalRead(U1_PIN);
+  return !digitalRead(U3_PIN);
 }
 
 bool getLineMid() {
@@ -158,8 +167,33 @@ bool getLineMid() {
 }
 
 bool getLineRight() {
-  return !digitalRead(U3_PIN);
+  return !digitalRead(U1_PIN);
 }
+//LEFT LINE FOLLOWER
+// bool getLineLeft_L() {
+//  return !digitalRead(U3_Left_PIN);
+// }
+
+//bool getLineMid_L() {
+//  return !digitalRead(U2_Left_PIN);
+//}
+
+//bool getLineRight_L() {
+//  return !digitalRead(U1_Left_PIN);
+//}
+
+//RIGHT LINE FOLLOWER
+// bool getLineLeft_R() {
+//  return !digitalRead(U3_Right_PIN);
+// }
+
+//bool getLineMid_R() {
+//  return !digitalRead(U2_Right_PIN);
+//}
+
+//bool getLineRight_L() {
+//  return !digitalRead(U1_Right_PIN);
+//}
 
 void testLineSensor() {
    Serial.print("Left :");
@@ -179,4 +213,10 @@ void drivetrainInit() {
   pinMode(U1_PIN, INPUT);
   pinMode(U2_PIN, INPUT);
   pinMode(U3_PIN, INPUT);
+  //pinMode(U1_Left_PIN, INPUT);
+  //pinMode(U2_Left_PIN, INPUT);
+  //pinMode(U3_Left_PIN, INPUT);
+  //pinMode(U1_Right_PIN, INPUT);
+  //pinMode(U2_Right_PIN, INPUT);
+  //pinMode(U3_Right_PIN, INPUT);
 }

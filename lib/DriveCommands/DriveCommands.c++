@@ -30,13 +30,23 @@ int inverter;
 float speed_right;
 float base_speed_left;
 float integral_error;
+//-----------
+// uint32_t previous_pulse_R;
+// uint32_t previous_pulse_L;
+//--------
 
 enum Correction {
   STRAIGHT,
   SOFTLEFT,
   SOFTRIGHT,
   HARDLEFT,
-  HARDRIGHT
+  HARDRIGHT,
+};
+
+enum Intersection {
+  NONE,
+  LEFT,
+  RIGHT
 };
 
 enum Correction last_correction = STRAIGHT;
@@ -263,35 +273,72 @@ bool endMoving() {
   }
 }
 
+//-----------------------------
+// void PID_line_follower(float speed_R, float speed_L){
+//   int pulse_R = getEncoderRight;
+//   int pulse_L = getEncoderLeft;
+//   int pulse_sinceLast_R = pulse_R - previous_pulse_R;
+//   int pulse_sinceLast_L = pulse_L - previous_pulse_L;
+// }
+
+//-----------------------------
+
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
 void followLine(float speed = 0.15) { //initial 0.2
   bool left = getLineLeft();
   bool mid = getLineMid();
   bool right = getLineRight();
+
+  bool left_L = getLineLeft_L();
+  bool mid_L = getLineMid_L();
+  bool right_L = getLineRight_L();
+
+  bool left_R = getLineLeft_R();
+  bool mid_R = getLineMid_R();
+  bool right_R = getLineRight_R();
+
   enum Correction current;
   float speed_left;
   float speed_right;
   float k = 0.15; // facteur de correction initiale 0.15
 
+  enum Intersection now;
+  
+  // Presence ou non d une intersection
+  if (left_L) {
+    now = LEFT;
+  } else if (right_R) {
+    now = RIGHT;
+  } else {
+    now = NONE;
+  }
 
   // Choix du facteur de correction de vitesse
   // 8 combinaisons possibles
-  if (left && mid && right) { // tous
-    current = STRAIGHT;
-  } else if (left && mid) {
-    current = SOFTRIGHT;
-  } else if (right && mid) {
-    current = SOFTLEFT;
-  } else if (left && right) { // ne devrait pas arriver
-    current = STRAIGHT;//straight
-  } else if (left) {
-    current = SOFTRIGHT;
-  } else if (right) {
-    current = SOFTLEFT;
-  } else if (mid) {
-    current = STRAIGHT;
-  } else { // aucun, 5 combinaison réduit à 3
+  if (now = NONE){
+    if (left && mid && right) { // tous
+      current = STRAIGHT;
+    } else if (left && mid) {
+      current = SOFTRIGHT;
+    } else if (right && mid) {
+      current = SOFTLEFT;
+    } else if (left && right) { // ne devrait pas arriver
+      current = STRAIGHT;//straight
+    } else if (left) {
+      current = SOFTRIGHT;
+    } else if (right) {
+      current = SOFTLEFT;
+    } else if (mid) {
+      current = STRAIGHT;
+    }
+
+    else if 
+  }
+
+  //retourner intersection
+  
+  else { // aucun, 5 combinaison réduit à 3
     if (last_correction == SOFTRIGHT || last_correction == HARDRIGHT) {
       current = HARDRIGHT;
     } else if (last_correction == SOFTLEFT || last_correction == HARDLEFT) {
@@ -324,13 +371,17 @@ void followLine(float speed = 0.15) { //initial 0.2
       break;
 
     case STRAIGHT:
-      speed_left = speed;
-      speed_right = speed;
+      driveStraight(speed);
+      break;
   }
 
   if (last_correction != STRAIGHT) {
     last_correction = current;
   }
   
-  moveIndependant(speed_left, speed_right); 
+  if (current != STRAIGHT && current != INTERSECTION_L 
+    && current =! INTERSECTION_R) {
+    moveIndependant(speed_left, speed_right);
+  }
+
 }
