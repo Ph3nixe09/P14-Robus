@@ -1,5 +1,5 @@
-#ifndef RFID_H
-#define RFID_H
+#ifndef RFID2_H
+#define RFID2_H
 
 void rfidInit();
 int ReadRFID();
