@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <DriveCommands.h>
 #include <rfid2.h>
+#include <Distributor.h>
 // Note : There is still some header files to add here
 
 // Variables :
@@ -9,13 +10,13 @@ int ID = 0;
 int BPM = 0; // Beats per minute
 int temperature = 0; // In Celsius ?
 bool answer[3] = {false, false, false};
-enum PillToGive{
-    RED,
-    BLUE,
-    GREEN,
+enum Etat_Interactions {
+    CALCUL,
+    DISTRIBUTION,
+    END,
 };
 
-enum PillToGive color;
+Etat_Interactions etat;
 
 void dataExtractionOrganiser(){
     /*
@@ -27,18 +28,25 @@ void dataExtractionOrganiser(){
     6. Pills : (To be determined by the time left) Depending on the answer and data collected, distribute different color tokens / pills
     */
 
-    /*for(int i=0; i<4; i++){
-        answer[i] = Question()[i];
-    }*/
-    
-    ID = ReadRFID(); // True fonction
-    BPM = Cardiac();
-    temperature = Thermo();
-    answer[0] = Question1();
-    answer[1] = Question2();
-    answer[2] = Question3();
+    switch (etat) {
+    case CALCUL:
+        ID = ReadRFID(); // True fonction
+        BPM = Cardiac();
+        temperature = Thermo();
+        answer[0] = Question1();
+        answer[1] = Question2();
+        answer[2] = Question3();
+        break;
 
-    
+    case DISTRIBUTION:
+        break;
+
+    case END:
+        break;
+
+    default:
+        break;
+    }
 }
 
 // These function are placebo function, they do nothing except fill the space before the real function get created
@@ -47,7 +55,6 @@ int Cardiac(){}
 bool Question1(){}
 bool Question2(){}
 bool Question3(){}
-void Pills(enum PillToGive color){};
 
 void PillsOrganiser(bool answer[3], int BPM, int temperature){
     // Rotates the robot to face the patient (angle, speed)(180, 0.5)
@@ -63,15 +70,17 @@ void PillsOrganiser(bool answer[3], int BPM, int temperature){
     }
 
     if (trueAnswerCounter >= trueSizeofAnswer){
-        Pills(BLUE);
+        distribute(2); // Distribute a Blue pill
     }
 
     // To give red pills
     if (BPM > 100){ // If the heart rate is higher then 100 BPM then a RED pills is given
-        Pills(RED);
+        distribute(1); // Distribute a Red pill
     }
     // To give green pills
     if (temperature > 37){ // If the temperature is higher the the normal temp of 37 Celsius, then a GREEN pill is given
-        Pills(GREEN);
+        // Distribute a Blue and Red pill
+        distribute(1);
+        distribute(2);
     }
 }
