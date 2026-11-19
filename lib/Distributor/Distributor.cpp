@@ -2,9 +2,9 @@
 #include <Arduino.h>
 
 
-const uint8_t CENTER = 0;
-const uint8_t CYLINDER_1 = 110;
-const uint8_t CYLINDER_2 = -110;
+const uint8_t CENTER = 90;
+const uint8_t CYLINDER_1 = 180; // Rouge, gauche
+const uint8_t CYLINDER_2 = 0; // Bleu, droit
 
 bool distributor_running = false;
 
