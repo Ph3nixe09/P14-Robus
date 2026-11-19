@@ -5,6 +5,7 @@
 #include <LED.h>
 #include <rfid2.h>
 #include <InfraReceiv.h>
+#include <Distributor.h>
 
 enum RobotState {
   WAITING_FOR_IR,
@@ -26,7 +27,8 @@ void setup() {
   BoardInit();
   ledInit();
   drivetrainInit();
-  rfidInit();
+  servoInit();
+  // rfidInit();
   count = 0;
 
   state = WAITING_FOR_IR;
@@ -36,46 +38,44 @@ void setup() {
 
 // Boucle du robot
 void loop() {
-  if(cardPresent()){
+  // if(cardPresent()){
     
-    Serial.println(ReadRFID());
-  }
+  //   Serial.println(ReadRFID());
+  // }
   //Safety bumper et infrarouge pour la détection d'obstacle
-  if (ir_safety){
-    if (getIRFront() > 300){
-      buffer ++;
-      if (buffer >= 3){
-        stop();
-        state = WAITING_FOR_IR;
-        bumper_safety = false;  //A enlever sur le final
-      }
-    }
-    else{
-      buffer = 0;
-    }
-  }
-  if (bumper_safety){
-    if (getBumberAny()){
-      stop();
-      state = WAITING_FOR_IR;
-      bumper_safety = false;  //Pour pas arreter direct (a enlever sur le final)
-      delay(200);  //Pour pas activer le test direct (a enlever sur le final)
-    }
-  }
+  // // if (ir_safety){
+  // //   if (getIRFront() > 300){
+  // //     buffer ++;
+  // //     if (buffer >= 3){
+  // //       stop();
+  // //       state = WAITING_FOR_IR;
+  // //       bumper_safety = false;  //A enlever sur le final
+  // //     }
+  // //   }
+  // //   else{
+  // //     buffer = 0;
+  // //   }
+  // // }
+  // if (bumper_safety){
+  //   if (getBumberAny()){
+  //     stop();
+  //     state = WAITING_FOR_IR;
+  //     bumper_safety = false;  //Pour pas arreter direct (a enlever sur le final)
+  //     delay(200);  //Pour pas activer le test direct (a enlever sur le final)
+  //   }
+  // }
 
   switch (state) {
     case WAITING_FOR_IR:
       if (getBumberRear() && testing) { // POUR TESTER
+        distribute(2);
         state = TEST_COMMAND;
-        delay(500);  //Pour pas activer le bumper_safety (a enlever sur le final)
-        bumper_safety = true;  //Pour pas activer le bumper_safety (a enlever sur le final)
-        driveDistance(100);
       }
       break;
     
     case TEST_COMMAND:
-      driveDistance();
-      if (endMoving()){
+      distribute();
+      if (endDistributor()) {
         state = WAITING_FOR_IR;
       }
       break;
