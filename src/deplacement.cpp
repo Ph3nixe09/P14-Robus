@@ -2,6 +2,7 @@
 #include <LibRobus.h>
 #include <Drivetrain.h>
 #include <DriveCommands.h>   // mets le vrai nom de ton fichier
+#include <Interactions.h>
 
 enum Etat {
   LIGNE_MILIEU,
@@ -22,7 +23,7 @@ Etat etat = LIGNE_MILIEU;
 int nbChambre = 0;
 int coteChambre = 0;   // -1 = gauche, +1 = droite
 
-void programmeChambre();   
+void dataExtractionOrganiser();   
 
 void setup() {
   BoardInit();
@@ -78,7 +79,7 @@ void loop() {
       break;
 //Il faut changer du code quand le fichier interaction serait fonctionnel, enlever tourner(180, 25), car il tournera dans l'autre code
     case PROGRAMME_INTERACTION:
-     // programmeChambre(); //
+     //void dataExtractionOrganiser(); //
       if (endMoving())  {
       etat = RETOUR_LIGNE;
       } 
