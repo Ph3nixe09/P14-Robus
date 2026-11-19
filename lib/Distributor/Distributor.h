@@ -6,5 +6,7 @@ void distributorPill2();
 void distributorCenter();
 void servoInit();
 void servoOff();
+void distribute(int cylinder = 0);
+bool endDistributor();
 
 #endif

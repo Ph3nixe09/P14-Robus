@@ -68,15 +68,16 @@ void loop() {
   switch (state) {
     case WAITING_FOR_IR:
       if (getBumberRear() && testing) { // POUR TESTER
+        distribute(2);
         state = TEST_COMMAND;
       }
       break;
     
     case TEST_COMMAND:
-      distributorPill1();
-      delay(1000);
-      distributorCenter();
-      delay(1000);
+      distribute();
+      if (endDistributor()) {
+        state = WAITING_FOR_IR;
+      }
       break;
   }
   delay(20); // clock de la boucle
