@@ -1,6 +1,7 @@
 #include <LibRobus.h>
 #include <Arduino.h>
 #include <DriveCommands.h>
+#include <rfid2.h>
 // Note : There is still some header files to add here
 
 // Variables :
@@ -30,7 +31,7 @@ void dataExtractionOrganiser(){
         answer[i] = Question()[i];
     }*/
     
-    ID = RFID();
+    ID = ReadRFID(); // True fonction
     BPM = Cardiac();
     temperature = Thermo();
     answer[0] = Question1();
@@ -41,7 +42,6 @@ void dataExtractionOrganiser(){
 }
 
 // These function are placebo function, they do nothing except fill the space before the real function get created
-int RFID(){}
 int Thermo(){}
 int Cardiac(){}
 bool Question1(){}
