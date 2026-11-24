@@ -3,7 +3,7 @@
 #include <Drivetrain.h>
 #include <DriveCommands.h>
 #include <LED.h>
-// #include <rfid.h>
+#include <rfid2.h>
 #include <InfraReceiv.h>
 #include <Distributor.h>
 
