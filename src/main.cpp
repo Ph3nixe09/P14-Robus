@@ -68,6 +68,11 @@ void loop() {
   switch (state) {
     case WAITING_FOR_IR:
       if (getBumberRear() && testing) { // POUR TESTER
+        distribute(1);
+        state = TEST_COMMAND;
+      }
+
+      if (getBumberFront() && testing) { // POUR TESTER
         distribute(2);
         state = TEST_COMMAND;
       }

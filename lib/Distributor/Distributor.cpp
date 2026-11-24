@@ -2,9 +2,9 @@
 #include <Arduino.h>
 
 
-const uint8_t CENTER = 90;
-const uint8_t CYLINDER_1 = 180; // Rouge, gauche
-const uint8_t CYLINDER_2 = 0; // Bleu, droit
+const uint8_t CENTER = 84;
+const uint8_t CYLINDER_1 = 28; // Rouge, gauche
+const uint8_t CYLINDER_2 = 138; // Bleu, droit
 
 bool distributor_running = false;
 
@@ -48,7 +48,7 @@ void distribute(int cylinder = 0) { // 1 gauche, 2 droit, seulement pour initial
     }
 
     else {
-        if ((millis() - dist_start_time) >= 1000) {
+        if ((millis() - dist_start_time) >= 500) {
             distributor_running = false;
             distributorCenter();
         }
