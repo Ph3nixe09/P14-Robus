@@ -3,7 +3,7 @@
 #include <Drivetrain.h>
 #include <DriveCommands.h>
 #include <LED.h>
-#include <rfid2.h>
+// #include <rfid.h>
 #include <InfraReceiv.h>
 #include <Distributor.h>
 
@@ -20,6 +20,7 @@ bool ir_safety = true;
 int buffer = 0;
 bool bumper_safety = false;  //True sur le final
 bool testing = true;
+int disp = 1;
 
 // Fonction actionner quand le robot s'allume
 void setup() { 
@@ -67,13 +68,8 @@ void loop() {
 
   switch (state) {
     case WAITING_FOR_IR:
-      if (getBumberRear() && testing) { // POUR TESTER
-        distribute(1);
-        state = TEST_COMMAND;
-      }
-
       if (getBumberFront() && testing) { // POUR TESTER
-        distribute(2);
+        distribute(disp);
         state = TEST_COMMAND;
       }
       break;
@@ -81,6 +77,11 @@ void loop() {
     case TEST_COMMAND:
       distribute();
       if (endDistributor()) {
+        if (disp == 1) {
+          disp = 2;
+        } else {
+          disp = 1;
+        }
         state = WAITING_FOR_IR;
       }
       break;
