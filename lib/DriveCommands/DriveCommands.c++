@@ -30,26 +30,27 @@ int inverter;
 float speed_right;
 float base_speed_left;
 float integral_error;
+
 //-----------
 // uint32_t previous_pulse_R;
 // uint32_t previous_pulse_L;
 //--------
 
-enum Correction {
-  STRAIGHT,
-  SOFTLEFT,
-  SOFTRIGHT,
-  HARDLEFT,
-  HARDRIGHT,
-};
+// enum Correction {
+//   STRAIGHT,
+//   SOFTLEFT,
+//   SOFTRIGHT,
+//   HARDLEFT,
+//   HARDRIGHT,
+// };
 
-enum Intersection {
-  NONE,
-  LEFT,
-  RIGHT
-};
+// enum Intersection {
+//   NONE,
+//   LEFT,
+//   RIGHT
+// };
 
-enum Correction last_correction = STRAIGHT;
+// enum Correction last_correction = STRAIGHT;
 
 // Commands
 // La commande change les vitesses de chaques roues selon les valeurs d'encodeurs pour aller droit
@@ -273,115 +274,159 @@ bool endMoving() {
   }
 }
 
-//-----------------------------
-// void PID_line_follower(float speed_R, float speed_L){
-//   int pulse_R = getEncoderRight;
-//   int pulse_L = getEncoderLeft;
-//   int pulse_sinceLast_R = pulse_R - previous_pulse_R;
-//   int pulse_sinceLast_L = pulse_L - previous_pulse_L;
-// }
-
-//-----------------------------
-
+//----------------------------
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
-void followLine(float speed = 0.15) { //initial 0.2
-  bool left = getLineLeft();
-  bool mid = getLineMid();
-  bool right = getLineRight();
 
-  bool left_L = getLineLeft_L();
-  bool mid_L = getLineMid_L();
-  bool right_L = getLineRight_L();
+int last_time;
+int I = 0;
+int last_error = 0;
+int kp = 1;
+int ki = 0;
+int kd = 0;
+bool first_iteration = true;
+int past_speed_right;
+int past_speed_left;
 
-  bool left_R = getLineLeft_R();
-  bool mid_R = getLineMid_R();
-  bool right_R = getLineRight_R();
-
-  enum Correction current;
-  float speed_left;
-  float speed_right;
-  float k = 0.15; // facteur de correction initiale 0.15
-
-  enum Intersection now;
-  
-  // Presence ou non d une intersection
-  if (left_L) {
-    now = LEFT;
-  } else if (right_R) {
-    now = RIGHT;
-  } else {
-    now = NONE;
-  }
-
-  // Choix du facteur de correction de vitesse
-  // 8 combinaisons possibles
-  if (now = NONE){
-    if (left && mid && right) { // tous
-      current = STRAIGHT;
-    } else if (left && mid) {
-      current = SOFTRIGHT;
-    } else if (right && mid) {
-      current = SOFTLEFT;
-    } else if (left && right) { // ne devrait pas arriver
-      current = STRAIGHT;//straight
-    } else if (left) {
-      current = SOFTRIGHT;
-    } else if (right) {
-      current = SOFTLEFT;
-    } else if (mid) {
-      current = STRAIGHT;
-    }
-
-    else if 
-  }
-
-  //retourner intersection
-  
-  else { // aucun, 5 combinaison réduit à 3
-    if (last_correction == SOFTRIGHT || last_correction == HARDRIGHT) {
-      current = HARDRIGHT;
-    } else if (last_correction == SOFTLEFT || last_correction == HARDLEFT) {
-      current = HARDLEFT;
-    } else {
-      current = STRAIGHT;
-    }
-  }
-
-  // Ajusté les vitesses selon le facteur de correction (k)
-  switch (current) {
-    case SOFTLEFT:
-      speed_left = speed - k;
-      speed_right = speed + k;
-      break;
-
-    case SOFTRIGHT:
-      speed_left = speed + k;
-      speed_right = speed - k;
-      break;
-
-    case HARDLEFT:
-      speed_left = 0;
-      speed_right = speed + 3 * k;
-      break;
-
-    case HARDRIGHT:
-      speed_left = speed + 3 * k;
-      speed_right = 0;
-      break;
-
-    case STRAIGHT:
-      driveStraight(speed);
-      break;
-  }
-
-  if (last_correction != STRAIGHT) {
-    last_correction = current;
+void followLine(float speed = 0.15) {
+  if (first_iteration){
+    past_speed_right = speed;
+    past_speed_left = speed;
+    first_iteration = false;
   }
   
-  if (current != STRAIGHT && current != INTERSECTION_L 
-    && current =! INTERSECTION_R) {
-    moveIndependant(speed_left, speed_right);
-  }
+  int numberOfCaptor = 3;
+  int captor_read [numberOfCaptor] = {getLineMid_L(), getLineRight_L(),
+                                        getLineLeft(), getLineMid(), getLineRight(),
+                                        getLineLeft_R(), getLineMid_R()};
+  int ponderation [numberOfCaptor] = {-3,-2,-1,0,1,2,3};
 
+  int erreur = 0;
+  int now = millis();
+  int dt = now - last_time;
+  //Serial.println(captor_read[0]);
+  //Serial.println(captor_read[1]);
+  //Serial.println(captor_read[2]);
+  
+  //l'erreur est la moyenne ponderer de l'etat de chaque capteur avec la ponderation definit plus tot
+   for (int i = 0; i < numberOfCaptor; i++){
+     erreur += captor_read[i]*ponderation[i];
+   }
+
+   Serial.println(erreur);
+   Serial.println("");
+
+  //Valeurs des corrections PID
+   int P = erreur;
+       I += erreur*dt;
+   int D = (erreur - last_error)/dt;
+
+   int correction = P*kp + I*ki + D*kd;
+  
+   int new_speed_right = past_speed_right + correction;
+   int new_speed_left = past_speed_left - correction;
+  
+   moveIndependant(new_speed_right, new_speed_left);
+
+   last_time = now;
+   past_speed_right = new_speed_right;
+   past_speed_left = new_speed_left;
 }
+
+  // bool left = getLineLeft();
+  // bool mid = getLineMid();
+  // bool right = getLineRight();
+
+  // bool left_L = getLineLeft_L();
+  // bool mid_L = getLineMid_L();
+  // bool right_L = getLineRight_L();
+
+  // bool left_R = getLineLeft_R();
+  // bool mid_R = getLineMid_R();
+  // bool right_R = getLineRight_R();
+
+  // enum Correction current;
+  // float speed_left;
+  // float speed_right;
+  // float k = 0.15; // facteur de correction initiale 0.15
+
+  // enum Intersection now;
+  
+  // // Presence ou non d une intersection
+  // if (left_L) {
+  //   now = LEFT;
+  // } else if (right_R) {
+  //   now = RIGHT;
+  // } else {
+  //   now = NONE;
+  // }
+
+  // // Choix du facteur de correction de vitesse
+  // // 8 combinaisons possibles
+  // if (now = NONE){
+  //   if (left && mid && right) { // tous
+  //     current = STRAIGHT;
+  //   } else if (left && mid) {
+  //     current = SOFTRIGHT;
+  //   } else if (right && mid) {
+  //     current = SOFTLEFT;
+  //   } else if (left && right) { // ne devrait pas arriver
+  //     current = STRAIGHT;//straight
+  //   } else if (left) {
+  //     current = SOFTRIGHT;
+  //   } else if (right) {
+  //     current = SOFTLEFT;
+  //   } else if (mid) {
+  //     current = STRAIGHT;
+  //   }
+
+  //   else if 
+  // }
+
+  // //retourner intersection
+  
+  // else { // aucun, 5 combinaison réduit à 3
+  //   if (last_correction == SOFTRIGHT || last_correction == HARDRIGHT) {
+  //     current = HARDRIGHT;
+  //   } else if (last_correction == SOFTLEFT || last_correction == HARDLEFT) {
+  //     current = HARDLEFT;
+  //   } else {
+  //     current = STRAIGHT;
+  //   }
+  // }
+
+  // // Ajuster les vitesses selon le facteur de correction (k)
+  // switch (current) {
+  //   case SOFTLEFT:
+  //     speed_left = speed - k;
+  //     speed_right = speed + k;
+  //     break;
+
+  //   case SOFTRIGHT:
+  //     speed_left = speed + k;
+  //     speed_right = speed - k;
+  //     break;
+
+  //   case HARDLEFT:
+  //     speed_left = 0;
+  //     speed_right = speed + 3 * k;
+  //     break;
+
+  //   case HARDRIGHT:
+  //     speed_left = speed + 3 * k;
+  //     speed_right = 0;
+  //     break;
+
+  //   case STRAIGHT:
+  //     driveStraight(speed);
+  //     break;
+  // }
+
+  // if (last_correction != STRAIGHT) {
+  //   last_correction = current;
+  // }
+  
+  // if (current != STRAIGHT && current != INTERSECTION_L 
+  //   && current =! INTERSECTION_R) {
+  //   moveIndependant(speed_left, speed_right);
+  // }
