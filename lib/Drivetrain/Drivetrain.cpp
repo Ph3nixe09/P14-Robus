@@ -8,15 +8,15 @@ int last_right = 0;
 // Pins
 extern const int GREEN_DETECT_PIN = 48;
 extern const int RED_DETECT_PIN = 49;
-extern const int U1_PIN = 41;  
-extern const int U2_PIN = 43; 
-extern const int U3_PIN = 45; 
-const int U1_Left_PIN = 40;
-const int U2_Left_PIN = 42;
-const int U3_Left_PIN = 44;
-const int U1_Right_PIN = 46;
-const int U2_Right_PIN = 47;
-const int U3_Right_PIN = 48; 
+extern const int U1_PIN = A3;  
+extern const int U2_PIN = A4; 
+extern const int U3_PIN = A5; 
+const int U1_Left_PIN = A0;
+const int U2_Left_PIN = A1;
+const int U3_Left_PIN = A2;
+const int U1_Right_PIN = A6;
+const int U2_Right_PIN = A7;
+const int U3_Right_PIN = A8; 
 //U1 = fil vert
 //U2 = fil blanc
 //U3 = fil gris 
@@ -165,63 +165,99 @@ bool detectWallRight() {
 
 //CENTRAL LINE FOLLOWER
 bool getLineLeft() {
-  return !digitalRead(U1_PIN);
+  int read = analogRead(U1_PIN);
+  if (read >= 900){
+    return true;}
+  else {
+    return false;}
 }
 
 bool getLineMid() {
-  return !digitalRead(U2_PIN);
+  int read = analogRead(U2_PIN);
+  if (read >= 900){
+    return true;}
+  else {
+    return false;}
 }
 
 bool getLineRight() {
-  return !digitalRead(U3_PIN);
+  int read = analogRead(U3_PIN);
+  if (read >= 850){
+    return true;}
+  else {
+    return false;}
 }
 //LEFT LINE FOLLOWER
- bool getLineLeft_L() {
-  return !digitalRead(U1_Left_PIN);
- }
+bool getLineLeft_L() {
+  int read = analogRead(U1_Left_PIN);
+  if (read >= 800){
+    return true;}
+  else {
+    return false;}
+}
 
 bool getLineMid_L() {
-  return !digitalRead(U2_Left_PIN);
+  int read = analogRead(U2_Left_PIN);
+  if (read >= 650){
+    return true;}
+  else {
+    return false;}
 }
 
 bool getLineRight_L() {
-  return !digitalRead(U3_Left_PIN);
+  int read = analogRead(U3_Left_PIN);
+  if (read >= 800){
+    return true;}
+  else {
+    return false;}
 }
 
 //RIGHT LINE FOLLOWER
- bool getLineLeft_R() {
-  return !digitalRead(U1_Right_PIN);
- }
+bool getLineLeft_R() {
+  int read = analogRead(U1_Right_PIN);
+  if (read >= 900){
+    return true;}
+  else {
+    return false;}
+}
 
 bool getLineMid_R() {
-  return !digitalRead(U2_Right_PIN);
+  int read = analogRead(U2_Right_PIN);
+  if (read >= 900){
+    return true;}
+  else {
+    return false;}
 }
 
 bool getLineRight_R() {
-  return !digitalRead(U3_Right_PIN);
+  int read = analogRead(U3_Right_PIN);
+  if (read >= 900){
+    return true;}
+  else {
+    return false;}
 }
 
 void testLineSensor() {
-  Serial.print("Left :");
-  Serial.println(getLineLeft());
-  Serial.print("Middle :");
-  Serial.println(getLineMid());
-  Serial.print("Right :");
-  Serial.println(getLineRight());
+   Serial.print("Left :");
+   Serial.println(getLineLeft());
+   Serial.print("Middle :");
+   Serial.println(getLineMid());
+   Serial.print("Right :");
+   Serial.println(getLineRight());
 
-  Serial.print("L Left :");
-  Serial.println(getLineLeft_L());
-  Serial.print("L Middle :");
-  Serial.println(getLineMid_L());
-  Serial.print("L Right :");
-  Serial.println(getLineRight_L()); 
+   Serial.print("L Left :");
+   Serial.println(getLineLeft_L()); 
+   Serial.print("L Middle :");
+   Serial.println(getLineMid_L());
+   Serial.print("L Right :");
+   Serial.println(getLineRight_L()); 
 
-  Serial.print("R Left :");
-  Serial.println(getLineLeft_R());
-  Serial.print("R Middle :");
-  Serial.println(getLineMid_R());
-  Serial.print("R Right :");
-  Serial.println(getLineRight_R());
+   Serial.print("R Left :");
+   Serial.println(getLineLeft_R());
+   Serial.print("R Middle :");
+   Serial.println(getLineMid_R());
+   Serial.print("R Right :");
+   Serial.println(getLineRight_R());
   delay(1000);
 }
 
