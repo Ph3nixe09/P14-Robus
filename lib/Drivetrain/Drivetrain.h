@@ -47,9 +47,18 @@ int getIRRight();
 bool detectWallFront(int distance = 275);
 bool detectWallRight();
 
+
+
+
 bool getLineLeft();
 bool getLineMid();
 bool getLineRight();
+bool getLineLeft_L();
+bool getLineLeft_M();
+bool getLineLeft_R();
+bool getLineRight_L();
+bool getLineRight_M();
+bool getLineRight_R();
 
 void testLineSensor();
 
