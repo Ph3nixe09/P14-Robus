@@ -39,17 +39,17 @@ void deplacement(bool init = false) {
       switch (etat) {
     
       case LIGNE_MILIEU:
-        if (nbChambre >= 5) {
+        if (nbChambre >= 1) {
           tourner(180, 0.1);
           etat = DEMI_TOUR_FINAL;
         }
-        else if (getLineLeft() || getLineRight()) {
-          if (getLineLeft()) {
-            coteChambre = -1;
-          } else {
+        else if (getLineLeft_L() || getLineRight_R()) {
+          if (getLineLeft_L()) {
             coteChambre = 1;
+          } else {
+            coteChambre = -1;
           }
-          driveDistance(8, 0.2);   // on lance l'avance jusqu'au centre de l'intersection
+          driveDistanceBackward(10, 0.2);   // on lance l'avance jusqu'au centre de l'intersection
           etat = AVANCER_INTERSECTION;
         }
         else {
@@ -58,7 +58,7 @@ void deplacement(bool init = false) {
         break;
 
       case AVANCER_INTERSECTION:
-        driveDistance(0, 0.2);   // on continue l'avance
+        driveDistanceBackward(0, 0.2);   // on continue l'avance
         if (endMoving()) {
           tourner(coteChambre * 90, 0.25);   // on lance le virage
           etat = TOURNER_VERS_CHAMBRE;
@@ -74,7 +74,7 @@ void deplacement(bool init = false) {
 
       case AVANCER_CHAMBRE:
         // Le bout de la chambre : les 3 capteurs ne voient plus la ligne
-        if (!getLineLeft() && !getLineMid() && !getLineRight()) {
+        if (!getLineLeft_L() && !getLineMid() && !getLineRight_R()) {
           stop();
           tourner(180, 0.25);
           etat = PROGRAMME_INTERACTION;
@@ -84,7 +84,6 @@ void deplacement(bool init = false) {
         break;
  //Il faut changer du code quand le fichier interaction serait fonctionnel, enlever tourner(180, 25), car il tournera dans l'autre code
       case PROGRAMME_INTERACTION:
-      //void dataExtractionOrganiser(); //
         tourner(0,0);
         if (endMoving())  {
         etat = RETOUR_LIGNE;
@@ -93,8 +92,8 @@ void deplacement(bool init = false) {
 
       case RETOUR_LIGNE:
       // Les 3 capteurs voient la ligne du milieu en même temps
-        if (getLineLeft() && getLineMid() && getLineRight()) {
-          driveDistance(8, 0.2);
+        if (getLineLeft_R() && getLineMid() && getLineRight_L()) {
+          driveDistanceBackward(10, 0.2);
           etat = AVANCER_RETOUR;
         } else {
           followLine(0.15);
@@ -102,7 +101,7 @@ void deplacement(bool init = false) {
         break;
 
       case AVANCER_RETOUR:
-        driveDistance(0, 0.2);
+        driveDistanceBackward(0, 0.2);
         if (endMoving()) {
           tourner(coteChambre * 90, 0.25);
           etat = TOURNER_VERS_MILIEU;
@@ -125,7 +124,7 @@ void deplacement(bool init = false) {
         break;
 
       case RETOUR_DEPART:
-        if (!getLineLeft() && !getLineMid() && !getLineRight()) {
+        if (!getLineLeft_L() && !getLineMid() && !getLineRight_R()) {
           stop();
           etat = FIN;
         } else {
@@ -155,6 +154,8 @@ const char* nomsEtats[] = {
   "RETOUR_DEPART", "FIN"
 };
 
+
+
 Etat dernierEtat = FIN;
 
 void setup() {
@@ -164,8 +165,9 @@ void setup() {
   beep(1);
 }
 
+
 void loop() {
-  if (getBumberRear()) {      // bumper arrière : démarre le parcours
+  if (getBumberLeft()) {      // bumper arrière : démarre le parcours
     deplacement(true);
   }
   if (getBumberFront()) {     // bumper avant : arrêt d'urgence
