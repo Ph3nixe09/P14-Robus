@@ -278,32 +278,35 @@ bool endMoving() {
 // Suivre une ligne au sol
 // La condition de fin sera dans le système de détection de couleurs
 
-int last_time;
-int I = 0;
-int last_error = 0;
-int kp = 1;
-int ki = 0;
-int kd = 0;
+float last_time;
+float I = 0;
+float last_error = 0;
+float kp = 0.02;
+float ki = 0.0005;
+float kd = 0;
 bool first_iteration = true;
-int past_speed_right;
-int past_speed_left;
+float past_speed_right;
+float past_speed_left;
+float erreur;
 
-void followLine(float speed = 0.15) {
-  if (first_iteration){
-    past_speed_right = speed;
-    past_speed_left = speed;
-    first_iteration = false;
-  }
+void followLine(float speed = -0.15) {
+  delay(0);
+  // if (first_iteration){
+  //   past_speed_right = speed;
+  //   past_speed_left = speed;
+  //   moveIndependant(past_speed_right, past_speed_left);
+  //   first_iteration = false;
+  // }
   
-  int numberOfCaptor = 3;
+  int numberOfCaptor = 7;
   int captor_read [numberOfCaptor] = {getLineMid_L(), getLineRight_L(),
                                         getLineLeft(), getLineMid(), getLineRight(),
                                         getLineLeft_R(), getLineMid_R()};
   int ponderation [numberOfCaptor] = {-3,-2,-1,0,1,2,3};
 
-  int erreur = 0;
-  int now = millis();
-  int dt = now - last_time;
+  erreur = 0;
+  float now = millis();
+  float dt = now - last_time;
   //Serial.println(captor_read[0]);
   //Serial.println(captor_read[1]);
   //Serial.println(captor_read[2]);
@@ -312,25 +315,29 @@ void followLine(float speed = 0.15) {
    for (int i = 0; i < numberOfCaptor; i++){
      erreur += captor_read[i]*ponderation[i];
    }
-
+   
+   Serial.println("erreur");
    Serial.println(erreur);
-   Serial.println("");
 
   //Valeurs des corrections PID
-   int P = erreur;
-       I += erreur*dt;
-   int D = (erreur - last_error)/dt;
+   float P = erreur;
+         I += erreur*dt;
+   float D = (erreur - last_error)/dt;
 
-   int correction = P*kp + I*ki + D*kd;
+   float correction = P*kp + I*ki + D*kd;
   
-   int new_speed_right = past_speed_right + correction;
-   int new_speed_left = past_speed_left - correction;
+   float new_speed_right = speed + correction;
+   float new_speed_left = speed - correction;
+   Serial.println("new speed L");
+   Serial.println(new_speed_left);
+   Serial.println("new speed R");
+   Serial.println(new_speed_right);
   
    moveIndependant(new_speed_right, new_speed_left);
 
    last_time = now;
-   past_speed_right = new_speed_right;
-   past_speed_left = new_speed_left;
+  //  past_speed_right = new_speed_right;
+  //  past_speed_left = new_speed_left;
 }
 
   // bool left = getLineLeft();
