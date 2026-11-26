@@ -34,8 +34,8 @@ void setup() {
 
 // Boucle du robot
 void loop() {
-  //followLine();
-  testLineSensor();
+  followLine(0.15);
+  //testLineSensor();
 
   //Safety bumper et infrarouge pour la détection d'obstacle
   // if (ir_safety){

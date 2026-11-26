@@ -276,27 +276,18 @@ bool endMoving() {
 
 //----------------------------
 // Suivre une ligne au sol
-// La condition de fin sera dans le système de détection de couleurs
 
 float last_time;
 float I = 0;
 float last_error = 0;
-float kp = 0.02;
-float ki = 0.0005;
-float kd = 0;
-bool first_iteration = true;
 float past_speed_right;
 float past_speed_left;
 float erreur;
 
-void followLine(float speed = -0.15) {
-  delay(0);
-  // if (first_iteration){
-  //   past_speed_right = speed;
-  //   past_speed_left = speed;
-  //   moveIndependant(past_speed_right, past_speed_left);
-  //   first_iteration = false;
-  // }
+void followLine(float base_speed = 0.15) {
+  float kp = 0.015 * (base_speed*base_speed/(0.15*0.15));
+  float ki = 0.00002 * (base_speed*base_speed/(0.15*0.15));//0.00002
+  float kd = 0.5 * (base_speed*base_speed/(0.15*0.15));//1.5
   
   int numberOfCaptor = 7;
   int captor_read [numberOfCaptor] = {getLineMid_L(), getLineRight_L(),
@@ -307,17 +298,12 @@ void followLine(float speed = -0.15) {
   erreur = 0;
   float now = millis();
   float dt = now - last_time;
-  //Serial.println(captor_read[0]);
-  //Serial.println(captor_read[1]);
-  //Serial.println(captor_read[2]);
   
-  //l'erreur est la moyenne ponderer de l'etat de chaque capteur avec la ponderation definit plus tot
+  //l'erreur est la moyenne ponderer de l'etat de chaque capteur 
+  //avec la ponderation definit plus tot
    for (int i = 0; i < numberOfCaptor; i++){
      erreur += captor_read[i]*ponderation[i];
    }
-   
-   Serial.println("erreur");
-   Serial.println(erreur);
 
   //Valeurs des corrections PID
    float P = erreur;
@@ -325,115 +311,7 @@ void followLine(float speed = -0.15) {
    float D = (erreur - last_error)/dt;
 
    float correction = P*kp + I*ki + D*kd;
-  
-   float new_speed_right = speed + correction;
-   float new_speed_left = speed - correction;
-   Serial.println("new speed L");
-   Serial.println(new_speed_left);
-   Serial.println("new speed R");
-   Serial.println(new_speed_right);
-  
-   moveIndependant(new_speed_right, new_speed_left);
-
+   float new_speed_L = base_speed - correction;
+   moveIndependant(base_speed, new_speed_L);
    last_time = now;
-  //  past_speed_right = new_speed_right;
-  //  past_speed_left = new_speed_left;
 }
-
-  // bool left = getLineLeft();
-  // bool mid = getLineMid();
-  // bool right = getLineRight();
-
-  // bool left_L = getLineLeft_L();
-  // bool mid_L = getLineMid_L();
-  // bool right_L = getLineRight_L();
-
-  // bool left_R = getLineLeft_R();
-  // bool mid_R = getLineMid_R();
-  // bool right_R = getLineRight_R();
-
-  // enum Correction current;
-  // float speed_left;
-  // float speed_right;
-  // float k = 0.15; // facteur de correction initiale 0.15
-
-  // enum Intersection now;
-  
-  // // Presence ou non d une intersection
-  // if (left_L) {
-  //   now = LEFT;
-  // } else if (right_R) {
-  //   now = RIGHT;
-  // } else {
-  //   now = NONE;
-  // }
-
-  // // Choix du facteur de correction de vitesse
-  // // 8 combinaisons possibles
-  // if (now = NONE){
-  //   if (left && mid && right) { // tous
-  //     current = STRAIGHT;
-  //   } else if (left && mid) {
-  //     current = SOFTRIGHT;
-  //   } else if (right && mid) {
-  //     current = SOFTLEFT;
-  //   } else if (left && right) { // ne devrait pas arriver
-  //     current = STRAIGHT;//straight
-  //   } else if (left) {
-  //     current = SOFTRIGHT;
-  //   } else if (right) {
-  //     current = SOFTLEFT;
-  //   } else if (mid) {
-  //     current = STRAIGHT;
-  //   }
-
-  //   else if 
-  // }
-
-  // //retourner intersection
-  
-  // else { // aucun, 5 combinaison réduit à 3
-  //   if (last_correction == SOFTRIGHT || last_correction == HARDRIGHT) {
-  //     current = HARDRIGHT;
-  //   } else if (last_correction == SOFTLEFT || last_correction == HARDLEFT) {
-  //     current = HARDLEFT;
-  //   } else {
-  //     current = STRAIGHT;
-  //   }
-  // }
-
-  // // Ajuster les vitesses selon le facteur de correction (k)
-  // switch (current) {
-  //   case SOFTLEFT:
-  //     speed_left = speed - k;
-  //     speed_right = speed + k;
-  //     break;
-
-  //   case SOFTRIGHT:
-  //     speed_left = speed + k;
-  //     speed_right = speed - k;
-  //     break;
-
-  //   case HARDLEFT:
-  //     speed_left = 0;
-  //     speed_right = speed + 3 * k;
-  //     break;
-
-  //   case HARDRIGHT:
-  //     speed_left = speed + 3 * k;
-  //     speed_right = 0;
-  //     break;
-
-  //   case STRAIGHT:
-  //     driveStraight(speed);
-  //     break;
-  // }
-
-  // if (last_correction != STRAIGHT) {
-  //   last_correction = current;
-  // }
-  
-  // if (current != STRAIGHT && current != INTERSECTION_L 
-  //   && current =! INTERSECTION_R) {
-  //   moveIndependant(speed_left, speed_right);
-  // }

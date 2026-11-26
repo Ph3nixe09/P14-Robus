@@ -163,13 +163,13 @@ bool detectWallRight() {
 }
 
 // line follower
-//les fonctions retournent false si une ligne noir est détecté TRUEEE
+//les fonctions retournent true si une ligne noir est détectée
 
 //CENTRAL LINE FOLLOWER
 bool getLineLeft() {
   int read = analogRead(U1_PIN);
   //Serial.println(read);
-  if (read >= 600){
+  if (read >= 600){ //seuil pour local 4ieme : 800
     return true;}
   else {
     return false;}
@@ -178,7 +178,7 @@ bool getLineLeft() {
 bool getLineMid() {
   int read = analogRead(U2_PIN);
   //Serial.println(read);
-  if (read >= 600){
+  if (read >= 750){//seuil pour local 4ieme : 850
     return true;}
   else {
     return false;}
@@ -187,7 +187,7 @@ bool getLineMid() {
 bool getLineRight() {
   int read = analogRead(U3_PIN);
   //Serial.println(read);
-  if (read >= 600){
+  if (read >= 600){ //seuil pour local 4ieme : 850
     return true;}
   else {
     return false;}
@@ -196,7 +196,7 @@ bool getLineRight() {
 bool getLineLeft_L() {
   int read = analogRead(U1_Left_PIN);
   //Serial.println(read);
-  if (read >= 600){
+  if (read >= 600){//seuil pour local 4ieme : 800
     return true;}
   else {
     return false;}
@@ -205,7 +205,7 @@ bool getLineLeft_L() {
 bool getLineMid_L() {
   int read = analogRead(U2_Left_PIN);
   //Serial.println(read);
-  if (read >= 600){
+  if (read >= 600){//seuil pour local 4ieme : 820
     return true;}
   else {
     return false;}
@@ -214,7 +214,7 @@ bool getLineMid_L() {
 bool getLineRight_L() {
   int read = analogRead(U3_Left_PIN);
   //Serial.println(read);
-  if (read >= 600){
+  if (read >= 600){//seuil pour local 4ieme : 800
     return true;}
   else {
     return false;}
@@ -224,7 +224,7 @@ bool getLineRight_L() {
 bool getLineLeft_R() {
   int read = analogRead(U1_Right_PIN);
   //Serial.println(read);
-  if (read >= 370){
+  if (read >= 600){//seuil pour local 4ieme : 800
     return true;}
   else {
     return false;}
@@ -233,7 +233,7 @@ bool getLineLeft_R() {
 bool getLineMid_R() {
   int read = analogRead(U2_Right_PIN);
   //Serial.println(read);
-  if (read >= 370){
+  if (read >= 370){//seuil pour local 4ieme : 450
     return true;}
   else {
     return false;}
@@ -242,7 +242,7 @@ bool getLineMid_R() {
 bool getLineRight_R() {
   int read = analogRead(U3_Right_PIN);
   //Serial.println(read);
-  if (read >= 380){
+  if (read >= 380){//seuil pour local 4ieme : 570
     return true;}
   else {
     return false;}
@@ -250,33 +250,24 @@ bool getLineRight_R() {
 
 void testLineSensor() {
    Serial.print("Left :");
-   //getLineLeft();
    Serial.println(getLineLeft());
    Serial.print("Middle :");
-   //getLineMid();
    Serial.println(getLineMid());
    Serial.print("Right :");
-   //getLineRight();
    Serial.println(getLineRight());
 
     Serial.print("L Left :");
-    //getLineLeft_L();
     Serial.println(getLineLeft_L()); 
     Serial.print("L Middle :");
-    //getLineMid_L();
     Serial.println(getLineMid_L());
     Serial.print("L Right :");
-    //getLineRight_R();
     Serial.println(getLineRight_L()); 
 
     Serial.print("R Left :");
     Serial.println(getLineLeft_R());
-    //getLineLeft_R();
     Serial.print("R Middle :");
-    //getLineMid_R();
     Serial.println(getLineMid_R());
     Serial.print("R Right :");
-    //getLineRight_R();
     Serial.println(getLineRight_R());
   delay(1000);
 }
