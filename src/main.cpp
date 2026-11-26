@@ -5,6 +5,7 @@
 #include <LED.h>
 #include <rfid2.h>
 #include <InfraReceiv.h>
+#include <LCD.h>
 
 enum RobotState {
   WAITING_FOR_IR,
@@ -27,6 +28,7 @@ void setup() {
   ledInit();
   drivetrainInit();
   rfidInit();
+  startLCD();
   count = 0;
 
   state = WAITING_FOR_IR;
@@ -69,7 +71,21 @@ void loop() {
         state = TEST_COMMAND;
         delay(500);  //Pour pas activer le bumper_safety (a enlever sur le final)
         bumper_safety = true;  //Pour pas activer le bumper_safety (a enlever sur le final)
-        driveDistance(100);
+        driveDistance(100);   //Commande
+      }
+      if (testing){
+        LCD("Scannez votre","bracelet sur le","capteur avant !"," ");
+        delay (5000);
+        LCD("Entrez votre age","sur le clavier","numerique svp.","");
+        delay (5000);
+        LCD("Merci",""," "," ");
+        delay (5000);
+        LCD("Avez-vous mal a","la gorge ou a la","tete ?","Oui: A    Non: B");
+        delay (5000);
+        LCD("Merci","Mettez votre","doigt sur le ca-", "pteur cardiaque.");
+        delay (5000);
+        LCD("\x01\x02 \x03_\x03\x04\x02","","       t(O_Ot)","");
+        delay(10000);
       }
       break;
     
