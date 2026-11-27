@@ -50,15 +50,18 @@ bool detectWallRight();
 
 
 
-bool getLineLeft();
-bool getLineMid();
-bool getLineRight();
+bool getLineMid_L();
+bool getLineMid_M();
+bool getLineMid_R();
 bool getLineLeft_L();
 bool getLineLeft_M();
 bool getLineLeft_R();
 bool getLineRight_L();
 bool getLineRight_M();
 bool getLineRight_R();
+bool getLineMid();
+bool getLineLeft();
+bool getLineRight();
 
 void testLineSensor();
 

@@ -31,15 +31,26 @@ float speed_right;
 float base_speed_left;
 float integral_error;
 
-enum Correction {
-  STRAIGHT,
-  SOFTLEFT,
-  SOFTRIGHT,
-  HARDLEFT,
-  HARDRIGHT
-};
+//-----------
+// uint32_t previous_pulse_R;
+// uint32_t previous_pulse_L;
+//--------
 
-enum Correction last_correction = STRAIGHT;
+// enum Correction {
+//   STRAIGHT,
+//   SOFTLEFT,
+//   SOFTRIGHT,
+//   HARDLEFT,
+//   HARDRIGHT,
+// };
+
+// enum Intersection {
+//   NONE,
+//   LEFT,
+//   RIGHT
+// };
+
+// enum Correction last_correction = STRAIGHT;
 
 // Commands
 // La commande change les vitesses de chaques roues selon les valeurs d'encodeurs pour aller droit
@@ -263,74 +274,44 @@ bool endMoving() {
   }
 }
 
+//----------------------------
 // Suivre une ligne au sol
-// La condition de fin sera dans le système de détection de couleurs
-void followLine(float speed = 0.15) { //initial 0.2
-  bool left = getLineLeft();
-  bool mid = getLineMid();
-  bool right = getLineRight();
-  enum Correction current;
-  float speed_left;
-  float speed_right;
-  float k = 0.15; // facteur de correction initiale 0.15
 
+float last_time;
+float I = 0;
+float last_error = 0;
+float past_speed_right;
+float past_speed_left;
+float erreur;
 
-  // Choix du facteur de correction de vitesse
-  // 8 combinaisons possibles
-  if (left && mid && right) { // tous
-    current = STRAIGHT;
-  } else if (left && mid) {
-    current = SOFTRIGHT;
-  } else if (right && mid) {
-    current = SOFTLEFT;
-  } else if (left && right) { // ne devrait pas arriver
-    current = STRAIGHT;//straight
-  } else if (left) {
-    current = SOFTRIGHT;
-  } else if (right) {
-    current = SOFTLEFT;
-  } else if (mid) {
-    current = STRAIGHT;
-  } else { // aucun, 5 combinaison réduit à 3
-    if (last_correction == SOFTRIGHT || last_correction == HARDRIGHT) {
-      current = HARDRIGHT;
-    } else if (last_correction == SOFTLEFT || last_correction == HARDLEFT) {
-      current = HARDLEFT;
-    } else {
-      current = STRAIGHT;
-    }
-  }
-
-  // Ajusté les vitesses selon le facteur de correction (k)
-  switch (current) {
-    case SOFTLEFT:
-      speed_left = speed - k;
-      speed_right = speed + k;
-      break;
-
-    case SOFTRIGHT:
-      speed_left = speed + k;
-      speed_right = speed - k;
-      break;
-
-    case HARDLEFT:
-      speed_left = 0;
-      speed_right = speed + 3 * k;
-      break;
-
-    case HARDRIGHT:
-      speed_left = speed + 3 * k;
-      speed_right = 0;
-      break;
-
-    case STRAIGHT:
-      speed_left = speed;
-      speed_right = speed;
-  }
-
-  if (last_correction != STRAIGHT) {
-    last_correction = current;
-  }
+void followLine(float base_speed = 0.15) {
+  float kp = 0.015 * (base_speed*base_speed/(0.15*0.15));
+  float ki = 0.00002 * (base_speed*base_speed/(0.15*0.15));//0.00002
+  float kd = 0.5 * (base_speed*base_speed/(0.15*0.15));//1.5
   
-  moveIndependant(speed_left, speed_right); 
+  int numberOfCaptor = 7;
+  int captor_read [numberOfCaptor] = {getLineMid_L(), getLineRight_L(),
+                                        getLineLeft(), getLineMid(), getLineRight(),
+                                        getLineLeft_R(), getLineMid_R()};
+  int ponderation [numberOfCaptor] = {-3,-2,-1,0,1,2,3};
+
+  erreur = 0;
+  float now = millis();
+  float dt = now - last_time;
+  
+  //l'erreur est la moyenne ponderer de l'etat de chaque capteur 
+  //avec la ponderation definit plus tot
+   for (int i = 0; i < numberOfCaptor; i++){
+     erreur += captor_read[i]*ponderation[i];
+   }
+
+  //Valeurs des corrections PID
+   float P = erreur;
+         I += erreur*dt;
+   float D = (erreur - last_error)/dt;
+
+   float correction = P*kp + I*ki + D*kd;
+   float new_speed_L = base_speed - correction;
+   moveIndependant(base_speed, new_speed_L);
+   last_time = now;
 }
