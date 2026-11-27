@@ -1,5 +1,4 @@
 #include <Keypad.h>
-#include <LibRobus.h>
 #include <Arduino.h>
 
 const byte ROWS = 4; 
@@ -12,19 +11,11 @@ char hexaKeys[ROWS][COLS] = {
   {'A', '0', 'B', 'C'}
 };
 
-byte rowPins[ROWS] = {9, 8, 7, 6}; 
+byte rowPins[ROWS] = {9, 8, 7, 6};  
 byte colPins[COLS] = {5, 4, 3, 2}; 
 
 Keypad customKeypad = Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS); 
 
-void setup(){
-  Serial.begin(9600);
-}
-  
-void loop(){
-  char customKey = customKeypad.getKey();
-  
-  if (customKey){
-    Serial.println(customKey);
-  }
+char getNumpad() {
+  return customKeypad.getKey();
 }
